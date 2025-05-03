@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andrew Dowsett - Unity Systems Engineer</title>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo">
+            <a href="#"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#about">ABOUT ME</a></li>
+                <li><a href="#portfolio">PROJECTS</a></li>
+                <li class="resume-button-container">
+                    <a href="https://drive.google.com/file/d/1fvaLIAZVGKCp2ntkrRGHVXOEuMnTdF8C/view?usp=sharing" class="resume-button" target="_blank">
+                        <span class="resume-text">RESUME</span>
+                        <span class="download-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Video Background Hero Section -->
+    <section class="video-container">
+        <!-- Background video - YouTube version -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; pointer-events: none;">
+            <iframe id="background-video"
+                src="https://www.youtube.com/embed/LvpOGv8ILHQ?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=LvpOGv8ILHQ"
+                style="position: absolute; top: 50%; left: 50%; width: 100%; height: 200vh; min-width: 200vh; transform: translate(-50%, -50%);"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+        <!-- Add this HTML inside your video-overlay div, after your social icons but before the gradient-fade -->
+        <div class="scroll-indicator">
+            <div class="scroll-arrow">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 13l5 5 5-5"></path>
+                    <path d="M7 6l5 5 5-5"></path>
+                </svg>
+            </div>
+            <span class="scroll-text">- More -</span>
+        </div>
+        <div class="video-overlay">
+            <h1 class="hero-title">Andrew Dowsett</h1>
+            <h2 class="hero-subtitle">UNITY SYSTEMS ENGINEER</h2>
+
+            <!-- Social Icons -->
+            <div class="social-icons-vertical">
+                <a href="https://x.com/PresGD" title="Twitter" target="_blank">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#000" stroke="none">
+                        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                    </svg>
+                </a>
+                <a href="https://www.linkedin.com/in/drewdowsett/" title="LinkedIn" target="_blank">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#000" stroke="none">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                        <rect x="2" y="9" width="4" height="12"></rect>
+                        <circle cx="4" cy="4" r="2"></circle>
+                    </svg>
+                </a>
+                <a href="https://github.com/AndrewIndieDev" title="GitHub" target="_blank">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#000" stroke="none">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                    </svg>
+                </a>
+                <!--<a href="mailto:andrew@andrewdowsett.dev" title="Email" target="_blank">
+                    <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
+                        <g transform="translate(4.8, 4.8) scale(0.6)">
+                          <rect x="2" y="4" width="20" height="16" rx="2" ry="2" fill="none" stroke="#000" stroke-width="2"/>
+                          <path d="M22 6L12 13L2 6" stroke="#000" stroke-width="2" fill="none"/>
+                          <line x1="2" y1="6" x2="9" y2="13" stroke="#000" stroke-width="0.5"/>
+                          <line x1="22" y1="6" x2="15" y2="13" stroke="#000" stroke-width="0.5"/>
+                        </g>
+                      </svg>
+                </a>-->
+            </div>
+            <div class="gradient-fade">
+            </div>
+        </div>
+    </section>
+    <!-- Tech Section-->
+    <section id="tech" class="tech">
+        <!-- Technical Experience Section for About Me -->
+        <div class="technical-experience">
+            <div class="tech-tags-container">
+                <div class="tech-tag">Unity Engine</div>
+                <div class="tech-tag">C#</div>
+                <div class="tech-tag">Editor Tools</div>
+                <div class="tech-tag">Burst Compiler & Jobs</div>
+                <div class="tech-tag">Game Feel</div>
+                <div class="tech-tag">AI Behaviour</div>
+                <div class="tech-tag">Game Optimisation</div>
+                <div class="tech-tag">UI / UX</div>
+                <div class="tech-tag">Git</div>
+                <div class="tech-tag">WebGL</div>
+                <div class="tech-tag">Mobile</div>
+                <div class="tech-tag">VR Development</div>
+            </div>
+        </div>
+    </section>
+    <!-- About Section -->
+    <section id="about" class="about">
+        <h2 class="portfolio-header">About Me</h2>
+        <div class="about-container">
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="images/profile-photo.jpg" alt="Andrew Dowsett">
+                </div>
+                <div class="about-text">
+                    <h3>Unity Systems Engineer</h3>
+                    <p>G'day! I'm Andrew, a Unity-loving code-monkey from Brisbane, Australia. I have worked with Unity for over a decade to create amazing experiences for humans. My career goal is to be able to work with a small group of friends, making the games that we want without worrying about finances.</p>
+                    
+                    <p>I enjoy:</p>
+                    <ul class="skill-list">
+                        <li><span class="skill-highlight">Programming</span> - Extensive knowledge in Unity C#, and code injection</li>
+                        <li><span class="skill-highlight">Editor Tools</span> - Building Unity Editor extensions for quick iteration</li>
+                        <li><span class="skill-highlight">Game Feel</span> - Taking games, and adding the juice to make players say "Wow!"</li>
+                        <li><span class="skill-highlight">Debugging</span> - Perhaps one of few people who enjoy searching for and squashing bugs</li>
+                        <li><span class="skill-highlight">Optimisation</span> - I love finding faster ways to do the same task</li>
+                    </ul>
+                    
+                    <p>I develop games as a passion, not as a job. I thouroughly enjoy building games and experiences, and having a good chin-wag with fellow developers about games.</p>
+                    
+                    <div class="experience-education">
+                        <div class="experience">
+                            <h4>Experience</h4>
+                            <div class="exp-item">
+                                <span class="date">JAN 2024 - Present</span>
+                                <span class="position">Indie Game Developer</span>
+                                <span class="company">Self-employed</span>
+                            </div>
+                            <div class="exp-item">
+                                <span class="date">JAN 2024 - DEC 2024</span>
+                                <span class="position">Resident</span>
+                                <span class="company">Screen Queensland Games Residency</span>
+                            </div>
+                        </div>
+                        
+                        <div class="education">
+                            <h4>Education</h4>
+                            <div class="edu-item">
+                                <span class="date">2014 - Present</span>
+                                <span class="degree">Fully self-taught</span>
+                                <span class="school">"I develop games as a passion, not as a job" - Me</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="portfolio">
+        <h2 class="portfolio-header">Projects</h2>
+
+        <div class="recent-work">
+            <h2>Released / Upcoming Titles</h2>
+
+            <div class="projects">
+                <!-- Project: Carrot Commotion -->
+                <div class="project-card project-card-wishlist">
+                    <a href="https://store.steampowered.com/app/2914110/Carrot_Commotion/" target="_blank">
+                        <div class="project-image">
+                            <img src="images/Carrot Commotion/Thumbnail.png" alt="Carrot Commotion Game Screenshot">
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Carrot Commotion</h3>
+                            <p class="project-subtitle">Social Deduction Game Show | COMING 2025</p>
+                            <div class="project-tools">
+                                <span class="tool-tag team">Team</span>
+                                <span class="tool-tag unity">Unity</span>
+                                <span class="tool-tag csharp">C#</span>
+                                <span class="tool-tag webgl">WebGL</span>
+                                <span class="tool-tag steam">Steam</span>
+                            </div>
+                            <div class="responsibilities">
+                                <h4>Demonstrated Skills:</h4>
+                                <ul>
+                                    <li>Multi-platform Networking</li>
+                                    <li>Custom WebGL Loading</li>
+                                    <li>Code Injection</li>
+                                    <li>Team Management</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Project: One Ship's Trash -->
+                <div class="project-card">
+                    <a href="https://liam3d.itch.io/one-ships-trash-jam" target="_blank">
+                        <div class="project-image">
+                            <img src="images/One Ship's Trash/Thumbnail.png" alt="One Ship's Trash Game Screenshot">
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">One Ship's Trash</h3>
+                            <p class="project-subtitle">Reef-cleaning Magnet Fishing | MAR 2025</p>
+                            <div class="project-tools">
+                                <span class="tool-tag team">Team</span>
+                                <span class="tool-tag unity">Unity</span>
+                                <span class="tool-tag csharp">C#</span>
+                                <span class="tool-tag gamejam">Game Jam</span>
+                                <span class="tool-tag webgl">WebGL</span>
+                            </div>
+                            <div class="responsibilities">
+                                <h4>Demonstrated Skills:</h4>
+                                <ul>
+                                    <li>Fast-paced development (48 hour project)</li>
+                                    <li>Scene Loader</li>
+                                    <li>Expandable Skill System</li>
+                                    <li>Code & Art Consolidation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- I Have More Hours Than You -->
+                <div class="project-card">
+                    <a href="https://store.steampowered.com/app/3056640/I_Have_More_Hours_Than_You/" target="_blank">
+                        <div class="project-image">
+                            <img src="images/IHMHTY/Thumbnail.png" alt="I Have More Hours Than You Game Screenshot">
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">I Have More Hours Than You</h3>
+                            <p class="project-subtitle">Idle-like Collection | FEB 2025</p>
+                            <div class="project-tools">
+                                <span class="tool-tag team">Team</span>
+                                <span class="tool-tag unity">Unity</span>
+                                <span class="tool-tag csharp">C#</span>
+                                <span class="tool-tag steam">Steam</span>
+                            </div>
+                            <div class="responsibilities">
+                                <h4>Demonstrated Skills:</h4>
+                                <ul>
+                                    <li>Fast-paced development (1 Month)</li>
+                                    <li>Steamworks API Integration</li>
+                                    <li></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Dinosaur Ecosystem -->
+                <div class="project-card">
+                    <a href="https://andrewindie.itch.io/project-gcap" target="_blank">
+                        <div class="project-image">
+                            <img src="images/Dinosaur Ecosystem/Thumbnail.png" alt="Dinosaur Ecosystem Game Screenshot">
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Dinosaur Ecosystem</h3>
+                            <p class="project-subtitle">Ecosystem Simulator | OCT 2024</p>
+                            <div class="project-tools">
+                                <span class="tool-tag team">Team</span>
+                                <span class="tool-tag unity">Unity</span>
+                                <span class="tool-tag csharp">C#</span>
+                                <span class="tool-tag ai">AI</span>
+                                <span class="tool-tag gamejam">Game Jam</span>
+                                <span class="tool-tag webgl">WebGL</span>
+                                <span class="tool-tag itch">Itch.io</span>
+                            </div>
+                            <div class="responsibilities">
+                                <h4>Demonstrated Skills:</h4>
+                                <ul>
+                                    <li>Fast-paced development (48 hour project)</li>
+                                    <li>Scene Loader</li>
+                                    <li>Expandable Skill System</li>
+                                    <li>Code & Art Consolidation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section - Add this after your About Me section
+    <section id="contact" class="portfolio">
+        <h2 class="portfolio-header">Contact</h2>
+
+        <div class="contact-container">
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12c6f3" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <a href="mailto:andrew@andrewdowsett.dev">Andrew Dowsett</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12c6f3" stroke-width="2">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4>GitHub</h4>
+                            <a href="https://github.com/AndrewIndieDev" target="_blank">AndrewIndieDev</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12c6f3" stroke-width="2">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                                <rect x="2" y="9" width="4" height="12"></rect>
+                                <circle cx="4" cy="4" r="2"></circle>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4>LinkedIn</h4>
+                            <a href="https://linkedin.com/in/coreyhorne" target="_blank">linkedin.com/in/coreyhorne</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    -->
+
+    <!-- Footer Section - Add this at the end of your body before the closing body tag -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <a href="#">Andrew Dowsett</a>
+                <p>Indie Game Developer</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-nav">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#about">About</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-social">
+                    <h4>Social Media</h4>
+                    <div class="social-icons-footer">
+                        <a href="https://x.com/PresGD" title="Twitter" target="_blank">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                            </svg>
+                        </a>
+                        <a href="https://www.linkedin.com/in/drewdowsett/" title="LinkedIn" target="_blank">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                                <rect x="2" y="9" width="4" height="12"></rect>
+                                <circle cx="4" cy="4" r="2"></circle>
+                            </svg>
+                        </a>
+                        <a href="https://github.com/AndrewIndieDev" title="GitHub" target="_blank">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Andrew Dowsett. All Rights Reserved.</p>
+        </div>
+    </footer>
+        
+
+    <script>
+        // Enhanced Project card hover effects with fallback for missing GIFs
+        document.querySelectorAll('.project-card').forEach(card => {
+            const imageContainer = card.querySelector('.project-image');
+            const staticImage = imageContainer.querySelector('img');
+            
+            // Store the original image source
+            const originalSrc = staticImage.src;
+            
+            // Generate the GIF path based on naming convention
+            // Assumes GIFs are in the same folder as thumbnails with "-animation.gif" suffix
+            // Example: if thumbnail is "images/Bakeneko/Thumbnail.png", GIF would be "images/Bakeneko/Thumbnail-animation.gif"
+            const gifSrc = originalSrc.replace(/\.(png|jpg|jpeg)$/i, '-animation.gif');
+            
+            // Create a flag to track if this card has a valid GIF
+            let hasValidGif = null; // null means we haven't checked yet
+            
+            // Preload and check if GIF exists
+            const preloadGif = new Image();
+            preloadGif.onload = () => { hasValidGif = true; };
+            preloadGif.onerror = () => { hasValidGif = false; };
+            preloadGif.src = gifSrc;
+            
+            // Add hover effect to swap image
+            card.addEventListener('mouseenter', () => {
+                // Always apply hover styling
+                card.style.outline = '2px solid white';
+                card.style.transform = 'translateY(-5px)';
+                card.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.3)';
+                
+                // Only swap image if GIF exists
+                if (hasValidGif === true) {
+                    staticImage.style.opacity = '0';
+                    setTimeout(() => {
+                        staticImage.src = gifSrc;
+                        staticImage.style.opacity = '1';
+                    }, 200);
+                }
+            });
+
+            card.addEventListener('mouseleave', () => {
+                // Remove outline effect
+                card.style.outline = 'none';
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = 'none';
+                
+                // Only swap back if we changed to GIF
+                if (hasValidGif === true) {
+                    staticImage.style.opacity = '0';
+                    setTimeout(() => {
+                        staticImage.src = originalSrc;
+                        staticImage.style.opacity = '1';
+                    }, 200);
+                }
+            });
+
+            // Make cards clickable
+            card.addEventListener('click', () => {
+                // You can add navigation to project detail pages here
+                console.log('Project clicked: ' + card.querySelector('.project-title').textContent);
+                
+                // Uncomment to enable navigation to project detail pages
+                // window.location.href = '/projects/' + card.querySelector('.project-title').textContent.toLowerCase().replace(/\s+/g, '-');
+            });
+        });
+
+        // Enhanced navbar scroll effect with transition
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.querySelector('header');
+            
+            // Function to update header appearance based on scroll position
+            function updateHeaderAppearance() {
+                // If we're at the top of the page (or very close)
+                if (window.scrollY < 50) {
+                    // Make header transparent
+                    header.classList.add('header-transparent');
+                    header.classList.remove('header-solid');
+                } else {
+                    // Make header solid as you scroll down
+                    header.classList.remove('header-transparent');
+                    header.classList.add('header-solid');
+                }
+            }
+            
+            // Set initial state
+            updateHeaderAppearance();
+            
+            // Update on scroll with throttling for performance
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateHeaderAppearance();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            const aboutSection = document.getElementById('about');
+            
+            // Fade out the indicator gradually as you scroll down
+            window.addEventListener('scroll', function() {
+                // Calculate how far down the viewport height we've scrolled (as a percentage)
+                const scrollPercentage = Math.min(window.scrollY / (window.innerHeight * 0.3), 1);
+                
+                // Apply an opacity value that decreases as scrollPercentage increases
+                scrollIndicator.style.opacity = (1 - scrollPercentage).toString();
+                
+                // Hide it completely when fully faded out (for better performance)
+                if (scrollPercentage === 1) {
+                    scrollIndicator.style.visibility = 'hidden';
+                } else {
+                    scrollIndicator.style.visibility = 'visible';
+                }
+            });
+            
+            // Enhanced smooth scrolling to the about section when clicked
+            if (scrollIndicator && aboutSection) {
+                scrollIndicator.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default behavior
+                    
+                    // Get the target position (the about section's top position)
+                    const targetPosition = aboutSection.getBoundingClientRect().top + window.pageYOffset;
+                    
+                    // Scroll smoothly to the target position
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Add a visual flash to the about section when it's reached (optional)
+                    setTimeout(() => {
+                        aboutSection.classList.add('section-highlight');
+                        setTimeout(() => {
+                            aboutSection.classList.remove('section-highlight');
+                        }, 1000);
+                    }, 800); // Delay to match scrolling time
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        // Existing scroll indicator code
+        const scrollIndicator = document.querySelector('.scroll-indicator');
+        const aboutSection = document.getElementById('tech');
+        
+        // Add smooth scrolling for all navigation links
+        document.querySelectorAll('header nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Get the target section from the href attribute
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    // Get the target position
+                    const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset;
+                    
+                    // Scroll smoothly to the target position
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Optional: Add a visual highlight to the section
+                    setTimeout(() => {
+                        targetSection.classList.add('section-highlight');
+                        setTimeout(() => {
+                            targetSection.classList.remove('section-highlight');
+                        }, 1000);
+                    }, 800);
+                }
+            });
+        });
+        
+        // Existing scroll indicator code continues...
+        if (scrollIndicator && aboutSection) {
+            // ...
+        }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create a fade overlay element specifically for the video
+        const fadeOverlay = document.createElement('div');
+        fadeOverlay.id = 'video-fade-overlay';
+        // Position between video and content, but below other elements
+        fadeOverlay.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: black; opacity: 0; z-index: -1; transition: opacity 0.8s ease; pointer-events: none;';
+        
+        // Insert the fade overlay right after the background-player
+        const videoContainer = document.querySelector('.video-container');
+        videoContainer.insertBefore(fadeOverlay, videoContainer.firstChild.nextSibling);
+        
+        // List of YouTube video IDs to play sequentially
+        const videoIds = [
+            '1G25hiEq9as',
+            'R2zTYqTvc_8',
+            'M6j01yKpSPM',
+            'x7GCOcdVmok'
+        ];
+        
+        // Initialize YouTube API
+        // First, add the YouTube iframe API script
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        
+        // Replace the current iframe with a div that will hold the YouTube player
+        const iframeWrapper = document.createElement('div');
+        iframeWrapper.id = 'background-player';
+        iframeWrapper.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -2; pointer-events: none;';
+        
+        // Remove existing iframe if present
+        const existingIframe = videoContainer.querySelector('iframe');
+        if (existingIframe) {
+            existingIframe.remove();
+        }
+        
+        videoContainer.prepend(iframeWrapper);
+        
+        // Create YouTube player when API is ready
+        let player;
+        let currentVideoIndex = 0;
+        let isFading = false;
+        
+        // This function will be called by the YouTube API when it's ready
+        window.onYouTubeIframeAPIReady = function() {
+            player = new YT.Player('background-player', {
+                height: '200vh',
+                width: '100%',
+                videoId: videoIds[0],
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'showinfo': 0,
+                    'rel': 0,
+                    'loop': 0,
+                    'mute': 1,
+                    'modestbranding': 1,
+                    'playsinline': 1,
+                    'enablejsapi': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        };
+        
+        // When player is ready, start playing
+        function onPlayerReady(event) {
+            event.target.playVideo();
+            
+            // Adjust player position for proper centering
+            const playerElement = document.querySelector('#background-player iframe');
+            if (playerElement) {
+                playerElement.style.cssText = 'position: absolute; top: 50%; left: 50%; width: 100%; height: 200vh; min-width: 200vh; transform: translate(-50%, -50%);';
+            }
+            
+            // Start monitoring video time to catch end before YouTube UI appears
+            setInterval(checkVideoTime, 1000);
+        }
+        
+        // Function to check video time and trigger fade before the end
+        function checkVideoTime() {
+            if (player && player.getPlayerState() === YT.PlayerState.PLAYING && !isFading) {
+                const duration = player.getDuration();
+                const currentTime = player.getCurrentTime();
+                
+                // If we're within 1.5 seconds of the end, start the fade transition
+                if (duration - currentTime <= 1.5) {
+                    startFadeTransition();
+                }
+            }
+        }
+        
+        // Function to handle the fade transition
+        function startFadeTransition() {
+            if (isFading) return;
+            isFading = true;
+            
+            // Start the fade out by making the overlay visible
+            const overlay = document.getElementById('video-fade-overlay');
+            overlay.style.zIndex = -1;
+            overlay.style.opacity = 1;
+            
+            // Wait for the fade out to complete, then change the video
+            setTimeout(() => {
+                // Move to the next video
+                currentVideoIndex = (currentVideoIndex + 1) % videoIds.length;
+                player.loadVideoById(videoIds[currentVideoIndex]);
+                
+                // Wait a short moment for the new video to start loading
+                setTimeout(() => {
+                    // Fade back in
+                    overlay.style.opacity = 0;
+                    
+                    // After fade-in completes, reset isFading state
+                    setTimeout(() => {
+                        isFading = false;
+                    }, 1000);
+                }, 3500);
+            }, 1000);
+        }
+        
+        // When current video ends, make sure we catch any missed transitions
+        function onPlayerStateChange(event) {
+            // If the video ended and we somehow missed the timing-based fade
+            if (event.data === YT.PlayerState.ENDED && !isFading) {
+                startFadeTransition();
+            }
+        }
+    });
+
+    </script>
+
+</body>
+</html>
