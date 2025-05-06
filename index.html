@@ -10,33 +10,59 @@
 </head>
 <body>
     <!-- Header Navigation -->
-    <header>
+    <!-- Updated Header Navigation -->
+<header>
+    <div class="header-left">
         <div class="logo">
             <a href="#">Andrew Dowsett</a>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#about">ABOUT ME</a></li>
-                <li><a href="#portfolio">PROJECTS</a></li>
-                <li class="resume-button-container">
-                    <a href="https://drive.google.com/file/d/1fvaLIAZVGKCp2ntkrRGHVXOEuMnTdF8C/view?usp=sharing" class="resume-button" target="_blank">
-                        <span class="resume-text">RESUME</span>
-                        <span class="download-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                        </span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
+    </div>
+    
+    <nav class="header-center">
+        <ul>
+            <li><a href="#portfolio">PROJECTS</a></li>
+            <li><a href="#specialties">SPECIALTIES</a></li>
+            <li><a href="#about">ABOUT ME</a></li>
+        </ul>
+    </nav>
+    
+    <div class="header-right">
+        <div class="header-social-icons">
+            <a href="https://x.com/PresGD" title="Twitter" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="none">
+                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/drewdowsett/" title="LinkedIn" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="none">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+            </a>
+            <a href="https://github.com/AndrewIndieDev" title="GitHub" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="none">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+            </a>
+        </div>
+        <div class="resume-button-container">
+            <a href="https://drive.google.com/file/d/1fvaLIAZVGKCp2ntkrRGHVXOEuMnTdF8C/view?usp=sharing" class="resume-button" target="_blank">
+                <span class="resume-text">RESUME</span>
+                <span class="download-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </span>
+            </a>
+        </div>
+    </div>
+</header>
 
-    <!-- Video Background Hero Section -->
+    <!-- Video Background Hero Section
     <section class="video-container">
-        <!-- Background video - YouTube version -->
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; pointer-events: none;">
             <iframe id="background-video"
                 src="https://www.youtube.com/embed/LvpOGv8ILHQ?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=LvpOGv8ILHQ"
@@ -46,7 +72,6 @@
                 allowfullscreen>
             </iframe>
         </div>
-        <!-- Add this HTML inside your video-overlay div, after your social icons but before the gradient-fade -->
         <div class="scroll-indicator">
             <div class="scroll-arrow">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -59,112 +84,11 @@
         <div class="video-overlay">
             <h1 class="hero-title">Andrew Dowsett</h1>
             <h2 class="hero-subtitle">UNITY SYSTEMS ENGINEER</h2>
-
-            <!-- Social Icons -->
-            <div class="social-icons-vertical">
-                <a href="https://x.com/PresGD" title="Twitter" target="_blank">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#000" stroke="none">
-                        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                    </svg>
-                </a>
-                <a href="https://www.linkedin.com/in/drewdowsett/" title="LinkedIn" target="_blank">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#000" stroke="none">
-                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                        <rect x="2" y="9" width="4" height="12"></rect>
-                        <circle cx="4" cy="4" r="2"></circle>
-                    </svg>
-                </a>
-                <a href="https://github.com/AndrewIndieDev" title="GitHub" target="_blank">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#000" stroke="none">
-                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                    </svg>
-                </a>
-                <!--<a href="mailto:andrew@andrewdowsett.dev" title="Email" target="_blank">
-                    <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
-                        <g transform="translate(4.8, 4.8) scale(0.6)">
-                          <rect x="2" y="4" width="20" height="16" rx="2" ry="2" fill="none" stroke="#000" stroke-width="2"/>
-                          <path d="M22 6L12 13L2 6" stroke="#000" stroke-width="2" fill="none"/>
-                          <line x1="2" y1="6" x2="9" y2="13" stroke="#000" stroke-width="0.5"/>
-                          <line x1="22" y1="6" x2="15" y2="13" stroke="#000" stroke-width="0.5"/>
-                        </g>
-                      </svg>
-                </a>-->
-            </div>
             <div class="gradient-fade">
             </div>
         </div>
-    </section>
-    <!-- Tech Section-->
-    <section id="tech" class="tech">
-        <!-- Technical Experience Section for About Me -->
-        <div class="technical-experience">
-            <div class="tech-tags-container">
-                <div class="tech-tag">Unity Engine</div>
-                <div class="tech-tag">C#</div>
-                <div class="tech-tag">Editor Tools</div>
-                <div class="tech-tag">Burst Compiler & Jobs</div>
-                <div class="tech-tag">Game Feel</div>
-                <div class="tech-tag">AI Behaviour</div>
-                <div class="tech-tag">Game Optimisation</div>
-                <div class="tech-tag">UI / UX</div>
-                <div class="tech-tag">Git</div>
-                <div class="tech-tag">WebGL</div>
-                <div class="tech-tag">Mobile</div>
-                <div class="tech-tag">VR Development</div>
-            </div>
-        </div>
-    </section>
-    <!-- About Section -->
-    <section id="about" class="about">
-        <h2 class="portfolio-header">About Me</h2>
-        <div class="about-container">
-            <div class="about-content">
-                <div class="about-image">
-                    <img src="images/profile-photo.jpg" alt="Andrew Dowsett">
-                </div>
-                <div class="about-text">
-                    <h3>Unity Systems Engineer</h3>
-                    <p>G'day! I'm Andrew, a Unity-loving code-monkey from Brisbane, Australia. I have worked with Unity for over a decade to create amazing experiences for humans. My career goal is to be able to work with a small group of friends, making the games that we want without worrying about finances.</p>
-                    
-                    <p>I enjoy:</p>
-                    <ul class="skill-list">
-                        <li><span class="skill-highlight">Programming</span> - Extensive knowledge in Unity C#, and code injection</li>
-                        <li><span class="skill-highlight">Editor Tools</span> - Building Unity Editor extensions for quick iteration</li>
-                        <li><span class="skill-highlight">Game Feel</span> - Taking games, and adding the juice to make players say "Wow!"</li>
-                        <li><span class="skill-highlight">Debugging</span> - Perhaps one of few people who enjoy searching for and squashing bugs</li>
-                        <li><span class="skill-highlight">Optimisation</span> - I love finding faster ways to do the same task</li>
-                    </ul>
-                    
-                    <p>I develop games as a passion, not as a job. I thouroughly enjoy building games and experiences, and having a good chin-wag with fellow developers about games.</p>
-                    
-                    <div class="experience-education">
-                        <div class="experience">
-                            <h4>Experience</h4>
-                            <div class="exp-item">
-                                <span class="date">JAN 2024 - Present</span>
-                                <span class="position">Indie Game Developer</span>
-                                <span class="company">Self-employed</span>
-                            </div>
-                            <div class="exp-item">
-                                <span class="date">JAN 2024 - DEC 2024</span>
-                                <span class="position">Resident</span>
-                                <span class="company">Screen Queensland Games Residency</span>
-                            </div>
-                        </div>
-                        
-                        <div class="education">
-                            <h4>Education</h4>
-                            <div class="edu-item">
-                                <span class="date">2014 - Present</span>
-                                <span class="degree">Fully self-taught</span>
-                                <span class="school">"I develop games as a passion, not as a job" - Me</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </section> -->
+
     <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio">
         <h2 class="portfolio-header">Projects</h2>
@@ -175,6 +99,7 @@
             <div class="projects">
                 <!-- Project: Carrot Commotion -->
                 <div class="project-card project-card-wishlist">
+                    <div class="feature-badge">Featured</div>
                     <a href="https://store.steampowered.com/app/2914110/Carrot_Commotion/" target="_blank">
                         <div class="project-image">
                             <img src="images/Carrot Commotion/Thumbnail.png" alt="Carrot Commotion Game Screenshot">
@@ -202,6 +127,34 @@
                     </a>
                 </div>
 
+                <!-- Project: Ridiculous Gungame -->
+                <div class="project-card project-card-demo">
+                    <a href="" target="">
+                        <div class="project-image">
+                            <img src="images/Ridiculous Gungame/Thumbnail.png" alt="Ridiculous Gungame Game Screenshot">
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Ridiculous Gungame</h3>
+                            <p class="project-subtitle">Insta-gib Party Shooter | DEMO 2025</p>
+                            <div class="project-tools">
+                                <span class="tool-tag team">Team</span>
+                                <span class="tool-tag unity">Unity</span>
+                                <span class="tool-tag csharp">C#</span>
+                                <span class="tool-tag steam">Steam</span>
+                            </div>
+                            <div class="responsibilities">
+                                <h4>Demonstrated Skills:</h4>
+                                <ul>
+                                    <li>UGS Networking</li>
+                                    <li>Design and implementation of new weapons</li>
+                                    <li>Steam Achievements</li>
+                                    <li>Steam Inventory</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
                 <!-- Project: One Ship's Trash -->
                 <div class="project-card">
                     <a href="https://liam3d.itch.io/one-ships-trash-jam" target="_blank">
@@ -221,7 +174,7 @@
                             <div class="responsibilities">
                                 <h4>Demonstrated Skills:</h4>
                                 <ul>
-                                    <li>Fast-paced development (48 hour project)</li>
+                                    <li>Fast-paced development (48 hours)</li>
                                     <li>Scene Loader</li>
                                     <li>Expandable Skill System</li>
                                     <li>Code & Art Consolidation</li>
@@ -251,7 +204,8 @@
                                 <ul>
                                     <li>Fast-paced development (1 Month)</li>
                                     <li>Steamworks API Integration</li>
-                                    <li></li>
+                                    <li>Steam Achievements</li>
+                                    <li>Steam Stat Tracking</li>
                                 </ul>
                             </div>
                         </div>
@@ -271,129 +225,187 @@
                                 <span class="tool-tag team">Team</span>
                                 <span class="tool-tag unity">Unity</span>
                                 <span class="tool-tag csharp">C#</span>
-                                <span class="tool-tag ai">AI</span>
-                                <span class="tool-tag gamejam">Game Jam</span>
                                 <span class="tool-tag webgl">WebGL</span>
                                 <span class="tool-tag itch">Itch.io</span>
                             </div>
                             <div class="responsibilities">
                                 <h4>Demonstrated Skills:</h4>
                                 <ul>
-                                    <li>Fast-paced development (48 hour project)</li>
-                                    <li>Scene Loader</li>
-                                    <li>Expandable Skill System</li>
-                                    <li>Code & Art Consolidation</li>
+                                    <li>Game Feel</li>
+                                    <li>Animation System</li>
+                                    <li>Level Design</li>
+                                    <li>UI / UX</li>
                                 </ul>
                             </div>
                         </div>
                     </a>
                 </div>
-
-
-
-
             </div>
         </div>
     </section>
 
-    <!-- Contact Section - Add this after your About Me section
-    <section id="contact" class="portfolio">
-        <h2 class="portfolio-header">Contact</h2>
 
-        <div class="contact-container">
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-method">
-                        <div class="contact-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12c6f3" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                        </div>
-                        <div class="contact-details">
-                            <h4>Email</h4>
-                            <a href="mailto:andrew@andrewdowsett.dev">Andrew Dowsett</a>
+<!-- Tech Section
+<section id="tech" class="tech">
+    <div class="technical-experience">
+        <div class="tech-tags-container">
+            <div class="tech-tag">Unity Engine</div>
+            <div class="tech-tag">C#</div>
+            <div class="tech-tag">Editor Tools</div>
+            <div class="tech-tag">Burst Compiler & Jobs</div>
+            <div class="tech-tag">Game Feel</div>
+            <div class="tech-tag">AI Behaviour</div>
+            <div class="tech-tag">Game Optimisation</div>
+            <div class="tech-tag">UI / UX</div>
+            <div class="tech-tag">Git</div>
+            <div class="tech-tag">WebGL</div>
+            <div class="tech-tag">Mobile</div>
+            <div class="tech-tag">VR Development</div>
+        </div>
+    </div>
+</section>-->
+
+<!-- Specialty Panels Section -->
+<section id="specialties" class="specialties">
+    <h2 class="portfolio-header">My Specialties</h2>
+    <div class="specialties-container">
+        <div class="about-panels">
+            <div class="about-panel">
+                <div class="panel-image" style="background-image: url('images/About Me/panel1-bg.jpg');">
+                    <div class="panel-overlay">
+                        <div class="panel-content">
+                            <h3 class="panel-title">Game Systems</h3>
+                            <div class="panel-text">
+                                <p>I specialize in building robust game systems that provide rich player experiences. From inventory management to AI behavior trees, I enjoy creating scalable solutions that can grow with your project.</p>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="contact-method">
-                        <div class="contact-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12c6f3" stroke-width="2">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                            </svg>
+                </div>
+            </div>
+            
+            <div class="about-panel">
+                <div class="panel-image" style="background-image: url('images/About Me/panel2-bg.jpg');">
+                    <div class="panel-overlay">
+                        <div class="panel-content">
+                            <h3 class="panel-title">Editor Tools</h3>
+                            <div class="panel-text">
+                                <p>Powerful custom editor tools make development faster and more intuitive. I build Unity editor extensions that streamline workflows and help teams focus on creating great gameplay.</p>
+                            </div>
                         </div>
-                        <div class="contact-details">
-                            <h4>GitHub</h4>
-                            <a href="https://github.com/AndrewIndieDev" target="_blank">AndrewIndieDev</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-panel">
+                <div class="panel-image" style="background-image: url('images/About Me/panel3-bg.jpg');">
+                    <div class="panel-overlay">
+                        <div class="panel-content">
+                            <h3 class="panel-title">Optimization</h3>
+                            <div class="panel-text">
+                                <p>Performance matters! I love finding bottlenecks and optimizing code to make games run smoothly on various platforms. From memory management to rendering techniques, I ensure your game runs at its best.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-panel">
+                <div class="panel-image" style="background-image: url('images/About Me/panel3-bg.jpg');">
+                    <div class="panel-overlay">
+                        <div class="panel-content">
+                            <h3 class="panel-title">Game Feel</h3>
+                            <div class="panel-text">
+                                <p>Want your players to comment on how your game just feels good to play? Let's chat about how we can make your game feel great to play, I love finding new ways to improve Game Feel!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about">
+    <h2 class="portfolio-header">More About Me</h2>
+    <div class="about-container">
+        <div class="about-content">
+            <div class="about-image">
+                <img src="images/profile-photo.jpg" alt="Andrew Dowsett">
+                <div class="experience-education">
+                    <div class="experience">
+                        <h4>Experience</h4>
+                        <div class="exp-item">
+                            <span class="date">JAN 2024 - Present</span>
+                            <span class="position">Indie Game Developer</span>
+                            <span class="company">Self-employed</span>
+                        </div>
+                        <div class="exp-item">
+                            <span class="date">JAN 2024 - DEC 2024</span>
+                            <span class="position">Resident</span>
+                            <span class="company">Screen Queensland Games Residency</span>
                         </div>
                     </div>
                     
-                    <div class="contact-method">
-                        <div class="contact-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12c6f3" stroke-width="2">
-                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                                <rect x="2" y="9" width="4" height="12"></rect>
-                                <circle cx="4" cy="4" r="2"></circle>
-                            </svg>
-                        </div>
-                        <div class="contact-details">
-                            <h4>LinkedIn</h4>
-                            <a href="https://linkedin.com/in/coreyhorne" target="_blank">linkedin.com/in/coreyhorne</a>
+                    <div class="education">
+                        <h4>Education</h4>
+                        <div class="edu-item">
+                            <span class="date">2014 - Present</span>
+                            <span class="degree">Self-taught C# Programmer</span>
+                            <span class="school">"I develop games as a passion, not as a job"</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    -->
-
-    <!-- Footer Section - Add this at the end of your body before the closing body tag -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <a href="#">Andrew Dowsett</a>
-                <p>Indie Game Developer</p>
-            </div>
-            
-            <div class="footer-links">
-                <div class="footer-nav">
-                    <h4>Navigation</h4>
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#portfolio">Portfolio</a></li>
-                        <li><a href="#about">About</a></li>
-                    </ul>
-                </div>
+            <div class="about-text">
+                <h3>Unity Systems Engineer</h3>
                 
-                <div class="footer-social">
-                    <h4>Social Media</h4>
-                    <div class="social-icons-footer">
-                        <a href="https://x.com/PresGD" title="Twitter" target="_blank">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-                                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                            </svg>
-                        </a>
-                        <a href="https://www.linkedin.com/in/drewdowsett/" title="LinkedIn" target="_blank">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                                <rect x="2" y="9" width="4" height="12"></rect>
-                                <circle cx="4" cy="4" r="2"></circle>
-                            </svg>
-                        </a>
-                        <a href="https://github.com/AndrewIndieDev" title="GitHub" target="_blank">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+                <p>
+                    I develop games as a passion, not as a job.
+                </p>
+                
+                <p>
+                    G'day! I'm Andrew, a Unity-loving code-monkey from Brisbane, Australia.
+                    I have worked with Unity for over a decade to create amazing experiences for humans.
+                    My career goal is to be able to work with a small group of friends, making the games that we want without worrying about finances.
+                </p>
+                
+                <p>
+                    I began my journey in 2006 when I picked up Game Maker 6.0 in High School.
+                    All I could do back then was use visual scripting to move a dot up, down, left, and right.
+                    I absolutely fell in love with making things move with words.
+                    I slowly started to learn how to use GML (Game Maker Language) and once I was confident enough (many years later) in my own ability, I started steaming my game development on Twitch.
+                    This was my first interaction with the game dev community and I was hooked deeper.
+                    I met a life-long friend during my development, David (icch_howw), a German guy with the same passion.
+                    Being able to speak to people all across the world about game development, and our own experiences was the push I needed to start considering Game Development as a career.
+                    But it wouldn't be fully realised until many years later, just how hard that is the achieve.
+                    Around 2012, David was moving over to use Unity Engine 4, and urged me to take a look at it.
+                </p>
+
+                <p>
+                    Fast forward to 2023, I have completed a few small commission works for streamers on Twitch and have made a few prototypes, but no games I would be proud enough to release.
+                    I also attended the Queensland Games Festival 2023, and it was there I learnt about the Screen Queensland Residency Program.
+                    When I got home I immediately went onto the Screen Queensland website and applied for the 2024 Residency.
+                    I was accepted and went through the application process, and started developing games full-time from February 2024.
+                </p>
+                
+                <p>
+                    I can't thank Screen Queensland enough for all the help they have given to not just me, but all developers they have interacted with.
+                    Because of them, and the other amazing humans behind Carrot Commotion, I have a game that I am proud to release into the world.
+                    I am now developing full-time, and I couldn't be happier!
+                </p>
+
             </div>
         </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2025 Andrew Dowsett. All Rights Reserved.</p>
-        </div>
-    </footer>
+    </div>
+</section>
+
+
+    <div class="footer-bottom">
+        <p>&copy; 2025 Andrew Dowsett. All Rights Reserved.</p>
+    </div>
         
 
     <script>
@@ -582,8 +594,7 @@
         }
     });
 
-
-    document.addEventListener('DOMContentLoaded', function() {
+    /*document.addEventListener('DOMContentLoaded', function() {
         // Create a fade overlay element specifically for the video
         const fadeOverlay = document.createElement('div');
         fadeOverlay.id = 'video-fade-overlay';
@@ -714,7 +725,7 @@
                 startFadeTransition();
             }
         }
-    });
+    });*/
 
     </script>
 
