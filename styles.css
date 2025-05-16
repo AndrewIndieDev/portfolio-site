@@ -102,6 +102,13 @@ nav ul li a:hover {
     color: #FFB014;
 }
 
+.logo-icon {
+    height: 30px; /* Adjust size as needed */
+    width: auto;
+    margin-right: 8px; /* Space between icon and text */
+    vertical-align: top; /* Aligns the icon with the text */
+}
+
 .header-social-icons {
     display: flex;
     gap: 15px;
