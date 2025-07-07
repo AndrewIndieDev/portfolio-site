@@ -48,7 +48,7 @@
             </a>
         </div>
         <div class="resume-button-container">
-            <a href="https://drive.google.com/file/d/1UT2wDAG5rRZBCUFIQNvAfPwCw0WmoKXK/view?usp=sharing" class="resume-button" target="_blank">
+            <a href="https://drive.google.com/file/d/1ckDZxe5AFY3t24DgAEDS3aLhphPSRi2P/view?usp=sharing" class="resume-button" target="_blank">
                 <span class="resume-text">RESUME</span>
                 <span class="download-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -95,11 +95,13 @@
         <h2 class="portfolio-header">Projects</h2>
 
         <div class="recent-work">
-            <h2>Upcoming Titles</h2>
-
             <div class="projects">
                 <!-- Project: Carrot Commotion -->
-                <div class="project-card project-card-wishlist">
+                <div class="project-card project-card-wishlist" 
+                data-static="images/Carrot Commotion/Thumbnail.png" 
+                data-animated="images/Carrot Commotion/Thumbnail.gif" 
+                style="background-image: url('images/Carrot Commotion/Thumbnail.png');">
+
                     <div class="feature-badge">Featured</div>
                     <a href="https://store.steampowered.com/app/2914110/Carrot_Commotion/" target="_blank">
                         <div class="project-image">
@@ -129,7 +131,11 @@
                 </div>
 
                 <!-- Project: Ridiculous Gungame -->
-                <div class="project-card project-card-wishlist">
+                <div class="project-card project-card-wishlist"
+                data-static="images/Ridiculous Gungame/Thumbnail.png" 
+                data-animated="images/Ridiculous Gungame/Thumbnail.gif"
+                style="background-image: url('images/Ridiculous Gungame/Thumbnail.png');">
+
                     <a href="https://store.steampowered.com/app/1224310/Ridiculous_Gungame/" target="_blank">
                         <div class="project-image">
                             <img src="images/Ridiculous Gungame/Thumbnail.png" alt="Ridiculous Gungame Game Screenshot">
@@ -155,14 +161,13 @@
                         </div>
                     </a>
                 </div>
-            </div>
-            
-            </br></br>
-            <h2>Released</h2>
 
-            <div class="projects">
                 <!-- I Have More Hours Than You -->
-                <div class="project-card">
+                <div class="project-card"
+                data-static="images/IHMHTY/Thumbnail.png" 
+                data-animated="images/IHMHTY/Thumbnail.gif"
+                style="background-image: url('images/IHMHTY/Thumbnail.png');">
+
                     <a href="https://store.steampowered.com/app/3056640/I_Have_More_Hours_Than_You/" target="_blank">
                         <div class="project-image">
                             <img src="images/IHMHTY/Thumbnail.png" alt="I Have More Hours Than You Game Screenshot">
@@ -188,16 +193,16 @@
                         </div>
                     </a>
                 </div>
-            </div>
 
-            </br></br>
-            <h2>Jam Games</h2>
-            <div class="projects">
                 <!-- Project: One Ship's Trash -->
-                <div class="project-card">
+                <div class="project-card"
+                data-static="images/One Ships Trash/Thumbnail.png" 
+                data-animated="images/One Ships Trash/Thumbnail.gif"
+                style="background-image: url('images/One Ships Trash/Thumbnail.png');">
+                
                     <a href="https://liam3d.itch.io/one-ships-trash-jam" target="_blank">
                         <div class="project-image">
-                            <img src="images/One Ship's Trash/Thumbnail.png" alt="One Ship's Trash Game Screenshot">
+                            <img src="images/One Ships Trash/Thumbnail.png" alt="One Ship's Trash Game Screenshot">
                         </div>
                         <div class="project-info">
                             <h3 class="project-title">One Ship's Trash</h3>
@@ -223,7 +228,11 @@
                 </div>
 
                 <!-- Dinosaur Ecosystem -->
-                <div class="project-card">
+                <div class="project-card"
+                data-static="images/Dinosaur Ecosystem/Thumbnail.png" 
+                data-animated="images/Dinosaur Ecosystem/Thumbnail.gif"
+                style="background-image: url('images/Dinosaur Ecosystem/Thumbnail.png');">
+
                     <a href="https://andrewindie.itch.io/project-gcap" target="_blank">
                         <div class="project-image">
                             <img src="images/Dinosaur Ecosystem/Thumbnail.png" alt="Dinosaur Ecosystem Game Screenshot">
@@ -278,67 +287,12 @@
                 </div>
             </div>
         </section>
-        <!--<div class="about-panels">
-            <div class="about-panel">
-                <div class="panel-image" style="background-image: url('images/About Me/panel1-bg.jpg');">
-                    <div class="panel-overlay">
-                        <div class="panel-content">
-                            <h3 class="panel-title">Game Systems</h3>
-                            <div class="panel-text">
-                                <p>I specialize in building robust game systems that provide rich player experiences. From inventory management to AI behavior trees, I enjoy creating scalable solutions that can grow with your project.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="about-panel">
-                <div class="panel-image" style="background-image: url('images/About Me/panel2-bg.jpg');">
-                    <div class="panel-overlay">
-                        <div class="panel-content">
-                            <h3 class="panel-title">Editor Tools</h3>
-                            <div class="panel-text">
-                                <p>Powerful custom editor tools make development faster and more intuitive. I build Unity editor extensions that streamline workflows and help teams focus on creating great gameplay.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="about-panel">
-                <div class="panel-image" style="background-image: url('images/About Me/panel3-bg.jpg');">
-                    <div class="panel-overlay">
-                        <div class="panel-content">
-                            <h3 class="panel-title">Optimization</h3>
-                            <div class="panel-text">
-                                <p>Performance matters! I love finding bottlenecks and optimizing code to make games run smoothly on various platforms. From memory management to rendering techniques, I ensure your game runs at its best.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="about-panel">
-                <div class="panel-image" style="background-image: url('images/About Me/panel3-bg.jpg');">
-                    <div class="panel-overlay">
-                        <div class="panel-content">
-                            <h3 class="panel-title">Game Feel</h3>
-                            <div class="panel-text">
-                                <p>Want your players to comment on how your game just feels good to play? Let's chat about how we can make your game feel great to play, I love finding new ways to improve Game Feel!
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
-
-        </div>
     </div>
 </section>
 
 <!-- About Section -->
 <section id="about" class="about">
-    <h2 class="portfolio-header">More About Me</h2>
+    <h2 class="portfolio-header">About Me</h2>
     <div class="about-container">
         <div class="about-content">
             <div class="about-image">
@@ -427,9 +381,7 @@
             const originalSrc = staticImage.src;
             
             // Generate the GIF path based on naming convention
-            // Assumes GIFs are in the same folder as thumbnails with "-animation.gif" suffix
-            // Example: if thumbnail is "images/Bakeneko/Thumbnail.png", GIF would be "images/Bakeneko/Thumbnail-animation.gif"
-            const gifSrc = originalSrc.replace(/\.(png|jpg|jpeg)$/i, '-animation.gif');
+            const gifSrc = originalSrc.replace(/\.(png|jpg|jpeg)$/i, '.gif');
             
             // Create a flag to track if this card has a valid GIF
             let hasValidGif = null; // null means we haven't checked yet
@@ -488,7 +440,7 @@
             const header = document.querySelector('header');
             
             // Function to update header appearance based on scroll position
-            /*function updateHeaderAppearance() {
+            function updateHeaderAppearance() {
                 // If we're at the top of the page (or very close)
                 if (window.scrollY < 50) {
                     // Make header transparent
@@ -502,7 +454,7 @@
             }
             
             // Set initial state
-            updateHeaderAppearance();*/
+            updateHeaderAppearance();
             
             // Update on scroll with throttling for performance
             let ticking = false;
@@ -527,13 +479,15 @@
                 const scrollPercentage = Math.min(window.scrollY / (window.innerHeight * 0.3), 1);
                 
                 // Apply an opacity value that decreases as scrollPercentage increases
-                scrollIndicator.style.opacity = (1 - scrollPercentage).toString();
-                
-                // Hide it completely when fully faded out (for better performance)
-                if (scrollPercentage === 1) {
-                    scrollIndicator.style.visibility = 'hidden';
-                } else {
-                    scrollIndicator.style.visibility = 'visible';
+                if (scrollIndicator) {
+                    scrollIndicator.style.opacity = (1 - scrollPercentage).toString();
+                    
+                    // Hide it completely when fully faded out (for better performance)
+                    if (scrollPercentage === 1) {
+                        scrollIndicator.style.visibility = 'hidden';
+                    } else {
+                        scrollIndicator.style.visibility = 'visible';
+                    }
                 }
             });
             
@@ -560,6 +514,38 @@
                     }, 800); // Delay to match scrolling time
                 });
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling for all navigation links
+            document.querySelectorAll('header nav a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get the target section from the href attribute
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    
+                    if (targetSection) {
+                        // Get the target position
+                        const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset;
+                        
+                        // Scroll smoothly to the target position
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Optional: Add a visual highlight to the section
+                        setTimeout(() => {
+                            targetSection.classList.add('section-highlight');
+                            setTimeout(() => {
+                                targetSection.classList.remove('section-highlight');
+                            }, 1000);
+                        }, 800);
+                    }
+                });
+            });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -603,138 +589,39 @@
         }
     });
 
-    /*document.addEventListener('DOMContentLoaded', function() {
-        // Create a fade overlay element specifically for the video
-        const fadeOverlay = document.createElement('div');
-        fadeOverlay.id = 'video-fade-overlay';
-        // Position between video and content, but below other elements
-        fadeOverlay.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: black; opacity: 0; z-index: -1; transition: opacity 0.8s ease; pointer-events: none;';
+    // Add PNG to GIF hover effect for project cards
+    document.querySelectorAll('.project-card').forEach(card => {
+        const staticImage = card.getAttribute('data-static');
+        const animatedImage = card.getAttribute('data-animated');
         
-        // Insert the fade overlay right after the background-player
-        const videoContainer = document.querySelector('.video-container');
-        videoContainer.insertBefore(fadeOverlay, videoContainer.firstChild.nextSibling);
-        
-        // List of YouTube video IDs to play sequentially
-        const videoIds = [
-            '1G25hiEq9as',
-            'R2zTYqTvc_8',
-            'M6j01yKpSPM',
-            'x7GCOcdVmok'
-        ];
-        
-        // Initialize YouTube API
-        // First, add the YouTube iframe API script
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        
-        // Replace the current iframe with a div that will hold the YouTube player
-        const iframeWrapper = document.createElement('div');
-        iframeWrapper.id = 'background-player';
-        iframeWrapper.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -2; pointer-events: none;';
-        
-        // Remove existing iframe if present
-        const existingIframe = videoContainer.querySelector('iframe');
-        if (existingIframe) {
-            existingIframe.remove();
-        }
-        
-        videoContainer.prepend(iframeWrapper);
-        
-        // Create YouTube player when API is ready
-        let player;
-        let currentVideoIndex = 0;
-        let isFading = false;
-        
-        // This function will be called by the YouTube API when it's ready
-        window.onYouTubeIframeAPIReady = function() {
-            player = new YT.Player('background-player', {
-                height: '200vh',
-                width: '100%',
-                videoId: videoIds[0],
-                playerVars: {
-                    'autoplay': 1,
-                    'controls': 0,
-                    'showinfo': 0,
-                    'rel': 0,
-                    'loop': 0,
-                    'mute': 1,
-                    'modestbranding': 1,
-                    'playsinline': 1,
-                    'enablejsapi': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+        if (staticImage && animatedImage) {
+            let hasValidGif = false;
+            
+            // Test if the GIF exists by trying to load it
+            const gifImg = new Image();
+            gifImg.onload = () => {
+                hasValidGif = true;
+                console.log(`GIF loaded successfully: ${animatedImage}`);
+            };
+            gifImg.onerror = () => {
+                hasValidGif = false;
+                console.log(`GIF not found: ${animatedImage}`);
+            };
+            gifImg.src = animatedImage;
+            
+            card.addEventListener('mouseenter', () => {
+                // Only switch to GIF if it exists, otherwise keep static image
+                if (hasValidGif) {
+                    card.style.backgroundImage = `url('${animatedImage}')`;
                 }
             });
-        };
-        
-        // When player is ready, start playing
-        function onPlayerReady(event) {
-            event.target.playVideo();
             
-            // Adjust player position for proper centering
-            const playerElement = document.querySelector('#background-player iframe');
-            if (playerElement) {
-                playerElement.style.cssText = 'position: absolute; top: 50%; left: 50%; width: 100%; height: 200vh; min-width: 200vh; transform: translate(-50%, -50%);';
-            }
-            
-            // Start monitoring video time to catch end before YouTube UI appears
-            setInterval(checkVideoTime, 1000);
+            card.addEventListener('mouseleave', () => {
+                // Always return to static image
+                card.style.backgroundImage = `url('${staticImage}')`;
+            });
         }
-        
-        // Function to check video time and trigger fade before the end
-        function checkVideoTime() {
-            if (player && player.getPlayerState() === YT.PlayerState.PLAYING && !isFading) {
-                const duration = player.getDuration();
-                const currentTime = player.getCurrentTime();
-                
-                // If we're within 1.5 seconds of the end, start the fade transition
-                if (duration - currentTime <= 1.5) {
-                    startFadeTransition();
-                }
-            }
-        }
-        
-        // Function to handle the fade transition
-        function startFadeTransition() {
-            if (isFading) return;
-            isFading = true;
-            
-            // Start the fade out by making the overlay visible
-            const overlay = document.getElementById('video-fade-overlay');
-            overlay.style.zIndex = -1;
-            overlay.style.opacity = 1;
-            
-            // Wait for the fade out to complete, then change the video
-            setTimeout(() => {
-                // Move to the next video
-                currentVideoIndex = (currentVideoIndex + 1) % videoIds.length;
-                player.loadVideoById(videoIds[currentVideoIndex]);
-                
-                // Wait a short moment for the new video to start loading
-                setTimeout(() => {
-                    // Fade back in
-                    overlay.style.opacity = 0;
-                    
-                    // After fade-in completes, reset isFading state
-                    setTimeout(() => {
-                        isFading = false;
-                    }, 1000);
-                }, 3500);
-            }, 1000);
-        }
-        
-        // When current video ends, make sure we catch any missed transitions
-        function onPlayerStateChange(event) {
-            // If the video ended and we somehow missed the timing-based fade
-            if (event.data === YT.PlayerState.ENDED && !isFading) {
-                startFadeTransition();
-            }
-        }
-    });*/
+    });
 
     </script>
 

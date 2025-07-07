@@ -332,9 +332,10 @@ nav ul li a:hover {
         height: 30px;
     }
 }
-/* Portfolio section */
+
+/* Updated Portfolio section for minimalist design */
 .portfolio {
-    padding: 60px 0;
+    padding: 60px 0 0 0; /* Remove bottom padding */
     background-color: #262527;
 }
 
@@ -350,15 +351,16 @@ nav ul li a:hover {
 
 .recent-work {
     text-align: center;
-    padding: 20px 20px 40px;
+    padding: 20px 0 0 0; /* Remove horizontal padding and bottom padding */
     background: #262527;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: none; /* Remove max-width constraint */
+    margin: 0;
+    width: 100%;
 }
 
 .recent-work h2 {
     font-size: 32px;
-    margin-bottom: 10px;
+    margin-bottom: 40px; /* Increase bottom margin */
     font-style: italic;
 }
 
@@ -368,80 +370,109 @@ nav ul li a:hover {
 }
 
 .projects {
-    display: flex;
-    flex-direction: column; /* Change to column layout */
-    gap: 40px; /* Increase gap between cards */
-    width: 100%; /* Ensure the container uses full width */
-    max-width: 1100px; /* Limit maximum width */
-    margin: 0 auto; /* Center the container */
-    padding: 0 20px; /* Add some padding on smaller screens */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    max-width: 1600px; /* Maximum width for 4 cards */
+    margin: 0 auto;
+    gap: 20px;
+    padding: 0 20px;
 }
 
 .project-card {
     background: #333;
-    width: 100%; /* Make cards take full width */
-    height: 350px;
-    border-radius: 8px; /* Slightly larger radius */
+    width: 100%;
+    max-width: 400px;
+    height: 400px; /* Fixed height of 400px */
+    aspect-ratio: 3/4; /* 3:4 aspect ratio */
+    border-radius: 8px; /* Add slight border radius back */
     overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s, outline 0.3s;
+    transition: all 0.3s ease; /* Add smooth transitions */
     cursor: pointer;
-    position: relative; /* For positioning badges */
-    border: 1px solid #444; /* Subtle border */
+    position: relative;
+    border: none; /* Remove border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0 auto; /* Center individual cards */
 }
 
 .project-card a {
     text-decoration: none;
     display: flex;
-    flex-direction: row;
+    flex-direction: column; /* Stack content vertically */
     height: 100%;
+    position: relative;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)); /* Vertical gradient from top to bottom */
+    transition: background 0.3s ease;
 }
 
+/* Add hover effects back */
 .project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(255, 176, 20, 0.25);
-    outline: 2px solid #FFB014;
-    animation: shadowPulse 2s infinite;
+    transform: none !important; /* Remove scaling */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important; /* Enhanced shadow on hover */
+}
+
+.project-card:hover a {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)) !important; /* Darker gradient on hover */
 }
 
 .project-card:nth-child(even) a {
-    flex-direction: row-reverse;
+    flex-direction: column; /* Keep vertical layout for even cards too */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)); /* Same gradient for all cards */
+}
+
+.project-card:nth-child(even):hover a {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)) !important; /* Same hover effect for all cards */
 }
 
 .project-image {
-    width: 45%; /* Adjust image width */
+    width: 45%;
     position: relative;
-    overflow: hidden; /* Keep animations contained */
+    overflow: hidden;
+    opacity: 0; /* Hide but maintain layout */
 }
 
 .project-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease, opacity 0.2s ease;
+    transition: none !important; /* Remove image hover effects */
+    opacity: 0; /* Hide the image */
 }
 
 .project-card:hover .project-image img {
-    transform: scale(1.05);
+    transform: none !important; /* Remove image scaling on hover */
 }
 
 .project-info {
-    width: 55%;
-    padding: 25px;
+    width: 100%; /* Full width since we're stacking vertically */
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end; /* Push content to bottom */
+    z-index: 2;
+    position: relative;
+    opacity: 0.9; /* Start slightly faded */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    flex-grow: 1; /* Take up remaining space */
+}
+
+.project-card:hover .project-info {
+    opacity: 1; /* Full opacity on hover */
+    transform: translateY(-5px); /* Slight upward movement */
 }
 
 .project-title {
     font-size: 26px;
     color: #f8fbf4;
     margin-bottom: 8px;
-    transition: color 0.3s, transform 0.3s;
+    transition: color 0.3s ease, transform 0.3s ease; /* Add smooth transitions */
 }
 
 .project-card:hover .project-title {
-    color: #FFB014;
-    transform: translateX(5px);
+    color: #FFB014 !important; /* Change to accent color on hover */
+    transform: translateX(5px) !important; /* Slight movement on hover */
 }
 
 .project-subtitle {
@@ -465,15 +496,18 @@ nav ul li a:hover {
     font-size: 13px;
     font-weight: bold;
     color: white;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Add hover effects back */
+    opacity: 0.8; /* Start slightly transparent */
 }
 
+/* Add tool tag hover effects */
 .project-card:hover .tool-tag {
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    opacity: 1;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 .tool-tag:hover {
-    transform: translateY(-2px) scale(1.05);
+    transform: translateY(-2px) scale(1.05) !important;
 }
 
 .solo {
@@ -638,65 +672,79 @@ nav ul li a:hover {
     background-color: #FFB014; /* Custom color for unreleased */
 }
 
-.project-card.unity-project:hover {
-    box-shadow: 0 10px 25px rgba(255, 100, 0, 0.3);
-}
-
-.project-card.web-project:hover {
-    box-shadow: 0 10px 25px rgba(0, 150, 255, 0.3);
-}
-
-.project-card.mobile-project:hover {
-    box-shadow: 0 10px 25px rgba(0, 200, 100, 0.3);
-}
-
+/* Remove all project type specific hover effects */
+.project-card.unity-project:hover,
+.project-card.web-project:hover,
+.project-card.mobile-project:hover,
 .project-card.ai-project:hover {
-    box-shadow: 0 10px 25px rgba(200, 0, 200, 0.3);
+    box-shadow: none;
 }
 
+/* Mobile responsiveness */
 @media (max-width: 900px) {
-    .project-card a,
-    .project-card:nth-child(even) a {
-        flex-direction: column; /* Stack vertically on mobile/tablet */
+    .projects {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 15px;
+        padding: 0 15px;
     }
     
-    .project-image,
+    .project-card {
+        height: 350px; /* Slightly smaller on mobile */
+        max-width: 350px;
+    }
+    
+    .project-card:hover {
+        transform: none !important; /* Remove scaling on mobile */
+    }
+    
     .project-info {
-        width: 100%; /* Full width on mobile */
+        padding: 15px;
     }
     
-    .project-image {
-        height: 250px; /* Set fixed height for images on mobile */
-    }
-    
-    .project-info {
-        padding: 20px 15px;
+    .project-card:hover .project-info {
+        transform: translateY(-3px); /* Smaller movement on mobile */
     }
     
     .project-title {
-        font-size: 22px;
+        font-size: 20px;
+    }
+    
+    .project-subtitle {
+        font-size: 13px;
     }
     
     .responsibilities h4 {
-        font-size: 16px;
+        font-size: 15px;
     }
     
     .responsibilities ul li {
-        font-size: 14px;
+        font-size: 12px;
     }
     
     .feature-badge {
         top: 10px;
         right: 10px;
-        font-size: 12px;
-        padding: 4px 10px;
+        font-size: 11px;
+        padding: 4px 8px;
     }
 }
 
+@media (max-width: 600px) {
+    .projects {
+        grid-template-columns: 1fr; /* Single column on very small screens */
+    }
+    
+    .project-card {
+        height: 320px;
+        max-width: 300px;
+    }
+}
+
+/* Add keyframe animations for hover effects */
 @keyframes fadeInRight {
     from {
-        opacity: 0;
-        transform: translateX(-20px);
+        opacity: 0.6;
+        transform: translateX(-10px);
     }
     to {
         opacity: 1;
@@ -704,36 +752,37 @@ nav ul li a:hover {
     }
 }
 
-.project-card:hover .responsibilities ul li {
-    animation: fadeInRight 0.3s forwards;
+/* Add subtle pulse animation for feature badge on hover */
+.feature-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #FFB014;
+    color: #222;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 13px;
+    z-index: 5;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.project-card:hover .responsibilities ul li:nth-child(1) {
-    animation-delay: 0s;
+.project-card:hover .feature-badge {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(255, 176, 20, 0.4);
 }
 
-.project-card:hover .responsibilities ul li:nth-child(2) {
-    animation-delay: 0.1s;
-}
-
-.project-card:hover .responsibilities ul li:nth-child(3) {
-    animation-delay: 0.2s;
-}
-
-.project-card:hover .responsibilities ul li:nth-child(4) {
-    animation-delay: 0.3s;
-}
-
-/* Gradual shadow animation on hover */
+/* Remove shadow pulse animation */
 @keyframes shadowPulse {
     0% {
-        box-shadow: 0 5px 15px rgba(255, 176, 20, 0.2);
+        box-shadow: none;
     }
     50% {
-        box-shadow: 0 5px 25px rgba(255, 176, 20, 0.4);
+        box-shadow: none;
     }
     100% {
-        box-shadow: 0 5px 15px rgba(255, 176, 20, 0.2);
+        box-shadow: none;
     }
 }
 
@@ -1384,8 +1433,9 @@ nav ul li a:hover {
 }
 
 .specialties-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    max-width: none; /* Remove max-width constraint */
+    width: 100%; /* Full width */
+    margin: 0;
+    padding: 0; /* Remove padding */
     background: #262527;
 }
