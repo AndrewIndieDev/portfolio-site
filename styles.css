@@ -383,7 +383,7 @@ body {
     background-position: center;
     border-radius: 32px;
     overflow: visible;
-    border: 1px solid #e0e0e0;
+    border: 0px solid #000;
     display: flex;
     align-items: center;
     justify-content: center;
