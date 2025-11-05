@@ -457,90 +457,113 @@ body {
     font-size: 14px;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-    .hello-text {
-        font-size: 36px;
-        top: 10%;
-        left: 10%;
-    }
-    
+/* ========================= */
+/*        MOBILE STYLES      */
+/* ========================= */
+
+/* Tablets and small laptops */
+@media (max-width: 900px) {
     .intro-section {
         flex-direction: column;
-        top: 25%;
-        left: 10%;
-        right: 10%;
+        text-align: center;
+        top: 20%;
         gap: 20px;
     }
-    
+
+    .intro-text {
+        text-align: center;
+    }
+
     .intro-text p {
-        font-size: 18px;
+        font-size: 32px;
+    }
+
+    .intro-image img {
+        max-width: 70vw;
+        max-height: 40vh;
+    }
+
+    .about-section,
+    .projects-section,
+    .aboutme-section {
+        padding: 60px 10%;
+    }
+
+    .about-content,
+    .project-item {
+        grid-template-columns: 1fr;
+    }
+
+    .project-frame-banner {
+        top: 100px;
+        left: -30px;
+        width: 200px;
+        height: 45px;
+        font-size: 12px;
     }
 }
 
+/* Phones */
+@media (max-width: 600px) {
+    .hello-text {
+        top: 10%;
+        left: 5%;
+        font-size: 28px;
+    }
 
+    .intro-section {
+        top: 22%;
+        left: 5%;
+        right: 5%;
+    }
 
+    .intro-text p {
+        font-size: 26px;
+        line-height: 1.2;
+    }
 
-/* OLD - This is used as a unity game in an iframe */
-.project-frame-interactive {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: #494949;
-    background-size: cover;
-    background-position: center;
-    border-radius: 32px;
-    overflow: visible;
-    border: 0px solid #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: background-image 0.5s ease;
-}
+    .intro-image img {
+        max-width: 85vw;
+        max-height: 35vh;
+    }
 
-.project-frame-interactive iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 32px;
-}
+    .read-more-text {
+        font-size: 14px;
+    }
 
-.load-game-btn {
-    padding: 16px 32px;
-    font-size: 18px;
-    font-family: 'Dosis';
-    color: #494949;
-    background: #fff;
-    border: 2px solid #494949;
-    border-radius: 32px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+    .about-title,
+    .projects-title,
+    .aboutme-title {
+        font-size: 30px;
+    }
 
-.load-game-btn:hover {
-    background: #494949;
-    color: #fff;
-}
+    .about-column h3,
+    .project-info h3 {
+        font-size: 20px;
+    }
 
-.fullscreen-btn {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #494949;
-    border-radius: 32px;
-    cursor: pointer;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 10;
-}
+    .project-frame {
+        border-radius: 20px;
+    }
 
-.fullscreen-btn:hover {
-    background: #494949;
-    color: #fff;
+    .project-frame-banner {
+        top: 85px;
+        left: -25px;
+        width: 170px;
+        height: 40px;
+        font-size: 11px;
+    }
+
+    .aboutme-info p {
+        font-size: 18px;
+    }
+
+    .skills-list {
+        gap: 8px;
+    }
+
+    .skill-tag {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
 }
