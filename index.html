@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="theme-toggle-icon" id="themeIcon">☀️</span>
+        <span class="theme-toggle-text" id="themeText">Light</span>
+    </button>
+
     <section class="intro-container">
         <div class="hello-text">Hello.</div>
         <div class="intro-section">
@@ -21,9 +26,9 @@
             </div>
         </div>
         <div class="intro-arrow-image">
-                <p class="read-more-text">read more</p>
-                <img src="images/down-arrow.png" alt="">
-            </div>
+            <p class="read-more-text">read more</p>
+            <img src="images/down-arrow.png" alt="">
+        </div>
     </section>
 
     <section class="aboutme-section">
@@ -100,11 +105,7 @@
                 <br>
                 <h4>Team:</h4>
                 <p>Andrew Dowsett</p>
-                <p>
-                    <!-- <a href="" target="_blank" rel="noopener noreferrer"> -->
-                    David Lawrence
-                    <!-- </a> -->
-                </p>
+                <p>David Lawrence</p>
                 <br>
                 <h4>Description:</h4>
                 <p>Ridiculous Gungame is an instagib party shooter game with lobbies up to 32 people! Each person can customise their character and enter a customised game with ridiculous weapons to fight with. It's kill or die laughing!</p>
@@ -131,11 +132,7 @@
                 <br>
                 <h4>Team:</h4>
                 <p>Andrew Dowsett</p>
-                <p>
-                    <!-- <a href="" target="_blank" rel="noopener noreferrer"> -->
-                    David Lawrence
-                    <!-- </a> -->
-                </p>
+                <p>David Lawrence</p>
                 <br>
                 <h4>Description:</h4>
                 <p>I Have More Hours Than You is a idle-like collection game at it's core. You interact with events and progress an abstract story about acceptance using Steam Achievements. This was created to test our knowledge of the Steam API.</p>
@@ -172,11 +169,7 @@
                     Liam Clarkson-Holborn
                     </a>
                 </p>
-                <p>
-                    <!-- <a href="" target="_blank" rel="noopener noreferrer"> -->
-                    Jayden Cosgrove
-                    <!-- </a> -->
-                </p>
+                <p>Jayden Cosgrove</p>
                 <br>
                 <h4>Description:</h4>
                 <p>Created for the 48 hour Season of the Dev 2025 Game Jam. One Ships Trash is a magnet fishing game about cleaning a Sunshine Coast reef. The reef was created using the Ex-HMAS Brisbane Warship, that was scuttled in July 2005.</p>
@@ -221,67 +214,40 @@
     <div class="footer-bottom">
         <p>&copy; 2025 Andrew Dowsett. All Rights Reserved.</p>
     </div>
-</body>
 
-<script>
-    document.querySelectorAll('.project-frame').forEach(frame => {
-        // Set initial background
-        frame.style.backgroundImage = `url('${frame.dataset.src}')`;
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        const body = document.body;
 
-        // Hover in
-        frame.addEventListener('mouseenter', () => {
-            if(frame.dataset.hover) {
-                frame.style.backgroundImage = `url('${frame.dataset.hover}')`;
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+            } else {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light';
             }
         });
 
-        // Hover out
-        frame.addEventListener('mouseleave', () => {
+        // Project frame hover effects
+        document.querySelectorAll('.project-frame').forEach(frame => {
             frame.style.backgroundImage = `url('${frame.dataset.src}')`;
+
+            frame.addEventListener('mouseenter', () => {
+                if(frame.dataset.hover) {
+                    frame.style.backgroundImage = `url('${frame.dataset.hover}')`;
+                }
+            });
+
+            frame.addEventListener('mouseleave', () => {
+                frame.style.backgroundImage = `url('${frame.dataset.src}')`;
+            });
         });
-    });
-
-    // OLD - used to load a website in an iframe
-    // document.querySelectorAll('.load-game-btn').forEach(btn => {
-    //     btn.addEventListener('click', function() {
-    //         const frame = this.parentElement;
-    //         const src = frame.getAttribute('data-src');
-            
-    //         const iframe = document.createElement('iframe');
-    //         iframe.src = src;
-    //         iframe.title = 'Unity WebGL Game';
-    //         iframe.allowFullscreen = true;
-            
-    //         const fullscreenBtn = document.createElement('button');
-    //         fullscreenBtn.className = 'fullscreen-btn';
-    //         fullscreenBtn.innerHTML = '⛶';
-    //         fullscreenBtn.title = 'Fullscreen';
-            
-    //         fullscreenBtn.addEventListener('click', function() {
-    //             if (!document.fullscreenElement) {
-    //                 if (frame.requestFullscreen) {
-    //                     frame.requestFullscreen();
-    //                 } else if (frame.webkitRequestFullscreen) {
-    //                     frame.webkitRequestFullscreen();
-    //                 } else if (frame.msRequestFullscreen) {
-    //                     frame.msRequestFullscreen();
-    //                 }
-    //             } else {
-    //                 if (document.exitFullscreen) {
-    //                     document.exitFullscreen();
-    //                 } else if (document.webkitExitFullscreen) {
-    //                     document.webkitExitFullscreen();
-    //                 } else if (document.msExitFullscreen) {
-    //                     document.msExitFullscreen();
-    //                 }
-    //             }
-    //         });
-            
-    //         frame.innerHTML = '';
-    //         frame.appendChild(iframe);
-    //         frame.appendChild(fullscreenBtn);
-    //     });
-    // });
-</script>
-
+    </script>
+</body>
 </html>
