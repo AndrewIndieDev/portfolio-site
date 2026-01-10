@@ -11,7 +11,6 @@
 </head>
 <body>
     <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <span class="theme-toggle-icon" id="themeIcon">☀️</span>
         <span class="theme-toggle-text" id="themeText">Light</span>
     </button>
 
@@ -218,7 +217,6 @@
     <script>
         // Theme toggle functionality
         const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
         const themeText = document.getElementById('themeText');
         const body = document.body;
 
@@ -226,10 +224,8 @@
             body.classList.toggle('light-mode');
             
             if (body.classList.contains('light-mode')) {
-                themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark';
             } else {
-                themeIcon.textContent = '☀️';
                 themeText.textContent = 'Light';
             }
         });
