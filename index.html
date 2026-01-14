@@ -230,10 +230,75 @@
             }
         });
 
-        // Project frame hover effects
-        document.querySelectorAll('.project-frame').forEach(frame => {
+        // Initialize project frames with static images
+        const projectFrames = document.querySelectorAll('.project-frame');
+        
+        projectFrames.forEach(frame => {
             frame.style.backgroundImage = `url('${frame.dataset.src}')`;
+        });
 
+        // Auto-play GIF for project closest to center
+        let currentActiveFrame = null;
+        let changeTimeout = null;
+
+        function updateActiveProject() {
+            const viewportCenter = window.innerHeight / 2;
+            let closestFrame = null;
+            let smallestDistance = Infinity;
+
+            projectFrames.forEach(frame => {
+                if (!frame.dataset.hover) return; // Skip if no GIF available
+                
+                const rect = frame.getBoundingClientRect();
+                const frameCenter = rect.top + rect.height / 2;
+                const distance = Math.abs(frameCenter - viewportCenter);
+
+                if (distance < smallestDistance) {
+                    smallestDistance = distance;
+                    closestFrame = frame;
+                }
+            });
+
+            // Update frames with 1 second delay
+            if (closestFrame !== currentActiveFrame) {
+                // Clear any pending change
+                if (changeTimeout) {
+                    clearTimeout(changeTimeout);
+                }
+
+                // Wait 1 second before changing
+                changeTimeout = setTimeout(() => {
+                    // Stop previous GIF
+                    if (currentActiveFrame && currentActiveFrame.dataset.hover) {
+                        currentActiveFrame.style.backgroundImage = `url('${currentActiveFrame.dataset.src}')`;
+                    }
+
+                    // Play new GIF
+                    if (closestFrame && closestFrame.dataset.hover) {
+                        closestFrame.style.backgroundImage = `url('${closestFrame.dataset.hover}')`;
+                    }
+
+                    currentActiveFrame = closestFrame;
+                }, 500);
+            }
+        }
+
+        // Throttle scroll events for better performance
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            if (scrollTimeout) {
+                window.cancelAnimationFrame(scrollTimeout);
+            }
+            scrollTimeout = window.requestAnimationFrame(() => {
+                updateActiveProject();
+            });
+        });
+
+        // Initial check
+        updateActiveProject();
+
+        // Manual hover still works
+        projectFrames.forEach(frame => {
             frame.addEventListener('mouseenter', () => {
                 if(frame.dataset.hover) {
                     frame.style.backgroundImage = `url('${frame.dataset.hover}')`;
@@ -241,7 +306,10 @@
             });
 
             frame.addEventListener('mouseleave', () => {
-                frame.style.backgroundImage = `url('${frame.dataset.src}')`;
+                // Only reset if this frame is not the currently active one
+                if (frame !== currentActiveFrame) {
+                    frame.style.backgroundImage = `url('${frame.dataset.src}')`;
+                }
             });
         });
     </script>
