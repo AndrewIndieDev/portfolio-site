@@ -10,10 +10,110 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <span class="theme-toggle-text" id="themeText">Light</span>
-    </button>
+    <div class="minimap" id="minimap">
+        <div class="minimap-inner">
+            <div class="minimap-background"></div>
+            <div class="minimap-cone" id="minimapCone"></div>
+            <div class="minimap-player"></div>
+        </div>
+        <div class="minimap-time-indicator">
+            <img class="time-cycle" id="timeCycle" src="images/time-cycle.png" alt="Time Cycle">
+            <div class="time-compass-arrow"></div>
+        </div>
+    </div>
 
+    <div class="dpad" id="dpad">
+        <button class="dpad-btn dpad-btn-up" id="dpadUp" aria-label="D-Pad Up" title="Coming Soon">
+            <span class="dpad-arrow">▲</span>
+        </button>
+        <button class="dpad-btn dpad-btn-left" id="dpadLeft" aria-label="D-Pad Left" title="Coming Soon">
+            <span class="dpad-arrow">◀</span>
+        </button>
+        <button class="dpad-btn dpad-btn-right" id="dpadRight" aria-label="D-Pad Right" title="Coming Soon">
+            <span class="dpad-arrow">▶</span>
+        </button>
+        <button class="dpad-btn dpad-btn-down" id="dpadDown" aria-label="D-Pad Down" title="Coming Soon">
+            <span class="dpad-arrow">▼</span>
+        </button>
+        <div class="dpad-center"></div>
+    </div>
+
+    <div class="controller-buttons" id="controllerButtons">
+        <button class="controller-btn controller-btn-north" id="btnNorth" aria-label="Toggle theme" title="Toggle Light/Dark Mode">
+            <span class="btn-label">Y</span>
+            <span class="theme-badge" id="themeBadge">Light</span>
+        </button>
+        <button class="controller-btn controller-btn-west" id="btnWest" aria-label="View achievements" title="View Achievements">
+            <span class="btn-label">X</span>
+            <span class="trophy-count" id="trophyCount">0/10</span>
+        </button>
+        <button class="controller-btn controller-btn-east" id="btnEast" aria-label="Button East" title="Coming Soon">
+            <span class="btn-label">B</span>
+        </button>
+        <button class="controller-btn controller-btn-south" id="btnSouth" aria-label="Button South" title="Coming Soon">
+            <span class="btn-label">A</span>
+        </button>
+    </div>
+
+    <div class="achievement-modal-overlay" id="achievementModal">
+        <div class="achievement-modal">
+            <div class="achievement-modal-header">
+                <div>
+                    <div class="achievement-modal-title">
+                        <img class="achievement-modal-trophy" src="images/trophy-icon.svg" alt="Trophy">
+                        <span>Achievements</span>
+                    </div>
+                    <div class="achievement-modal-progress" id="modalProgress">0/10 Unlocked</div>
+                </div>
+                <button class="achievement-modal-close" id="closeModal" aria-label="Close">×</button>
+            </div>
+            <div class="achievement-grid" id="achievementGrid">
+                <!-- Achievement cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="dev-console" id="devConsole">
+        <div class="dev-console-header">
+            <span class="dev-console-title">Unity Dev Console</span>
+            <button class="dev-console-close" id="closeConsole" aria-label="Close">×</button>
+        </div>
+        <div class="dev-console-output" id="consoleOutput">
+            <div class="console-message console-system">Developer Console Activated</div>
+            <div class="console-message console-system">Type 'help' for available commands</div>
+        </div>
+        <div class="dev-console-input-container">
+            <span class="console-prompt">></span>
+            <input type="text" class="dev-console-input" id="consoleInput" placeholder="Enter command..." autocomplete="off">
+        </div>
+    </div>
+
+    <div class="xp-bar-container" id="xpBarContainer">
+        <div class="xp-bar-level">
+            <span class="xp-level-text">LVL <span id="xpLevel">1</span></span>
+        </div>
+        <div class="xp-bar-wrapper">
+            <div class="xp-bar-bg">
+                <div class="xp-bar-fill" id="xpBarFill"></div>
+            </div>
+            <div class="xp-bar-text" id="xpBarText">0%</div>
+        </div>
+    </div>
+
+    <div class="custom-scrollbar" id="customScrollbar">
+        <div class="scrollbar-track">
+            <div class="scrollbar-thumb" id="scrollbarThumb"></div>
+        </div>
+    </div>
+
+    <div class="level-up-notification" id="levelUpNotification">
+        <div class="level-up-text">LEVEL UP!</div>
+        <div class="level-up-level">Level <span id="levelUpNumber">2</span></div>
+    </div>
+
+    <canvas class="particle-canvas" id="particleCanvas"></canvas>
+
+    <div class="horizontal-container">
     <section class="intro-container">
         <div class="hello-text">Hello.</div>
         <div class="intro-section">
@@ -25,8 +125,8 @@
             </div>
         </div>
         <div class="intro-arrow-image">
-            <p class="read-more-text">read more</p>
-            <img src="images/down-arrow.png" alt="">
+            <p class="read-more-text">explore more</p>
+            <img src="images/down-arrow.png" alt="" class="arrow-horizontal">
         </div>
     </section>
 
@@ -208,26 +308,827 @@
             data-hover="images/Dinosaur Ecosystem/Thumbnail.gif">
             </div>
         </div>
+
+        <div class="project-item" data-hidden="true">
+            <div class="project-info">
+                <h3>Mandela Protocol</h3>
+                <h4>Platform:</h4>
+                <p>PC</p>
+                <br>
+                <h4>Store Page:</h4>
+                <p>Coming Soon</p>
+                <br>
+                <h4>Team:</h4>
+                <p>Andrew Dowsett</p>
+                <p>
+                    <a href="https://coreyhorne.com/" target="_blank" rel="noopener noreferrer">
+                    Corey Horne
+                    </a></p>
+                <br>
+                <h4>Description:</h4>
+                <p>Mandela Protocol is a dangerous take on an horror anomaly game. If you don't spot anomalies, they will evolve and come after you in their own unique ways. Team up with up to X (TBD) players and find all the anomalies before they evolve and unalive your whole team.</p>
+            </div>
+            <div class="project-frame"
+            data-src="images/Mandela Protocol/thumbnail.png"
+            data-hover="images/Mandela Protocol/thumbnail.png">
+                <div class="project-frame-banner">Secret</div>
+            </div>
+        </div>
     </section>
 
-    <div class="footer-bottom">
-        <p>&copy; 2025 Andrew Dowsett. All Rights Reserved.</p>
     </div>
 
     <script>
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('themeToggle');
-        const themeText = document.getElementById('themeText');
+        // Achievement System
+        const ACHIEVEMENTS = {
+            'first_visit': {
+                id: 'first_visit',
+                title: 'Welcome!',
+                description: 'Thanks for visiting my portfolio',
+                icon: 'images/achievements/first_visit.png',
+                xp: 10
+            },
+            'scroll_end': {
+                id: 'scroll_end',
+                title: 'Journey Complete',
+                description: 'Reached the end of the room',
+                icon: 'images/achievements/scroll_end.png',
+                xp: 25
+            },
+            'light_mode': {
+                id: 'light_mode',
+                title: 'Enlightened',
+                description: 'Switched to light mode',
+                icon: 'images/achievements/light_mode.png',
+                xp: 15
+            },
+            'dark_mode': {
+                id: 'dark_mode',
+                title: 'Shadow Walker',
+                description: 'Switched to dark mode',
+                icon: 'images/achievements/dark_mode.png',
+                xp: 15
+            },
+            'view_all_projects': {
+                id: 'view_all_projects',
+                title: 'Completionist',
+                description: 'Viewed all non-hidden projects',
+                icon: 'images/achievements/view_all_projects.png',
+                xp: 30
+            },
+            'external_link': {
+                id: 'external_link',
+                title: 'Curious Mind',
+                description: 'Clicked on a project link',
+                icon: 'images/achievements/external_link.png',
+                xp: 20
+            },
+            'time_spent': {
+                id: 'time_spent',
+                title: 'Dedicated Visitor',
+                description: 'Spent 2 minutes exploring',
+                icon: 'images/achievements/time_spent.png',
+                xp: 35
+            },
+            'read_about': {
+                id: 'read_about',
+                title: 'Getting Personal',
+                description: 'Read the About Me section',
+                icon: 'images/achievements/read_about.png',
+                xp: 20
+            },
+            'hover_master': {
+                id: 'hover_master',
+                title: 'Interactive Explorer',
+                description: 'Hovered over 3 project previews',
+                icon: 'images/achievements/hover_master.png',
+                xp: 25
+            },
+            'unlock_all': {
+                id: 'unlock_all',
+                title: 'Achievement Hunter',
+                description: 'Unlocked all achievements!',
+                icon: 'images/achievements/unlock_all.png',
+                xp: 50
+            }
+        };
+
+        class AchievementManager {
+            constructor() {
+                this.unlockedAchievements = this.loadProgress();
+                this.toastQueue = [];
+                this.isShowingToast = false;
+                this.projectsViewed = new Set();
+                this.projectsHovered = new Set();
+                this.startTime = Date.now();
+                this.hasViewedAbout = false;
+                this.aboutMeTimer = null;
+
+                this.init();
+            }
+
+            init() {
+                this.updateTrophyCount();
+                this.setupEventListeners();
+
+                // Check first visit
+                setTimeout(() => {
+                    this.unlock('first_visit');
+                }, 1000);
+
+                // Check time spent
+                setTimeout(() => {
+                    this.unlock('time_spent');
+                }, 120000); // 2 minutes
+            }
+
+            loadProgress() {
+                const saved = localStorage.getItem('portfolio_achievements');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveProgress() {
+                localStorage.setItem('portfolio_achievements', JSON.stringify(this.unlockedAchievements));
+            }
+
+            unlock(achievementId) {
+                if (this.unlockedAchievements.includes(achievementId)) {
+                    return;
+                }
+
+                this.unlockedAchievements.push(achievementId);
+                this.saveProgress();
+                const achievement = ACHIEVEMENTS[achievementId];
+                this.showToast(achievement);
+                this.updateTrophyCount();
+
+                // Grant XP
+                if (achievement.xp) {
+                    xpSystem.addXP(achievement.xp);
+                }
+
+                // Check if all achievements unlocked
+                if (this.unlockedAchievements.length === Object.keys(ACHIEVEMENTS).length - 1) {
+                    setTimeout(() => this.unlock('unlock_all'), 500);
+                }
+            }
+
+            showToast(achievement) {
+                this.toastQueue.push(achievement);
+                if (!this.isShowingToast) {
+                    this.processToastQueue();
+                }
+            }
+
+            processToastQueue() {
+                if (this.toastQueue.length === 0) {
+                    this.isShowingToast = false;
+                    return;
+                }
+
+                this.isShowingToast = true;
+                const achievement = this.toastQueue.shift();
+
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = 'achievement-toast';
+                toast.innerHTML = `
+                    <img class="achievement-icon" src="${achievement.icon}" alt="${achievement.title}" onerror="this.style.display='none'">
+                    <div class="achievement-content">
+                        <div class="achievement-title">Achievement Unlocked! +${achievement.xp} XP</div>
+                        <div class="achievement-description"><strong>${achievement.title}</strong> - ${achievement.description}</div>
+                    </div>
+                `;
+
+                document.body.appendChild(toast);
+
+                // Show animation
+                setTimeout(() => toast.classList.add('show'), 100);
+
+                // Hide and remove after 4 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                        this.processToastQueue();
+                    }, 500);
+                }, 4000);
+            }
+
+            updateTrophyCount() {
+                const count = this.unlockedAchievements.length;
+                const total = Object.keys(ACHIEVEMENTS).length;
+                document.getElementById('trophyCount').textContent = `${count}/${total}`;
+            }
+
+            setupEventListeners() {
+                // Scroll detection (horizontal)
+                window.addEventListener('scroll', () => {
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    const windowWidth = window.innerWidth;
+                    const documentWidth = document.documentElement.scrollWidth;
+
+                    // Check if scrolled to the end
+                    if (scrollLeft + windowWidth >= documentWidth - 100) {
+                        this.unlock('scroll_end');
+                    }
+
+                    // Check if About Me section is in view
+                    const aboutSection = document.querySelector('.aboutme-section');
+                    if (aboutSection && !this.hasViewedAbout) {
+                        const rect = aboutSection.getBoundingClientRect();
+                        const isInView = rect.left < windowWidth && rect.right > 0;
+
+                        if (isInView) {
+                            // Start timer if not already started
+                            if (!this.aboutMeTimer) {
+                                this.aboutMeTimer = setTimeout(() => {
+                                    this.unlock('read_about');
+                                    this.hasViewedAbout = true;
+                                }, 5000); // 5 seconds
+                            }
+                        } else {
+                            // Cancel timer if user scrolled away
+                            if (this.aboutMeTimer) {
+                                clearTimeout(this.aboutMeTimer);
+                                this.aboutMeTimer = null;
+                            }
+                        }
+                    }
+
+                    // Track which projects are in view (excluding hidden ones)
+                    const projectFrames = document.querySelectorAll('.project-item:not([data-hidden="true"])');
+                    projectFrames.forEach((project, index) => {
+                        const rect = project.getBoundingClientRect();
+                        if (rect.left < windowWidth && rect.right > 0) {
+                            this.projectsViewed.add(index);
+                            if (this.projectsViewed.size === projectFrames.length) {
+                                this.unlock('view_all_projects');
+                            }
+                        }
+                    });
+                });
+
+                // External link clicks
+                document.querySelectorAll('.project-info a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        this.unlock('external_link');
+                    });
+                });
+
+                // Project hover tracking (excluding hidden projects)
+                document.querySelectorAll('.project-item:not([data-hidden="true"]) .project-frame').forEach((frame, index) => {
+                    frame.addEventListener('mouseenter', () => {
+                        this.projectsHovered.add(index);
+                        if (this.projectsHovered.size >= 3) {
+                            this.unlock('hover_master');
+                        }
+                    });
+                });
+
+                // West button click - show all achievements
+                document.getElementById('btnWest').addEventListener('click', () => {
+                    this.showAchievementList();
+                });
+            }
+
+            showAchievementList() {
+                const modal = document.getElementById('achievementModal');
+                const grid = document.getElementById('achievementGrid');
+                const progress = document.getElementById('modalProgress');
+
+                // Update progress text
+                const total = Object.keys(ACHIEVEMENTS).length;
+                const count = this.unlockedAchievements.length;
+                progress.textContent = `${count}/${total} Unlocked`;
+
+                // Clear and populate grid
+                grid.innerHTML = '';
+                Object.values(ACHIEVEMENTS).forEach(ach => {
+                    const unlocked = this.unlockedAchievements.includes(ach.id);
+                    const card = document.createElement('div');
+                    card.className = `achievement-card ${unlocked ? 'unlocked' : 'locked'}`;
+                    card.innerHTML = `
+                        <img class="achievement-card-icon" src="${ach.icon}" alt="${ach.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%23666%22 rx=%228%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3E%3F%3C/text%3E%3C/svg%3E'">
+                        <div class="achievement-card-content">
+                            <div class="achievement-card-title">
+                                ${ach.title}
+                            </div>
+                            <div class="achievement-card-description">${ach.description}</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                // Show modal
+                modal.classList.add('show');
+            }
+
+            hideAchievementList() {
+                const modal = document.getElementById('achievementModal');
+                modal.classList.remove('show');
+            }
+        }
+
+        // Initialize achievement system
+        const achievementManager = new AchievementManager();
+
+        // Modal close functionality
+        document.getElementById('closeModal').addEventListener('click', () => {
+            achievementManager.hideAchievementList();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('achievementModal').addEventListener('click', (e) => {
+            if (e.target.id === 'achievementModal') {
+                achievementManager.hideAchievementList();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                achievementManager.hideAchievementList();
+            }
+        });
+
+        // Dev Console System
+        class DevConsole {
+            constructor() {
+                this.console = document.getElementById('devConsole');
+                this.output = document.getElementById('consoleOutput');
+                this.input = document.getElementById('consoleInput');
+                this.isActive = false;
+                this.konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+                this.konamiIndex = 0;
+                this.hiddenProjectsVisible = false;
+
+                this.commands = {
+                    'help': () => this.showHelp(),
+                    'ad_testtoast': () => this.testToast(),
+                    'ad_showhiddenprojects': () => this.showHiddenProjects(),
+                    'clear': () => this.clearOutput(),
+                    'close': () => this.toggle()
+                };
+
+                this.init();
+            }
+
+            init() {
+                // Konami code detection
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === this.konamiCode[this.konamiIndex]) {
+                        this.konamiIndex++;
+                        if (this.konamiIndex === this.konamiCode.length) {
+                            this.activate();
+                            this.konamiIndex = 0;
+                        }
+                    } else {
+                        this.konamiIndex = 0;
+                    }
+                });
+
+                // Console input handling
+                this.input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const command = this.input.value.trim();
+                        if (command) {
+                            this.executeCommand(command);
+                            this.input.value = '';
+                        }
+                    }
+                });
+
+                // Close button
+                document.getElementById('closeConsole').addEventListener('click', () => {
+                    this.toggle();
+                });
+
+                // Focus input when console opens
+                this.console.addEventListener('transitionend', () => {
+                    if (this.isActive) {
+                        this.input.focus();
+                    }
+                });
+            }
+
+            activate() {
+                this.addMessage('Konami Code Activated! Developer Console Unlocked.', 'success');
+                this.toggle();
+            }
+
+            toggle() {
+                this.isActive = !this.isActive;
+                this.console.classList.toggle('active');
+                if (this.isActive) {
+                    setTimeout(() => this.input.focus(), 300);
+                }
+            }
+
+            executeCommand(command) {
+                this.addMessage(`> ${command}`, 'command');
+
+                const cmd = command.toLowerCase().trim();
+                if (this.commands[cmd]) {
+                    this.commands[cmd]();
+                } else {
+                    this.addMessage(`Unknown command: "${command}". Type 'help' for available commands.`, 'error');
+                }
+
+                // Auto-scroll to bottom
+                this.output.scrollTop = this.output.scrollHeight;
+            }
+
+            addMessage(text, type = 'info') {
+                const msg = document.createElement('div');
+                msg.className = `console-message console-${type}`;
+                msg.textContent = text;
+                this.output.appendChild(msg);
+                this.output.scrollTop = this.output.scrollHeight;
+            }
+
+            showHelp() {
+                this.addMessage('Available Commands:', 'info');
+                this.addMessage('  help - Show this help message', 'info');
+                this.addMessage('  ad_testtoast - Test achievement toast notification', 'info');
+                this.addMessage('  ad_showhiddenprojects - Toggle hidden projects visibility', 'info');
+                this.addMessage('  clear - Clear console output', 'info');
+                this.addMessage('  close - Close the console', 'info');
+            }
+
+            testToast() {
+                const testAchievement = {
+                    id: 'test',
+                    title: 'Test Achievement',
+                    description: 'This is a test notification from the dev console',
+                    icon: 'images/achievements/placeholder.svg',
+                    xp: 25
+                };
+                achievementManager.showToast(testAchievement);
+                this.addMessage('Test toast notification triggered.', 'success');
+            }
+
+            showHiddenProjects() {
+                this.hiddenProjectsVisible = !this.hiddenProjectsVisible;
+                const hiddenProjects = document.querySelectorAll('.project-item[data-hidden="true"]');
+
+                hiddenProjects.forEach(project => {
+                    if (this.hiddenProjectsVisible) {
+                        project.style.display = 'grid';
+                    } else {
+                        project.style.display = 'none';
+                    }
+                });
+
+                if (hiddenProjects.length === 0) {
+                    this.addMessage('No hidden projects found.', 'warning');
+                } else {
+                    const state = this.hiddenProjectsVisible ? 'shown' : 'hidden';
+                    this.addMessage(`Hidden projects ${state} (${hiddenProjects.length} project${hiddenProjects.length > 1 ? 's' : ''}).`, 'success');
+                }
+            }
+
+            clearOutput() {
+                this.output.innerHTML = '';
+                this.addMessage('Console cleared.', 'system');
+            }
+        }
+
+        // Initialize dev console
+        const devConsole = new DevConsole();
+
+        // XP System
+        class XPSystem {
+            constructor() {
+                this.xpBarFill = document.getElementById('xpBarFill');
+                this.xpBarText = document.getElementById('xpBarText');
+                this.xpLevel = document.getElementById('xpLevel');
+                this.levelUpNotification = document.getElementById('levelUpNotification');
+                this.levelUpNumber = document.getElementById('levelUpNumber');
+                this.canvas = document.getElementById('particleCanvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                this.currentLevel = 1;
+                this.currentXP = 0;
+                this.particles = [];
+
+                this.loadProgress();
+                this.setupCanvas();
+                this.init();
+            }
+
+            init() {
+                window.addEventListener('resize', () => this.setupCanvas());
+                this.updateDisplay();
+                this.animate();
+            }
+
+            setupCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            // Exponential XP requirements: level 1 = 50 XP, each level requires 1.5x more
+            getXPForLevel(level) {
+                return Math.floor(50 * Math.pow(1.5, level - 1));
+            }
+
+            // Calculate total XP from all unlocked achievements
+            calculateXPFromAchievements() {
+                let totalXP = 0;
+                achievementManager.unlockedAchievements.forEach(achId => {
+                    const achievement = ACHIEVEMENTS[achId];
+                    if (achievement && achievement.xp) {
+                        totalXP += achievement.xp;
+                    }
+                });
+                return totalXP;
+            }
+
+            // Initialize XP and level from unlocked achievements
+            initializeFromAchievements() {
+                let totalXP = this.calculateXPFromAchievements();
+
+                // Calculate level and current XP from total earned XP
+                this.currentLevel = 1;
+                this.currentXP = totalXP;
+
+                // Process level ups (consume XP for each level gained)
+                while (this.currentXP >= this.getXPForLevel(this.currentLevel)) {
+                    this.currentXP -= this.getXPForLevel(this.currentLevel);
+                    this.currentLevel++;
+                }
+            }
+
+            loadProgress() {
+                // XP is now calculated from achievements, not stored separately
+                this.initializeFromAchievements();
+            }
+
+            saveProgress() {
+                // No longer saving XP - it's calculated from achievements
+            }
+
+            addXP(amount) {
+                this.currentXP += amount;
+
+                // Check for level ups
+                let leveledUp = false;
+                while (this.currentXP >= this.getXPForLevel(this.currentLevel)) {
+                    this.currentXP -= this.getXPForLevel(this.currentLevel);
+                    this.currentLevel++;
+                    leveledUp = true;
+                }
+
+                if (leveledUp) {
+                    this.levelUp();
+                }
+
+                this.saveProgress();
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                const xpNeeded = this.getXPForLevel(this.currentLevel);
+                const progress = (this.currentXP / xpNeeded) * 100;
+
+                this.xpBarFill.style.width = progress + '%';
+                this.xpBarText.textContent = `${this.currentXP}/${xpNeeded}`;
+                this.xpLevel.textContent = this.currentLevel;
+            }
+
+            levelUp() {
+                // Show level up notification
+                this.levelUpNumber.textContent = this.currentLevel;
+                this.levelUpNotification.classList.add('show');
+
+                // Create particles
+                this.createLevelUpParticles();
+
+                // Hide notification after 2 seconds
+                setTimeout(() => {
+                    this.levelUpNotification.classList.remove('show');
+                }, 2000);
+            }
+
+            createLevelUpParticles() {
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                const particleCount = 50;
+
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = (Math.PI * 2 * i) / particleCount;
+                    const velocity = 2 + Math.random() * 3;
+
+                    this.particles.push({
+                        x: centerX,
+                        y: centerY,
+                        vx: Math.cos(angle) * velocity,
+                        vy: Math.sin(angle) * velocity,
+                        life: 1,
+                        decay: 0.015 + Math.random() * 0.01,
+                        size: 3 + Math.random() * 4,
+                        color: this.getRandomColor()
+                    });
+                }
+            }
+
+            getRandomColor() {
+                const colors = ['#FFB014', '#FFC04D', '#FFD700', '#FFA500'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Update and draw particles
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+
+                    // Update particle
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.1; // Gravity
+                    p.life -= p.decay;
+
+                    // Remove dead particles
+                    if (p.life <= 0) {
+                        this.particles.splice(i, 1);
+                        continue;
+                    }
+
+                    // Draw particle
+                    this.ctx.save();
+                    this.ctx.globalAlpha = p.life;
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.restore();
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize XP system
+        const xpSystem = new XPSystem();
+
+        // Minimap System
+        class MinimapSystem {
+            constructor() {
+                this.cone = document.getElementById('minimapCone');
+                this.timeCycle = document.getElementById('timeCycle');
+                this.init();
+            }
+
+            init() {
+                // Update time rotation
+                this.updateTimeRotation();
+                setInterval(() => this.updateTimeRotation(), 60000); // Update every minute
+
+                // Update cone rotation on scroll
+                window.addEventListener('scroll', () => this.updateConeRotation());
+                window.addEventListener('resize', () => this.updateConeRotation());
+                this.updateConeRotation();
+            }
+
+            updateTimeRotation() {
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const totalMinutes = hours * 60 + minutes;
+
+                // Adjust so 6am is 0deg (start of day), 6pm is 180deg (start of night)
+                const adjustedMinutes = (totalMinutes - 360 + 1440) % 1440; // Subtract 6am (360 min) and wrap
+                const rotation = (adjustedMinutes / 1440) * 360;
+
+                // Rotate counter-clockwise (negate the rotation)
+                this.timeCycle.style.transform = `rotate(-${rotation}deg)`;
+            }
+
+            updateConeRotation() {
+                const scrollPercentage = window.scrollX / (document.documentElement.scrollWidth - window.innerWidth);
+                const rotation = scrollPercentage * 360;
+
+                this.cone.style.transform = `translate(-50%, 0%) rotate(${rotation}deg)`;
+            }
+        }
+
+        // Initialize minimap
+        const minimapSystem = new MinimapSystem();
+
+        // Horizontal Scroll System - Convert vertical wheel to horizontal scroll
+        window.addEventListener('wheel', (e) => {
+            // Prevent default vertical scroll
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                e.preventDefault();
+                // Convert vertical scroll to horizontal
+                window.scrollBy({
+                    left: e.deltaY,
+                    behavior: 'auto'
+                });
+            }
+        }, { passive: false });
+
+        // Mobile touch scroll - disable vertical, enable horizontal
+        let touchStartY = 0;
+        let touchStartX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            const touchDeltaY = Math.abs(e.touches[0].clientY - touchStartY);
+            const touchDeltaX = Math.abs(e.touches[0].clientX - touchStartX);
+
+            // If vertical movement is greater than horizontal, prevent it
+            if (touchDeltaY > touchDeltaX) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Custom Scrollbar System
+        function updateCustomScrollbar() {
+            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+            const scrollWidth = document.documentElement.scrollWidth - window.innerWidth;
+            const scrollPercentage = (scrollLeft / scrollWidth) * 100;
+
+            const scrollbarThumb = document.getElementById('scrollbarThumb');
+            if (scrollbarThumb) {
+                scrollbarThumb.style.width = scrollPercentage + '%';
+            }
+        }
+
+        window.addEventListener('scroll', updateCustomScrollbar);
+        window.addEventListener('resize', updateCustomScrollbar);
+        updateCustomScrollbar();
+
+        // Controller buttons functionality
+        const btnNorth = document.getElementById('btnNorth');
+        const themeBadge = document.getElementById('themeBadge');
         const body = document.body;
 
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('light-mode');
-            
+        // Function to update theme badge
+        function updateThemeBadge() {
             if (body.classList.contains('light-mode')) {
-                themeText.textContent = 'Dark';
+                themeBadge.textContent = 'Dark';
             } else {
-                themeText.textContent = 'Light';
+                themeBadge.textContent = 'Light';
             }
+        }
+
+        // Initialize theme badge
+        updateThemeBadge();
+
+        // North button - Theme toggle
+        btnNorth.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            updateThemeBadge();
+
+            if (body.classList.contains('light-mode')) {
+                achievementManager.unlock('light_mode');
+            } else {
+                achievementManager.unlock('dark_mode');
+            }
+        });
+
+        // D-Pad functionality - dispatch keyboard events for Konami code
+        function dispatchKeyEvent(key) {
+            const event = new KeyboardEvent('keydown', {
+                key: key,
+                code: key,
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(event);
+        }
+
+        document.getElementById('dpadUp').addEventListener('click', () => {
+            dispatchKeyEvent('ArrowUp');
+        });
+
+        document.getElementById('dpadDown').addEventListener('click', () => {
+            dispatchKeyEvent('ArrowDown');
+        });
+
+        document.getElementById('dpadLeft').addEventListener('click', () => {
+            dispatchKeyEvent('ArrowLeft');
+        });
+
+        document.getElementById('dpadRight').addEventListener('click', () => {
+            dispatchKeyEvent('ArrowRight');
+        });
+
+        // East button (B) and South button (A) - dispatch keyboard events
+        document.getElementById('btnEast').addEventListener('click', () => {
+            dispatchKeyEvent('b');
+        });
+
+        document.getElementById('btnSouth').addEventListener('click', () => {
+            dispatchKeyEvent('a');
         });
 
         // Initialize project frames with static images
@@ -242,15 +1143,15 @@
         let changeTimeout = null;
 
         function updateActiveProject() {
-            const viewportCenter = window.innerHeight / 2;
+            const viewportCenter = window.innerWidth / 2;
             let closestFrame = null;
             let smallestDistance = Infinity;
 
             projectFrames.forEach(frame => {
                 if (!frame.dataset.hover) return; // Skip if no GIF available
-                
+
                 const rect = frame.getBoundingClientRect();
-                const frameCenter = rect.top + rect.height / 2;
+                const frameCenter = rect.left + rect.width / 2;
                 const distance = Math.abs(frameCenter - viewportCenter);
 
                 if (distance < smallestDistance) {
