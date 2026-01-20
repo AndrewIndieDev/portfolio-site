@@ -298,10 +298,10 @@ body.light-mode .controller-btn:hover {
     top: 30px;
     right: 30px;
     width: 200px;
-    height: 200px;
+    height: 60px;
     background: linear-gradient(180deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.95) 100%);
     border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    border-radius: 12px;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 1000;
@@ -319,7 +319,7 @@ body.light-mode .minimap {
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+    border-radius: 12px;
     overflow: hidden;
 }
 
@@ -343,43 +343,61 @@ body.light-mode .minimap-background {
         repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.02) 10px, rgba(0, 0, 0, 0.02) 20px);
 }
 
-.minimap-player {
+.minimap-boundary-left {
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 80%;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 4;
+    pointer-events: none;
+}
+
+body.light-mode .minimap-boundary-left {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.minimap-boundary-right {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 80%;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 4;
+    pointer-events: none;
+}
+
+body.light-mode .minimap-boundary-right {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.minimap-viewport-box {
     position: absolute;
     top: 50%;
-    left: 50%;
-    width: 12px;
-    height: 12px;
-    background: #4ec9b0;
-    border: 2px solid #2a2a2a;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
+    left: 29px;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #b0b0b0;
+    background: transparent;
+    transform: translateY(-50%);
     z-index: 3;
-    box-shadow: 0 0 8px rgba(78, 201, 176, 0.6);
+    transition: left 0.3s ease;
+    pointer-events: none;
 }
 
-body.light-mode .minimap-player {
-    border-color: #fff;
-}
-
-.minimap-cone {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-left: 30px solid transparent;
-    border-right: 30px solid transparent;
-    border-bottom: 60px solid rgba(255, 176, 20, 0.3);
-    transform-origin: 50% 0%;
-    transform: translate(-50%, 0%) rotate(0deg);
-    z-index: 2;
-    transition: transform 0.3s ease;
+body.light-mode .minimap-viewport-box {
+    border-color: #494949;
 }
 
 .minimap-time-indicator {
     position: absolute;
-    top: 0px;
-    right: 0px;
+    top: 50%;
+    left: -30px;
+    transform: translateY(-50%);
     width: 50px;
     height: 50px;
     background: linear-gradient(180deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.95) 100%);
@@ -1534,15 +1552,29 @@ body.light-mode .scrollbar-track {
     .minimap {
         top: 20px;
         right: 20px;
-        width: 150px;
-        height: 150px;
+        width: 180px;
+        height: 55px;
+    }
+
+    .minimap-boundary-left {
+        left: 22px;
+        height: 44px;
+    }
+
+    .minimap-boundary-right {
+        height: 44px;
+    }
+
+    .minimap-viewport-box {
+        left: 26px;
     }
 
     .minimap-time-indicator {
         width: 40px;
         height: 40px;
-        top: 0px;
-        right: 0px;
+        top: 50%;
+        left: -25px;
+        transform: translateY(-50%);
     }
 
     .time-compass-arrow {
@@ -1663,26 +1695,32 @@ body.light-mode .scrollbar-track {
     .minimap {
         top: 10px;
         right: 10px;
-        width: 100px;
-        height: 100px;
+        width: 140px;
+        height: 45px;
     }
 
-    .minimap-player {
-        width: 8px;
-        height: 8px;
+    .minimap-boundary-left {
+        left: 18px;
+        height: 36px;
     }
 
-    .minimap-cone {
-        border-left: 18px solid transparent;
-        border-right: 18px solid transparent;
-        border-bottom: 35px solid rgba(255, 176, 20, 0.3);
+    .minimap-boundary-right {
+        height: 36px;
+    }
+
+    .minimap-viewport-box {
+        left: 22px;
+        width: 30px;
+        height: 30px;
+        border-width: 2px;
     }
 
     .minimap-time-indicator {
         width: 30px;
         height: 30px;
-        top: 0px;
-        right: 0px;
+        top: 50%;
+        left: -20px;
+        transform: translateY(-50%);
     }
 
     .time-compass-arrow {

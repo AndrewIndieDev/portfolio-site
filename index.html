@@ -13,8 +13,9 @@
     <div class="minimap" id="minimap">
         <div class="minimap-inner">
             <div class="minimap-background"></div>
-            <div class="minimap-cone" id="minimapCone"></div>
-            <div class="minimap-player"></div>
+            <div class="minimap-boundary-left"></div>
+            <div class="minimap-boundary-right"></div>
+            <div class="minimap-viewport-box" id="minimapViewportBox"></div>
         </div>
         <div class="minimap-time-indicator">
             <img class="time-cycle" id="timeCycle" src="images/time-cycle.png" alt="Time Cycle">
@@ -26,10 +27,10 @@
         <button class="dpad-btn dpad-btn-up" id="dpadUp" aria-label="D-Pad Up" title="Coming Soon">
             <span class="dpad-arrow">▲</span>
         </button>
-        <button class="dpad-btn dpad-btn-left" id="dpadLeft" aria-label="D-Pad Left" title="Coming Soon">
+        <button class="dpad-btn dpad-btn-left" id="dpadLeft" aria-label="Scroll Left" title="Scroll Left">
             <span class="dpad-arrow">◀</span>
         </button>
-        <button class="dpad-btn dpad-btn-right" id="dpadRight" aria-label="D-Pad Right" title="Coming Soon">
+        <button class="dpad-btn dpad-btn-right" id="dpadRight" aria-label="Scroll Right" title="Scroll Right">
             <span class="dpad-arrow">▶</span>
         </button>
         <button class="dpad-btn dpad-btn-down" id="dpadDown" aria-label="D-Pad Down" title="Coming Soon">
@@ -326,7 +327,7 @@
                     </a></p>
                 <br>
                 <h4>Description:</h4>
-                <p>Mandela Protocol is a dangerous take on an horror anomaly game. If you don't spot anomalies, they will evolve and come after you in their own unique ways. Team up with up to X (TBD) players and find all the anomalies before they evolve and unalive your whole team.</p>
+                <p>Mandela Protocol is a dangerous spot the difference horror game. Report anomalies to your robot friend using your camera, and hope the anomalies don't come after you. Team up with up to X (TBD) players and report all the anomalies like a good little human.</p>
             </div>
             <div class="project-frame"
             data-src="images/Mandela Protocol/thumbnail.png"
@@ -977,7 +978,9 @@
         // Minimap System
         class MinimapSystem {
             constructor() {
-                this.cone = document.getElementById('minimapCone');
+                this.minimap = document.getElementById('minimap');
+                this.viewportBox = document.getElementById('minimapViewportBox');
+                this.leftBoundary = document.querySelector('.minimap-boundary-left');
                 this.timeCycle = document.getElementById('timeCycle');
                 this.init();
             }
@@ -987,10 +990,10 @@
                 this.updateTimeRotation();
                 setInterval(() => this.updateTimeRotation(), 60000); // Update every minute
 
-                // Update cone rotation on scroll
-                window.addEventListener('scroll', () => this.updateConeRotation());
-                window.addEventListener('resize', () => this.updateConeRotation());
-                this.updateConeRotation();
+                // Update viewport box position on scroll
+                window.addEventListener('scroll', () => this.updateViewportPosition());
+                window.addEventListener('resize', () => this.updateViewportPosition());
+                this.updateViewportPosition();
             }
 
             updateTimeRotation() {
@@ -1007,11 +1010,30 @@
                 this.timeCycle.style.transform = `rotate(-${rotation}deg)`;
             }
 
-            updateConeRotation() {
+            updateViewportPosition() {
                 const scrollPercentage = window.scrollX / (document.documentElement.scrollWidth - window.innerWidth);
-                const rotation = scrollPercentage * 360;
 
-                this.cone.style.transform = `translate(-50%, 0%) rotate(${rotation}deg)`;
+                // Get actual dimensions from DOM for responsive support
+                const minimapWidth = this.minimap.offsetWidth;
+                const viewportBoxWidth = this.viewportBox.offsetWidth;
+                const leftBoundaryPos = this.leftBoundary.offsetLeft; // Read from DOM for responsiveness
+                const rightBoundaryOffset = 5; // Right boundary from right edge
+                const boundaryWidth = 2; // Boundary line width
+                const leftGap = 4; // Gap on left side between viewport box and left boundary
+                const rightGap = 6; // Gap on right side between viewport box and right boundary
+
+                // Calculate travel range with asymmetric gaps (4px left, 6px right)
+                // Left: boundary position + 4px gap
+                // Right: boundary at (width - 5 - 2), box right edge stops 6px before at (width - 5 - 2 - 6)
+                //        so box left position is (width - 13 - boxWidth)
+                const minLeft = leftBoundaryPos + leftGap;
+                const maxLeft = minimapWidth - rightBoundaryOffset - boundaryWidth - rightGap - viewportBoxWidth;
+                const travelRange = maxLeft - minLeft;
+
+                // Calculate left position based on scroll percentage
+                const leftPosition = minLeft + (scrollPercentage * travelRange);
+
+                this.viewportBox.style.left = `${leftPosition}px`;
             }
         }
 
@@ -1114,6 +1136,64 @@
             dispatchKeyEvent('ArrowDown');
         });
 
+        // D-pad left/right continuous scroll when held down
+        let scrollInterval = null;
+        const scrollSpeed = 20; // Interval in milliseconds (faster = smoother)
+        const scrollAmount = 8; // Pixels per interval tick (20ms * 8px = 400px/second)
+
+        function startContinuousScroll(direction) {
+            // Clear any existing interval
+            if (scrollInterval) {
+                clearInterval(scrollInterval);
+            }
+
+            // Immediate first scroll
+            window.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'auto' // Use auto for continuous scrolling
+            });
+
+            // Start continuous scrolling
+            scrollInterval = setInterval(() => {
+                window.scrollBy({
+                    left: direction === 'left' ? -scrollAmount : scrollAmount,
+                    behavior: 'auto'
+                });
+            }, scrollSpeed);
+        }
+
+        function stopContinuousScroll() {
+            if (scrollInterval) {
+                clearInterval(scrollInterval);
+                scrollInterval = null;
+            }
+        }
+
+        // Left button continuous scroll
+        const dpadLeft = document.getElementById('dpadLeft');
+        dpadLeft.addEventListener('mousedown', () => startContinuousScroll('left'));
+        dpadLeft.addEventListener('mouseup', stopContinuousScroll);
+        dpadLeft.addEventListener('mouseleave', stopContinuousScroll);
+        dpadLeft.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startContinuousScroll('left');
+        });
+        dpadLeft.addEventListener('touchend', stopContinuousScroll);
+        dpadLeft.addEventListener('touchcancel', stopContinuousScroll);
+
+        // Right button continuous scroll
+        const dpadRight = document.getElementById('dpadRight');
+        dpadRight.addEventListener('mousedown', () => startContinuousScroll('right'));
+        dpadRight.addEventListener('mouseup', stopContinuousScroll);
+        dpadRight.addEventListener('mouseleave', stopContinuousScroll);
+        dpadRight.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startContinuousScroll('right');
+        });
+        dpadRight.addEventListener('touchend', stopContinuousScroll);
+        dpadRight.addEventListener('touchcancel', stopContinuousScroll);
+
+        // Keep click handlers for Konami code compatibility
         document.getElementById('dpadLeft').addEventListener('click', () => {
             dispatchKeyEvent('ArrowLeft');
         });
@@ -1129,6 +1209,74 @@
 
         document.getElementById('btnSouth').addEventListener('click', () => {
             dispatchKeyEvent('a');
+        });
+
+        // Keyboard arrow key scrolling with held-down support
+        let keyScrollInterval = null;
+        let currentScrollKey = null;
+
+        document.addEventListener('keydown', (e) => {
+            // Don't scroll if user is typing in the dev console
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            // Only respond to real keyboard events, not dispatched events from D-pad clicks
+            if (!e.isTrusted) {
+                return;
+            }
+
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                e.preventDefault();
+
+                // If already scrolling with this key, don't start again
+                if (currentScrollKey === e.key) {
+                    return;
+                }
+
+                // Stop any existing scroll
+                if (keyScrollInterval) {
+                    clearInterval(keyScrollInterval);
+                }
+
+                currentScrollKey = e.key;
+                const direction = e.key === 'ArrowLeft' ? -1 : 1;
+                const keyScrollAmount = 8; // Pixels per interval tick (20ms * 8px = 400px/second)
+
+                // Immediate first scroll
+                window.scrollBy({
+                    left: direction * keyScrollAmount,
+                    behavior: 'auto'
+                });
+
+                // Start continuous scrolling
+                keyScrollInterval = setInterval(() => {
+                    window.scrollBy({
+                        left: direction * keyScrollAmount,
+                        behavior: 'auto'
+                    });
+                }, 20);
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                if (keyScrollInterval) {
+                    clearInterval(keyScrollInterval);
+                    keyScrollInterval = null;
+                    currentScrollKey = null;
+                }
+            }
+        });
+
+        // Stop all scrolling if window loses focus
+        window.addEventListener('blur', () => {
+            stopContinuousScroll();
+            if (keyScrollInterval) {
+                clearInterval(keyScrollInterval);
+                keyScrollInterval = null;
+                currentScrollKey = null;
+            }
         });
 
         // Initialize project frames with static images
