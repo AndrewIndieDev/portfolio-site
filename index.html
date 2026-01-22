@@ -1961,8 +1961,8 @@
                 this.localDamageAccumulated += damage;
                 this.lastLocalDamageTime = Date.now();
 
-                // Grant XP: 20% of damage dealt, floored, minimum 1
-                const xpGain = Math.max(1, Math.floor(damage * 0.2));
+                // Grant XP: 50% of damage dealt, floored, minimum 1
+                const xpGain = Math.max(1, Math.floor(damage * 0.5));
 
                 // Track XP locally (will be synced to server later)
                 this.totalXP += xpGain;
