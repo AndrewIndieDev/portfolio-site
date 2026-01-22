@@ -930,7 +930,6 @@
 
             addXP(amount) {
                 // Deprecated - XP now managed by boss widget
-                console.warn('XPSystem.addXP is deprecated - use bossWidget.addAchievementXP instead');
             }
 
             updateDisplay() {
@@ -1551,17 +1550,13 @@
                 try {
                     // Check if Firebase SDK is loaded via CDN
                     if (typeof firebase === 'undefined') {
-                        console.warn('🔴 Firebase SDK not loaded. Boss widget will use mock data.');
                         this.useMockData();
                         return;
                     }
 
-                    console.log('✅ Firebase SDK loaded');
-
                     // Initialize Firebase
                     if (!firebase.apps.length) {
                         firebase.initializeApp(this.firebaseConfig);
-                        console.log('✅ Firebase app initialized');
                     }
 
                     this.auth = firebase.auth();
@@ -1573,23 +1568,16 @@
                     // this.functions.useEmulator('localhost', 5001); // Disabled for production
 
                     // Sign in anonymously and wait for auth state to be ready
-                    console.log('🔄 Attempting anonymous sign-in...');
                     await this.auth.signInAnonymously();
-                    console.log('✅ Anonymous sign-in successful! UID:', this.auth.currentUser.uid);
 
                     // Wait a moment for auth token to propagate
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    console.log('✅ Auth token ready');
 
                     // Create player
-                    console.log('🔄 Creating player...');
                     await this.createPlayer();
-                    console.log('✅ Player created');
 
                     // Load data and start systems
-                    console.log('🔄 Loading boss and player data...');
                     await this.loadData();
-                    console.log('✅ Data loaded. Boss health:', this.bossState.currentHealth, '/', this.bossState.maxHealth);
 
                     this.setupEventListeners();
                     this.startLocalDamageLoop(); // Apply damage locally every 100ms
@@ -1597,12 +1585,7 @@
                     this.startHealthAnimation();
                     this.listenToBossChanges();
 
-                    console.log('✅ Boss widget fully initialized with Firebase!');
-
                 } catch (error) {
-                    console.error('🔴 Firebase initialization error:', error);
-                    console.error('🔴 Error details:', error.code, error.message);
-                    console.warn('⚠️ Falling back to mock data');
                     this.useMockData();
                 }
             }
@@ -1654,10 +1637,7 @@
 
             async createPlayer() {
                 const createPlayerFunc = this.functions.httpsCallable('createPlayer');
-                console.log('🔄 Calling createPlayer function...');
-                console.log('   Current user:', this.auth.currentUser ? this.auth.currentUser.uid : 'null');
                 const result = await createPlayerFunc();
-                console.log('✅ createPlayer result:', result);
                 return result;
             }
 
@@ -1793,10 +1773,6 @@
                     const damage = dps * ((windowEnd - windowStart) / 1000);
 
                     try {
-                        console.log('🔄 Syncing with server...');
-                        console.log('   Submitting damage:', Math.round(damage), '(DPS:', dps, ')');
-                        console.log('   Submitting XP gained:', this.xpGainedSinceLastSync);
-
                         const submitDamageFunc = this.functions.httpsCallable('submitDamage');
                         const result = await submitDamageFunc({
                             damage,
@@ -1804,8 +1780,6 @@
                             windowEnd,
                             totalXPGained: this.xpGainedSinceLastSync
                         });
-
-                        console.log('✅ Server sync complete. Damage applied:', result.data.appliedDamage);
 
                         // Reset tracking variables
                         this.lastDamageTime = now;
@@ -1828,13 +1802,10 @@
                             window.xpSystem.syncFromBossWidget();
                         }
 
-                        console.log('📊 Boss health synced:', this.bossState.currentHealth, '/', this.bossState.maxHealth);
-                        console.log('📊 Total XP synced:', this.totalXP);
-
                         this.updateUI();
                         // Don't play hit animation here - it's already playing from local damage loop
                     } catch (error) {
-                        console.error('❌ Error syncing with server:', error);
+                        // Silent error handling
                     }
                 }, 60000); // Sync with server every 60 seconds (1 minute)
             }
@@ -1845,10 +1816,6 @@
                     const dps = this.calculateDPS();
                     const damage = dps * 60; // 60 seconds worth of damage
 
-                    console.log('🔄 Mock server sync...');
-                    console.log('   Submitting damage:', Math.round(damage), '(DPS:', dps, ')');
-                    console.log('   XP gained since last sync:', this.xpGainedSinceLastSync);
-
                     // Update mock "server" boss state
                     this.bossState.currentHealth -= damage;
                     if (this.bossState.currentHealth <= 0) {
@@ -1856,7 +1823,6 @@
                         this.bossState.phase++;
                         this.bossState.maxHealth = this.calculateBossHP(this.bossState.phase);
                         this.bossState.currentHealth = this.bossState.maxHealth;
-                        console.log('💀 Boss defeated! New phase:', this.bossState.phase);
                     }
 
                     // Sync local health with "server" health
@@ -1864,9 +1830,6 @@
 
                     // Reset XP tracking
                     this.xpGainedSinceLastSync = 0;
-
-                    console.log('✅ Mock sync complete. Boss health:', this.bossState.currentHealth, '/', this.bossState.maxHealth);
-                    console.log('📊 Total XP:', this.totalXP);
 
                     this.updateUI();
                     // Don't play hit animation here - it's already playing from local damage loop
@@ -1910,7 +1873,6 @@
                     this.bossData[phase] = data;
                     this.bossName.textContent = data.name;
                 } catch (error) {
-                    console.error(`Failed to load boss data for phase ${phase}:`, error);
                     this.bossName.textContent = 'Unknown Boss';
                 }
             }
@@ -2180,17 +2142,13 @@
                     try {
                         const grantXPFunc = this.functions.httpsCallable('grantAchievementXP');
                         const result = await grantXPFunc({ xpAmount });
-                        console.log('✅ Achievement XP granted:', xpAmount, 'New total:', result.data.newTotalXP);
 
                         // Update with server value to stay in sync
                         this.playerData.totalXP = result.data.newTotalXP;
                         this.totalXP = result.data.newTotalXP;
                     } catch (error) {
-                        console.error('❌ Error granting achievement XP:', error);
+                        // Silent error handling
                     }
-                } else {
-                    // Mock mode - just keep local value
-                    console.log('✅ Achievement XP granted (mock mode):', xpAmount);
                 }
             }
 
@@ -2204,7 +2162,6 @@
                     try {
                         // First, sync any unsynced XP to the server
                         if (this.xpGainedSinceLastSync > 0) {
-                            console.log('🔄 Syncing XP before purchase...', this.xpGainedSinceLastSync);
                             const submitDamageFunc = this.functions.httpsCallable('submitDamage');
                             const now = Date.now();
                             const windowStart = this.lastDamageTime;
@@ -2229,8 +2186,6 @@
                             const serverPlayerData = playerDoc.data();
                             this.playerData.totalXP = serverPlayerData.totalXP;
                             this.totalXP = serverPlayerData.totalXP;
-
-                            console.log('✅ XP synced. Server XP:', this.totalXP);
                         }
 
                         // Check if player has enough total XP (using server value)
@@ -2253,10 +2208,7 @@
                         if (window.xpSystem) {
                             window.xpSystem.syncFromBossWidget();
                         }
-
-                        console.log('✅ Upgrade purchased:', upgradeType, 'Level:', currentLevel + 1);
                     } catch (error) {
-                        console.error('❌ Error purchasing upgrade:', error);
                         alert('Failed to purchase upgrade: ' + error.message);
                         return;
                     }
@@ -2283,8 +2235,6 @@
         // Note: Requires Firebase SDK to be loaded via CDN in HTML <head>
         if (!isMobileDevice()) {
             window.bossWidget = new BossWidget();
-        } else {
-            console.log('📱 Mobile device detected - Boss widget and XP bar disabled');
         }
     </script>
 </body>
