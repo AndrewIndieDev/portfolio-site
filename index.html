@@ -1677,7 +1677,15 @@
             listenToBossChanges() {
                 // Real-time listener for boss state changes (from other players)
                 this.db.collection('boss').doc('state').onSnapshot((doc) => {
+                    const previousHealth = this.bossState.currentHealth;
                     this.bossState = doc.data();
+
+                    // Check if boss HP dropped from server update (other players' damage)
+                    if (previousHealth && this.bossState.currentHealth < previousHealth) {
+                        // Trigger blue swipe to indicate other players' damage
+                        this.createServerSwipeVFX();
+                    }
+
                     // Update local health to match server (other players may have damaged it)
                     this.localBossHealth = this.bossState.currentHealth;
                     this.updateUI();
@@ -2036,6 +2044,23 @@
                         }, 500);
                     }, 100);
                 }
+            }
+
+            createServerSwipeVFX() {
+                // Create blue swipe effect for server updates (other players' damage)
+                const swipe = document.createElement('div');
+                swipe.className = 'boss-swipe-vfx-server';
+
+                // Apply random rotation between -60 and 60 degrees
+                const randomRotation = Math.random() * 120 - 60;
+                swipe.style.transform = `translate(-50%, -50%) rotate(${randomRotation}deg)`;
+
+                this.bossHead.appendChild(swipe);
+
+                // Remove after animation completes
+                setTimeout(() => {
+                    swipe.remove();
+                }, 200);
             }
 
             setupEventListeners() {

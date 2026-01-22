@@ -1618,6 +1618,26 @@ body.light-mode .scrollbar-track {
     border-radius: 50%;
 }
 
+.boss-swipe-vfx-server {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 130%;
+    height: 10px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(59, 130, 246, 0.4) 10%,
+        rgba(255, 255, 255, 0.9) 40%,
+        rgba(96, 165, 250, 0.9) 50%,
+        rgba(255, 255, 255, 0.9) 60%,
+        rgba(59, 130, 246, 0.4) 90%,
+        transparent 100%);
+    animation: swipeFade 0.2s ease-in-out forwards;
+    pointer-events: none;
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.8);
+    border-radius: 50%;
+}
+
 .boss-xp-text {
     position: absolute;
     bottom: 0;
