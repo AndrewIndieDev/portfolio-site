@@ -130,7 +130,7 @@
         <div class="boss-health-bar-container">
             <div class="boss-health-bar">
                 <div class="boss-health-fill" id="bossHealthFill"></div>
-                <div class="boss-health-text" id="bossHealthText">100%</div>
+                <div class="boss-health-text" id="bossHealthText">10,000 / 10,000</div>
             </div>
             <div class="boss-info">
                 <span class="boss-name" id="bossName">The Awakening</span>
@@ -1607,6 +1607,23 @@
                 }
             }
 
+            calculateBossHP(phase) {
+                if (phase <= 100) {
+                    // Exponential growth from 10,000 (phase 1) to 1,000,000,000 (phase 100)
+                    const baseHP = 10000;
+                    const multiplier = Math.pow(100000, 1/99); // ≈ 1.1174
+                    return Math.floor(baseHP * Math.pow(multiplier, phase - 1));
+                } else {
+                    // Linear growth: 1 billion HP per level after phase 100
+                    return 1000000000 * (phase - 99);
+                }
+            }
+
+            formatNumber(num) {
+                // Format number with commas (e.g., 10000 -> 10,000)
+                return Math.floor(num).toLocaleString('en-US');
+            }
+
             useMockData() {
                 // Mock data for testing without Firebase
                 this.bossState = {
@@ -1835,9 +1852,9 @@
                     // Update mock "server" boss state
                     this.bossState.currentHealth -= damage;
                     if (this.bossState.currentHealth <= 0) {
-                        // Boss defeated
+                        // Boss defeated - advance to next phase
                         this.bossState.phase++;
-                        this.bossState.maxHealth *= 1.5;
+                        this.bossState.maxHealth = this.calculateBossHP(this.bossState.phase);
                         this.bossState.currentHealth = this.bossState.maxHealth;
                         console.log('💀 Boss defeated! New phase:', this.bossState.phase);
                     }
@@ -1919,7 +1936,11 @@
 
                     // Update health bar
                     this.healthFill.style.width = `${this.currentDisplayHealth}%`;
-                    this.healthText.textContent = `${Math.round(this.currentDisplayHealth)}%`;
+
+                    // Calculate and display actual HP numbers
+                    const maxHP = this.bossState.maxHealth;
+                    const currentHP = (this.currentDisplayHealth / 100) * maxHP;
+                    this.healthText.textContent = `${this.formatNumber(currentHP)} / ${this.formatNumber(maxHP)}`;
 
                     // Update head position to follow body center
                     this.updateHeadPosition();

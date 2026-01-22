@@ -4,6 +4,19 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.firestore();
 
+// Calculate boss max HP for a given phase
+function calculateBossHP(phase) {
+  if (phase <= 100) {
+    // Exponential growth from 10,000 (phase 1) to 1,000,000,000 (phase 100)
+    const baseHP = 10000;
+    const multiplier = Math.pow(100000, 1/99); // ≈ 1.1174
+    return Math.floor(baseHP * Math.pow(multiplier, phase - 1));
+  } else {
+    // Linear growth: 1 billion HP per level after phase 100
+    return 1000000000 * (phase - 99);
+  }
+}
+
 // CORS configuration
 const corsOptions = {
   cors: true, // Allow all origins in development
@@ -59,9 +72,9 @@ exports.submitDamage = https.onCall(
       let newHealth = boss.currentHealth - appliedDamage;
 
       if (newHealth <= 0) {
-        // Boss dies → reset phase
+        // Boss dies → advance to next phase
         const newPhase = boss.phase + 1;
-        const newMaxHealth = boss.baseHealth * (1 + newPhase * 0.5); // scale up
+        const newMaxHealth = calculateBossHP(newPhase);
         newHealth = newMaxHealth;
 
         tx.update(bossRef, {
