@@ -8,6 +8,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
 </head>
 <body>
     <div class="minimap" id="minimap">
@@ -113,6 +119,49 @@
     </div>
 
     <canvas class="particle-canvas" id="particleCanvas"></canvas>
+
+    <!-- Boss Widget -->
+    <div class="boss-widget" id="bossWidget">
+        <div class="boss-container">
+            <div class="boss-body" id="bossBody"></div>
+            <div class="boss-head" id="bossHead"></div>
+        </div>
+
+        <div class="boss-health-bar-container">
+            <div class="boss-health-bar">
+                <div class="boss-health-fill" id="bossHealthFill"></div>
+                <div class="boss-health-text" id="bossHealthText">100%</div>
+            </div>
+            <div class="boss-info">
+                <span class="boss-name" id="bossName">The Awakening</span>
+                <span class="boss-phase" id="bossPhase">Phase 1</span>
+            </div>
+        </div>
+
+        <div class="upgrade-hover-text" id="upgradeHoverText">Upgrades</div>
+
+        <div class="upgrade-menu" id="upgradeMenu">
+            <button class="upgrade-button upgrade-damage" data-upgrade="damage">
+                <img src="images/boss_upgrades/damage.png" alt="Damage" class="upgrade-icon">
+            </button>
+            <button class="upgrade-button upgrade-speed" data-upgrade="attackspeed">
+                <img src="images/boss_upgrades/attackspeed.png" alt="Attack Speed" class="upgrade-icon">
+            </button>
+            <button class="upgrade-button upgrade-auto" data-upgrade="critchance">
+                <img src="images/boss_upgrades/crit_chance.png" alt="Crit Chance" class="upgrade-icon">
+            </button>
+            <button class="upgrade-button upgrade-crit" data-upgrade="critdamage">
+                <img src="images/boss_upgrades/crit_damage.png" alt="Crit Damage" class="upgrade-icon">
+            </button>
+        </div>
+
+        <div class="upgrade-tooltip" id="upgradeTooltip">
+            <div class="tooltip-name" id="tooltipName">Upgrade Name</div>
+            <div class="tooltip-level" id="tooltipLevel">Level: 0</div>
+            <div class="tooltip-cost" id="tooltipCost">Cost: 100 XP</div>
+            <div class="tooltip-effect" id="tooltipEffect">+10 <span class="stat-increase">DPS</span></div>
+        </div>
+    </div>
 
     <div class="horizontal-container">
     <section class="intro-container">
@@ -463,9 +512,9 @@
                 this.showToast(achievement);
                 this.updateTrophyCount();
 
-                // Grant XP
-                if (achievement.xp) {
-                    xpSystem.addXP(achievement.xp);
+                // Grant XP to boss widget (syncs to Firebase)
+                if (achievement.xp && window.bossWidget) {
+                    window.bossWidget.addAchievementXP(achievement.xp);
                 }
 
                 // Check if all achievements unlocked
@@ -632,7 +681,7 @@
         }
 
         // Initialize achievement system
-        const achievementManager = new AchievementManager();
+        window.achievementManager = new AchievementManager();
 
         // Modal close functionality
         document.getElementById('closeModal').addEventListener('click', () => {
@@ -834,59 +883,54 @@
                 return Math.floor(50 * Math.pow(1.5, level - 1));
             }
 
-            // Calculate total XP from all unlocked achievements
-            calculateXPFromAchievements() {
-                let totalXP = 0;
-                achievementManager.unlockedAchievements.forEach(achId => {
-                    const achievement = ACHIEVEMENTS[achId];
-                    if (achievement && achievement.xp) {
-                        totalXP += achievement.xp;
-                    }
-                });
-                return totalXP;
-            }
+            // Sync XP from boss widget's totalXP
+            syncFromBossWidget() {
+                if (!window.bossWidget) return;
 
-            // Initialize XP and level from unlocked achievements
-            initializeFromAchievements() {
-                let totalXP = this.calculateXPFromAchievements();
+                const totalXP = window.bossWidget.totalXP || 0;
 
                 // Calculate level and current XP from total earned XP
-                this.currentLevel = 1;
-                this.currentXP = totalXP;
+                let tempLevel = 1;
+                let remainingXP = totalXP;
 
                 // Process level ups (consume XP for each level gained)
-                while (this.currentXP >= this.getXPForLevel(this.currentLevel)) {
-                    this.currentXP -= this.getXPForLevel(this.currentLevel);
-                    this.currentLevel++;
-                }
-            }
-
-            loadProgress() {
-                // XP is now calculated from achievements, not stored separately
-                this.initializeFromAchievements();
-            }
-
-            saveProgress() {
-                // No longer saving XP - it's calculated from achievements
-            }
-
-            addXP(amount) {
-                this.currentXP += amount;
-
-                // Check for level ups
-                let leveledUp = false;
-                while (this.currentXP >= this.getXPForLevel(this.currentLevel)) {
-                    this.currentXP -= this.getXPForLevel(this.currentLevel);
-                    this.currentLevel++;
-                    leveledUp = true;
+                while (remainingXP >= this.getXPForLevel(tempLevel)) {
+                    remainingXP -= this.getXPForLevel(tempLevel);
+                    tempLevel++;
                 }
 
-                if (leveledUp) {
+                // Check if we leveled up
+                const oldLevel = this.currentLevel;
+                this.currentLevel = tempLevel;
+                this.currentXP = remainingXP;
+
+                if (this.currentLevel > oldLevel) {
                     this.levelUp();
                 }
 
-                this.saveProgress();
                 this.updateDisplay();
+            }
+
+            loadProgress() {
+                // Wait for boss widget to initialize, then sync
+                const checkBossWidget = setInterval(() => {
+                    if (window.bossWidget && window.bossWidget.playerData) {
+                        this.syncFromBossWidget();
+                        clearInterval(checkBossWidget);
+                    }
+                }, 100);
+
+                // Timeout after 5 seconds if boss widget doesn't load
+                setTimeout(() => clearInterval(checkBossWidget), 5000);
+            }
+
+            saveProgress() {
+                // No longer saving XP - it's synced from boss widget
+            }
+
+            addXP(amount) {
+                // Deprecated - XP now managed by boss widget
+                console.warn('XPSystem.addXP is deprecated - use bossWidget.addAchievementXP instead');
             }
 
             updateDisplay() {
@@ -973,7 +1017,7 @@
         }
 
         // Initialize XP system
-        const xpSystem = new XPSystem();
+        window.xpSystem = new XPSystem();
 
         // Minimap System
         class MinimapSystem {
@@ -994,6 +1038,46 @@
                 window.addEventListener('scroll', () => this.updateViewportPosition());
                 window.addEventListener('resize', () => this.updateViewportPosition());
                 this.updateViewportPosition();
+
+                // Add click handler for minimap navigation
+                this.minimap.addEventListener('click', (e) => this.handleMinimapClick(e));
+                this.minimap.style.cursor = 'pointer';
+            }
+
+            handleMinimapClick(e) {
+                // Get click position relative to minimap
+                const rect = this.minimap.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+
+                // Get dimensions and boundaries (same as updateViewportPosition)
+                const minimapWidth = this.minimap.offsetWidth;
+                const viewportBoxWidth = this.viewportBox.offsetWidth;
+                const leftBoundaryPos = this.leftBoundary.offsetLeft;
+                const rightBoundaryOffset = 5;
+                const boundaryWidth = 2;
+                const leftGap = 4;
+                const rightGap = 6;
+
+                // Calculate travel range
+                const minLeft = leftBoundaryPos + leftGap;
+                const maxLeft = minimapWidth - rightBoundaryOffset - boundaryWidth - rightGap - viewportBoxWidth;
+                const travelRange = maxLeft - minLeft;
+
+                // Calculate scroll percentage from click position
+                // Center the viewport box on the click position
+                const targetBoxLeft = clickX - (viewportBoxWidth / 2);
+                const clampedBoxLeft = Math.max(minLeft, Math.min(maxLeft, targetBoxLeft));
+                const scrollPercentage = (clampedBoxLeft - minLeft) / travelRange;
+
+                // Calculate target scroll position
+                const maxScrollX = document.documentElement.scrollWidth - window.innerWidth;
+                const targetScrollX = scrollPercentage * maxScrollX;
+
+                // Smooth scroll to position
+                window.scrollTo({
+                    left: targetScrollX,
+                    behavior: 'smooth'
+                });
             }
 
             updateTimeRotation() {
@@ -1361,6 +1445,812 @@
                 }
             });
         });
+
+        // ===========================
+        //      BOSS WIDGET SYSTEM
+        // ===========================
+
+        class BossWidget {
+            constructor() {
+                // Firebase configuration
+                this.firebaseConfig = {
+                    apiKey: "AIzaSyABduDmw6F50DZ2gFPhyQV_qlzGKaVT7mw",
+                    authDomain: "portfolio-boss-raid.firebaseapp.com",
+                    projectId: "portfolio-boss-raid",
+                    storageBucket: "portfolio-boss-raid.firebasestorage.app",
+                    messagingSenderId: "431982597085",
+                    appId: "1:431982597085:web:622b13cf3b8b8a1a565c34"
+                };
+
+                // DOM elements
+                this.widget = document.getElementById('bossWidget');
+                this.bossBody = document.getElementById('bossBody');
+                this.bossHead = document.getElementById('bossHead');
+                this.healthFill = document.getElementById('bossHealthFill');
+                this.healthText = document.getElementById('bossHealthText');
+                this.bossName = document.getElementById('bossName');
+                this.phaseText = document.getElementById('bossPhase');
+                this.upgradeMenu = document.getElementById('upgradeMenu');
+                this.upgradeTooltip = document.getElementById('upgradeTooltip');
+
+                // State
+                this.currentPhase = 1;
+                this.bossState = null;
+                this.playerData = null;
+                this.bossData = {}; // Store boss data (names, etc.) by phase
+                this.isMenuOpen = false;
+                this.lastDamageTime = Date.now();
+                this.lastLocalDamageTime = Date.now();
+                this.targetHealth = 100;
+                this.currentDisplayHealth = 100;
+                this.animationFrame = null;
+                this.localDamageAccumulated = 0;
+                this.localBossHealth = 0; // Client-side boss health for immediate feedback
+                this.lastHitAnimationTime = 0; // Track when we last played hit animation
+                this.trackingCursor = false; // Track whether tooltip should follow cursor
+                this.totalXP = 0; // Track total XP earned (for upgrades)
+                this.xpGainedSinceLastSync = 0; // Track XP gained since last server sync
+
+                // Upgrade definitions
+                this.upgrades = {
+                    damage: {
+                        name: 'Damage',
+                        icon: 'images/boss_upgrades/damage.png',
+                        baseCost: 2,
+                        costMultiplier: 2.0,
+                        getEffect: (level) => {
+                            const totalDamage = 1 + (level * 2);
+                            return `${totalDamage}`;
+                        },
+                        description: 'Damage'
+                    },
+                    attackspeed: {
+                        name: 'Attack Speed',
+                        icon: 'images/boss_upgrades/attackspeed.png',
+                        baseCost: 128,
+                        costMultiplier: 2.0,
+                        getEffect: (level) => {
+                            const interval = 2000 * Math.pow(0.9, level);
+                            const seconds = (interval / 1000).toFixed(2);
+                            return `${seconds}s`;
+                        },
+                        description: 'Attack Speed'
+                    },
+                    critchance: {
+                        name: 'Crit Chance',
+                        icon: 'images/boss_upgrades/crit_chance.png',
+                        baseCost: 2,
+                        costMultiplier: 2.0,
+                        getEffect: (level) => `${level * 2}%`,
+                        description: 'Crit Chance'
+                    },
+                    critdamage: {
+                        name: 'Crit Damage',
+                        icon: 'images/boss_upgrades/crit_damage.png',
+                        baseCost: 2,
+                        costMultiplier: 2.0,
+                        getEffect: (level) => `+${100 + level * 10}%`,
+                        description: 'Crit Damage'
+                    }
+                };
+
+                this.init();
+            }
+
+            async init() {
+                try {
+                    // Check if Firebase SDK is loaded via CDN
+                    if (typeof firebase === 'undefined') {
+                        console.warn('🔴 Firebase SDK not loaded. Boss widget will use mock data.');
+                        this.useMockData();
+                        return;
+                    }
+
+                    console.log('✅ Firebase SDK loaded');
+
+                    // Initialize Firebase
+                    if (!firebase.apps.length) {
+                        firebase.initializeApp(this.firebaseConfig);
+                        console.log('✅ Firebase app initialized');
+                    }
+
+                    this.auth = firebase.auth();
+                    this.db = firebase.firestore();
+
+                    // Get Functions instance for australia-southeast1 region
+                    const app = firebase.app();
+                    this.functions = app.functions('australia-southeast1');
+                    // this.functions.useEmulator('localhost', 5001); // Disabled for production
+
+                    // Sign in anonymously and wait for auth state to be ready
+                    console.log('🔄 Attempting anonymous sign-in...');
+                    await this.auth.signInAnonymously();
+                    console.log('✅ Anonymous sign-in successful! UID:', this.auth.currentUser.uid);
+
+                    // Wait a moment for auth token to propagate
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    console.log('✅ Auth token ready');
+
+                    // Create player
+                    console.log('🔄 Creating player...');
+                    await this.createPlayer();
+                    console.log('✅ Player created');
+
+                    // Load data and start systems
+                    console.log('🔄 Loading boss and player data...');
+                    await this.loadData();
+                    console.log('✅ Data loaded. Boss health:', this.bossState.currentHealth, '/', this.bossState.maxHealth);
+
+                    this.setupEventListeners();
+                    this.startLocalDamageLoop(); // Apply damage locally every 100ms
+                    this.startDamageLoop(); // Sync with server every 60 seconds
+                    this.startHealthAnimation();
+                    this.listenToBossChanges();
+
+                    console.log('✅ Boss widget fully initialized with Firebase!');
+
+                } catch (error) {
+                    console.error('🔴 Firebase initialization error:', error);
+                    console.error('🔴 Error details:', error.code, error.message);
+                    console.warn('⚠️ Falling back to mock data');
+                    this.useMockData();
+                }
+            }
+
+            useMockData() {
+                // Mock data for testing without Firebase
+                this.bossState = {
+                    currentHealth: 10000,
+                    maxHealth: 10000,
+                    phase: 1
+                };
+                this.playerData = {
+                    xp: 0,
+                    totalXP: 0,
+                    dps: 1,
+                    upgrades: { damage: 0, attackspeed: 0, critchance: 0, critdamage: 0 },
+                    totalDamage: 0
+                };
+
+                // Initialize local boss health and total XP
+                this.localBossHealth = this.bossState.currentHealth;
+                this.lastLocalDamageTime = Date.now();
+                this.totalXP = 0;
+                this.xpGainedSinceLastSync = 0;
+
+                this.updateUI();
+                this.setupEventListeners();
+                this.startLocalDamageLoop(); // Apply damage locally every 100ms
+                this.startMockDamage(); // "Sync" with mock server every 60 seconds
+                this.startHealthAnimation();
+            }
+
+            async createPlayer() {
+                const createPlayerFunc = this.functions.httpsCallable('createPlayer');
+                console.log('🔄 Calling createPlayer function...');
+                console.log('   Current user:', this.auth.currentUser ? this.auth.currentUser.uid : 'null');
+                const result = await createPlayerFunc();
+                console.log('✅ createPlayer result:', result);
+                return result;
+            }
+
+            async loadData() {
+                const uid = this.auth.currentUser.uid;
+
+                // Load player data
+                const playerDoc = await this.db.collection('players').doc(uid).get();
+                this.playerData = playerDoc.data();
+
+                // Initialize totalXP if not present
+                if (!this.playerData.totalXP) {
+                    this.playerData.totalXP = 0;
+                }
+                this.totalXP = this.playerData.totalXP;
+                this.xpGainedSinceLastSync = 0;
+
+                // Load upgrades from subcollection
+                this.playerData.upgrades = {};
+                const upgradesSnapshot = await this.db.collection('players').doc(uid).collection('upgrades').get();
+                upgradesSnapshot.forEach(doc => {
+                    this.playerData.upgrades[doc.id] = doc.data().level || 0;
+                });
+
+                // Load boss state
+                const bossDoc = await this.db.collection('boss').doc('state').get();
+                this.bossState = bossDoc.data();
+
+                // Initialize local boss health from server
+                this.localBossHealth = this.bossState.currentHealth;
+
+                this.lastDamageTime = Date.now();
+                this.lastLocalDamageTime = Date.now();
+                this.updateUI();
+            }
+
+            listenToBossChanges() {
+                // Real-time listener for boss state changes (from other players)
+                this.db.collection('boss').doc('state').onSnapshot((doc) => {
+                    this.bossState = doc.data();
+                    // Update local health to match server (other players may have damaged it)
+                    this.localBossHealth = this.bossState.currentHealth;
+                    this.updateUI();
+                });
+            }
+
+            getAttackInterval() {
+                // Base attack interval is 2000ms (2 seconds)
+                let baseInterval = 2000;
+                const upgrades = this.playerData.upgrades || {};
+                const attackSpeedLevel = upgrades['attackspeed'] || 0;
+
+                // Each level reduces interval by 10% (multiplicative)
+                // Formula: baseInterval * (0.9 ^ attackSpeedLevel)
+                const interval = baseInterval * Math.pow(0.9, attackSpeedLevel);
+
+                return interval;
+            }
+
+            getBaseDamage() {
+                let baseDamage = this.playerData.dps || 1;
+                const upgrades = this.playerData.upgrades || {};
+                const damageLevel = upgrades['damage'] || 0;
+
+                // Add flat damage from damage upgrades
+                baseDamage += damageLevel * 2;
+
+                return baseDamage;
+            }
+
+            getCritChance() {
+                const upgrades = this.playerData.upgrades || {};
+                const critChanceLevel = upgrades['critchance'] || 0;
+
+                // 2% crit chance per level
+                return critChanceLevel * 2;
+            }
+
+            getCritMultiplier() {
+                const upgrades = this.playerData.upgrades || {};
+                const critDamageLevel = upgrades['critdamage'] || 0;
+
+                // Base 100% + 10% per level (so level 1 = 110%, level 2 = 120%, etc.)
+                return 1.0 + (critDamageLevel * 0.1);
+            }
+
+            calculateDPS() {
+                // Calculate average DPS including crit chance
+                const baseDamage = this.getBaseDamage();
+                const critChance = this.getCritChance() / 100; // Convert to decimal
+                const critMultiplier = this.getCritMultiplier();
+                const attackInterval = this.getAttackInterval();
+
+                // Average damage per hit = baseDamage × (1 + critMultiplier × critChance)
+                // This accounts for: non-crits do baseDamage, crits do baseDamage × (1 + critMultiplier)
+                const avgDamagePerHit = baseDamage * (1 + critMultiplier * critChance);
+
+                // DPS = average damage per hit / attack interval in seconds
+                const dps = avgDamagePerHit / (attackInterval / 1000);
+
+                return dps;
+            }
+
+            startLocalDamageLoop() {
+                // Apply damage locally for smooth visual feedback
+                setInterval(() => {
+                    const now = Date.now();
+
+                    // Check for client-side boss "death" (just for visual feedback)
+                    if (this.localBossHealth <= 0) {
+                        this.localBossHealth = 0;
+                    }
+
+                    // Play hit animation based on attack speed
+                    const attackInterval = this.getAttackInterval();
+                    if (now - this.lastHitAnimationTime >= attackInterval) {
+                        this.showHitAnimation();
+                        this.lastHitAnimationTime = now;
+                    }
+
+                    // Update UI with local health
+                    this.updateLocalUI();
+                }, 100); // Update local damage every 100ms for smooth animation
+            }
+
+            startDamageLoop() {
+                // Sync with server every 60 seconds
+                setInterval(async () => {
+                    const now = Date.now();
+                    const windowStart = this.lastDamageTime;
+                    const windowEnd = now;
+                    const dps = this.calculateDPS();
+                    const damage = dps * ((windowEnd - windowStart) / 1000);
+
+                    try {
+                        console.log('🔄 Syncing with server...');
+                        console.log('   Submitting damage:', Math.round(damage), '(DPS:', dps, ')');
+                        console.log('   Submitting XP gained:', this.xpGainedSinceLastSync);
+
+                        const submitDamageFunc = this.functions.httpsCallable('submitDamage');
+                        const result = await submitDamageFunc({
+                            damage,
+                            windowStart,
+                            windowEnd,
+                            totalXPGained: this.xpGainedSinceLastSync
+                        });
+
+                        console.log('✅ Server sync complete. Damage applied:', result.data.appliedDamage);
+
+                        // Reset tracking variables
+                        this.lastDamageTime = now;
+                        this.localDamageAccumulated = 0;
+                        this.xpGainedSinceLastSync = 0;
+
+                        // Fetch fresh boss state (includes damage from other players)
+                        const bossDoc = await this.db.collection('boss').doc('state').get();
+                        this.bossState = bossDoc.data();
+                        this.localBossHealth = this.bossState.currentHealth;
+
+                        // Refresh player data to get updated totalXP from server
+                        const playerDoc = await this.db.collection('players').doc(this.auth.currentUser.uid).get();
+                        const serverPlayerData = playerDoc.data();
+                        this.playerData.totalXP = serverPlayerData.totalXP;
+                        this.totalXP = serverPlayerData.totalXP;
+
+                        // Update XP system display
+                        if (window.xpSystem) {
+                            window.xpSystem.syncFromBossWidget();
+                        }
+
+                        console.log('📊 Boss health synced:', this.bossState.currentHealth, '/', this.bossState.maxHealth);
+                        console.log('📊 Total XP synced:', this.totalXP);
+
+                        this.updateUI();
+                        // Don't play hit animation here - it's already playing from local damage loop
+                    } catch (error) {
+                        console.error('❌ Error syncing with server:', error);
+                    }
+                }, 60000); // Sync with server every 60 seconds (1 minute)
+            }
+
+            startMockDamage() {
+                // Simulate server sync every 60 seconds in mock mode
+                setInterval(() => {
+                    const dps = this.calculateDPS();
+                    const damage = dps * 60; // 60 seconds worth of damage
+
+                    console.log('🔄 Mock server sync...');
+                    console.log('   Submitting damage:', Math.round(damage), '(DPS:', dps, ')');
+                    console.log('   XP gained since last sync:', this.xpGainedSinceLastSync);
+
+                    // Update mock "server" boss state
+                    this.bossState.currentHealth -= damage;
+                    if (this.bossState.currentHealth <= 0) {
+                        // Boss defeated
+                        this.bossState.phase++;
+                        this.bossState.maxHealth *= 1.5;
+                        this.bossState.currentHealth = this.bossState.maxHealth;
+                        console.log('💀 Boss defeated! New phase:', this.bossState.phase);
+                    }
+
+                    // Sync local health with "server" health
+                    this.localBossHealth = this.bossState.currentHealth;
+
+                    // Reset XP tracking
+                    this.xpGainedSinceLastSync = 0;
+
+                    console.log('✅ Mock sync complete. Boss health:', this.bossState.currentHealth, '/', this.bossState.maxHealth);
+                    console.log('📊 Total XP:', this.totalXP);
+
+                    this.updateUI();
+                    // Don't play hit animation here - it's already playing from local damage loop
+                }, 60000); // Submit damage every 60 seconds (1 minute)
+            }
+
+            updateLocalUI() {
+                // Update health bar based on LOCAL boss health for immediate feedback
+                const healthPercent = (this.localBossHealth / this.bossState.maxHealth) * 100;
+                this.targetHealth = Math.max(0, healthPercent);
+            }
+
+            async updateUI() {
+                // Update phase
+                const phase = this.bossState.phase || 1;
+                this.currentPhase = phase;
+                this.phaseText.textContent = `Phase ${phase}`;
+
+                // Load and display boss name
+                await this.loadBossData(phase);
+
+                // Update boss images
+                this.updateBossImages(phase);
+
+                // Update health (smoothly animated via startHealthAnimation)
+                const healthPercent = (this.localBossHealth / this.bossState.maxHealth) * 100;
+                this.targetHealth = Math.max(0, healthPercent);
+            }
+
+            async loadBossData(phase) {
+                // Check if we already have the data cached
+                if (this.bossData[phase]) {
+                    this.bossName.textContent = this.bossData[phase].name;
+                    return;
+                }
+
+                // Load boss data from JSON file
+                try {
+                    const response = await fetch(`images/boss/phase_${phase}/boss_data.json`);
+                    const data = await response.json();
+                    this.bossData[phase] = data;
+                    this.bossName.textContent = data.name;
+                } catch (error) {
+                    console.error(`Failed to load boss data for phase ${phase}:`, error);
+                    this.bossName.textContent = 'Unknown Boss';
+                }
+            }
+
+            updateBossImages(phase) {
+                // Use actual images with new folder structure
+                this.bossBody.style.backgroundImage = `url('images/boss/phase_${phase}/body.png')`;
+                this.bossHead.style.backgroundImage = `url('images/boss/phase_${phase}/head.png')`;
+
+                // Store current phase for hit animation
+                this.currentPhase = phase;
+            }
+
+            startHealthAnimation() {
+                const animate = () => {
+                    // Smoothly interpolate current display health towards target health
+                    const diff = this.targetHealth - this.currentDisplayHealth;
+                    if (Math.abs(diff) > 0.1) {
+                        this.currentDisplayHealth += diff * 0.1;
+                    } else {
+                        this.currentDisplayHealth = this.targetHealth;
+                    }
+
+                    // Update health bar
+                    this.healthFill.style.width = `${this.currentDisplayHealth}%`;
+                    this.healthText.textContent = `${Math.round(this.currentDisplayHealth)}%`;
+
+                    // Update head position to follow body center
+                    this.updateHeadPosition();
+
+                    this.animationFrame = requestAnimationFrame(animate);
+                };
+
+                animate();
+            }
+
+            updateHeadPosition() {
+                // Get the body's bounding box to find its current center point
+                const bodyRect = this.bossBody.getBoundingClientRect();
+                const containerRect = this.bossBody.parentElement.getBoundingClientRect();
+
+                // Calculate center point of body relative to container
+                const bodyCenterX = (bodyRect.left + bodyRect.width / 2) - containerRect.left;
+                const bodyCenterY = (bodyRect.top + bodyRect.height / 2) - containerRect.top;
+
+                // Position head at body's center point
+                this.bossHead.style.left = `${bodyCenterX}px`;
+                this.bossHead.style.top = `${bodyCenterY}px`;
+                this.bossHead.style.transform = 'translate(-50%, -50%)';
+            }
+
+            showHitAnimation() {
+                // Calculate damage for this hit
+                const baseDamage = this.getBaseDamage();
+                const critChance = this.getCritChance();
+                const critMultiplier = this.getCritMultiplier();
+
+                // Roll for crit
+                const isCrit = Math.random() * 100 < critChance;
+                // Crit damage = base + (base × critMultiplier)
+                const damage = isCrit ? baseDamage * (1 + critMultiplier) : baseDamage;
+
+                // Apply damage to boss
+                this.localBossHealth -= damage;
+                this.localDamageAccumulated += damage;
+                this.lastLocalDamageTime = Date.now();
+
+                // Grant XP: 20% of damage dealt, floored, minimum 1
+                const xpGain = Math.max(1, Math.floor(damage * 0.2));
+
+                // Track XP locally (will be synced to server later)
+                this.totalXP += xpGain;
+                this.xpGainedSinceLastSync += xpGain;
+                if (!this.playerData.totalXP) this.playerData.totalXP = 0;
+                this.playerData.totalXP += xpGain;
+
+                // Update XP system display
+                if (window.xpSystem) {
+                    window.xpSystem.syncFromBossWidget();
+                }
+
+                this.bossHead.classList.add('hit');
+
+                // Switch to hit image
+                this.bossHead.style.backgroundImage = `url('images/boss/phase_${this.currentPhase}/head_hit.png')`;
+
+                // Create swipe VFX (with crit effect if critical hit)
+                this.createSwipeVFX(isCrit);
+
+                // Show XP gain text
+                this.showXPGainText(xpGain);
+
+                setTimeout(() => {
+                    this.bossHead.classList.remove('hit');
+                    // Switch back to normal head image
+                    this.bossHead.style.backgroundImage = `url('images/boss/phase_${this.currentPhase}/head.png')`;
+                }, 300);
+            }
+
+            showXPGainText(xpAmount) {
+                // Create XP text element
+                const xpText = document.createElement('div');
+                xpText.className = 'boss-xp-text';
+                xpText.textContent = `+${xpAmount} XP`;
+
+                // Append to boss body
+                this.bossBody.appendChild(xpText);
+
+                // Remove after animation completes
+                setTimeout(() => {
+                    xpText.remove();
+                }, 1000);
+            }
+
+            createSwipeVFX(isCrit = false) {
+                // Create normal swipe effect element
+                const swipe = document.createElement('div');
+                swipe.className = 'boss-swipe-vfx';
+
+                // Apply random rotation between -60 and 60 degrees
+                const randomRotation = Math.random() * 120 - 60;
+                swipe.style.transform = `translate(-50%, -50%) rotate(${randomRotation}deg)`;
+
+                this.bossHead.appendChild(swipe);
+
+                // Remove after animation completes
+                setTimeout(() => {
+                    swipe.remove();
+                }, 200);
+
+                // If critical hit, add a second red crit swipe with 0.1s delay
+                if (isCrit) {
+                    setTimeout(() => {
+                        const critSwipe = document.createElement('div');
+                        critSwipe.className = 'boss-swipe-vfx-crit';
+
+                        // Apply different random rotation for variety
+                        const critRotation = Math.random() * 120 - 60;
+                        critSwipe.style.transform = `translate(-50%, -50%) rotate(${critRotation}deg)`;
+
+                        this.bossHead.appendChild(critSwipe);
+
+                        // Remove after animation completes
+                        setTimeout(() => {
+                            critSwipe.remove();
+                        }, 200);
+
+                        // Show CRIT text
+                        const critText = document.createElement('div');
+                        critText.className = 'boss-crit-text';
+                        critText.textContent = 'CRIT!';
+                        this.bossHead.appendChild(critText);
+
+                        // Remove crit text after animation completes
+                        setTimeout(() => {
+                            critText.remove();
+                        }, 500);
+                    }, 100);
+                }
+            }
+
+            setupEventListeners() {
+                // Click widget to toggle upgrade menu
+                this.widget.addEventListener('click', (e) => {
+                    if (!e.target.closest('.upgrade-button') && !e.target.closest('.upgrade-menu')) {
+                        this.toggleUpgradeMenu();
+                    }
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.boss-widget') && this.isMenuOpen) {
+                        this.closeUpgradeMenu();
+                    }
+                });
+
+                // Track cursor position for tooltip
+                document.addEventListener('mousemove', (e) => {
+                    if (this.trackingCursor && this.upgradeTooltip.classList.contains('show')) {
+                        // Position tooltip near cursor with offset
+                        const offsetX = 20;
+                        const offsetY = 20;
+                        this.upgradeTooltip.style.left = `${e.clientX + offsetX}px`;
+                        this.upgradeTooltip.style.top = `${e.clientY + offsetY}px`;
+                    }
+                });
+
+                // Upgrade button interactions
+                const upgradeButtons = document.querySelectorAll('.upgrade-button');
+                upgradeButtons.forEach(button => {
+                    const upgradeType = button.dataset.upgrade;
+
+                    button.addEventListener('mouseenter', () => {
+                        this.showUpgradeTooltip(upgradeType, button);
+                    });
+
+                    button.addEventListener('mouseleave', () => {
+                        this.hideUpgradeTooltip();
+                    });
+
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.purchaseUpgrade(upgradeType);
+                    });
+                });
+            }
+
+            toggleUpgradeMenu() {
+                this.isMenuOpen = !this.isMenuOpen;
+                if (this.isMenuOpen) {
+                    this.upgradeMenu.classList.add('show');
+                } else {
+                    this.upgradeMenu.classList.remove('show');
+                    this.hideUpgradeTooltip();
+                }
+            }
+
+            closeUpgradeMenu() {
+                this.isMenuOpen = false;
+                this.upgradeMenu.classList.remove('show');
+                this.hideUpgradeTooltip();
+            }
+
+            showUpgradeTooltip(upgradeType, button) {
+                if (!this.isMenuOpen) return;
+
+                const upgrade = this.upgrades[upgradeType];
+                const currentLevel = (this.playerData.upgrades && this.playerData.upgrades[upgradeType]) || 0;
+                const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, currentLevel));
+                const currentEffect = currentLevel > 0 ? upgrade.getEffect(currentLevel) : '0';
+                const nextEffect = upgrade.getEffect(currentLevel + 1);
+                const currentTotalXP = this.playerData.totalXP || 0;
+
+                document.getElementById('tooltipName').textContent = upgrade.name;
+                document.getElementById('tooltipLevel').textContent = `Level: ${currentLevel}`;
+                document.getElementById('tooltipCost').textContent = `Cost: ${cost} Total XP (Have: ${currentTotalXP})`;
+                document.getElementById('tooltipEffect').innerHTML = `<span class="stat-increase">${currentEffect} >> ${nextEffect}</span>`;
+
+                this.upgradeTooltip.classList.add('show');
+
+                // Start tracking cursor position
+                this.trackingCursor = true;
+            }
+
+            hideUpgradeTooltip() {
+                this.upgradeTooltip.classList.remove('show');
+                this.trackingCursor = false;
+            }
+
+            async addAchievementXP(xpAmount) {
+                // Update locally first for immediate feedback
+                this.totalXP += xpAmount;
+                if (!this.playerData.totalXP) this.playerData.totalXP = 0;
+                this.playerData.totalXP += xpAmount;
+
+                // Notify XP system to update display
+                if (window.xpSystem) {
+                    window.xpSystem.syncFromBossWidget();
+                }
+
+                // Sync to Firebase via Cloud Function
+                if (this.auth && this.functions) {
+                    try {
+                        const grantXPFunc = this.functions.httpsCallable('grantAchievementXP');
+                        const result = await grantXPFunc({ xpAmount });
+                        console.log('✅ Achievement XP granted:', xpAmount, 'New total:', result.data.newTotalXP);
+
+                        // Update with server value to stay in sync
+                        this.playerData.totalXP = result.data.newTotalXP;
+                        this.totalXP = result.data.newTotalXP;
+                    } catch (error) {
+                        console.error('❌ Error granting achievement XP:', error);
+                    }
+                } else {
+                    // Mock mode - just keep local value
+                    console.log('✅ Achievement XP granted (mock mode):', xpAmount);
+                }
+            }
+
+            async purchaseUpgrade(upgradeType) {
+                const upgrade = this.upgrades[upgradeType];
+                const currentLevel = (this.playerData.upgrades && this.playerData.upgrades[upgradeType]) || 0;
+                const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, currentLevel));
+
+                // Call Cloud Function to purchase upgrade
+                if (this.auth && this.functions) {
+                    try {
+                        // First, sync any unsynced XP to the server
+                        if (this.xpGainedSinceLastSync > 0) {
+                            console.log('🔄 Syncing XP before purchase...', this.xpGainedSinceLastSync);
+                            const submitDamageFunc = this.functions.httpsCallable('submitDamage');
+                            const now = Date.now();
+                            const windowStart = this.lastDamageTime;
+                            const windowEnd = now;
+                            const dps = this.calculateDPS();
+                            const damage = dps * ((windowEnd - windowStart) / 1000);
+
+                            await submitDamageFunc({
+                                damage,
+                                windowStart,
+                                windowEnd,
+                                totalXPGained: this.xpGainedSinceLastSync
+                            });
+
+                            // Reset tracking
+                            this.lastDamageTime = now;
+                            this.localDamageAccumulated = 0;
+                            this.xpGainedSinceLastSync = 0;
+
+                            // Refresh player XP from server
+                            const playerDoc = await this.db.collection('players').doc(this.auth.currentUser.uid).get();
+                            const serverPlayerData = playerDoc.data();
+                            this.playerData.totalXP = serverPlayerData.totalXP;
+                            this.totalXP = serverPlayerData.totalXP;
+
+                            console.log('✅ XP synced. Server XP:', this.totalXP);
+                        }
+
+                        // Check if player has enough total XP (using server value)
+                        const currentTotalXP = this.playerData.totalXP || 0;
+                        if (currentTotalXP < cost) {
+                            alert(`Not enough Total XP! Need ${cost}, have ${currentTotalXP}`);
+                            return;
+                        }
+
+                        const purchaseUpgradeFunc = this.functions.httpsCallable('purchaseUpgrade');
+                        await purchaseUpgradeFunc({ upgradeType, cost });
+
+                        // Update locally after successful purchase
+                        if (!this.playerData.upgrades) this.playerData.upgrades = {};
+                        this.playerData.upgrades[upgradeType] = currentLevel + 1;
+                        this.playerData.totalXP -= cost;
+                        this.totalXP = this.playerData.totalXP;
+
+                        // Update XP system display
+                        if (window.xpSystem) {
+                            window.xpSystem.syncFromBossWidget();
+                        }
+
+                        console.log('✅ Upgrade purchased:', upgradeType, 'Level:', currentLevel + 1);
+                    } catch (error) {
+                        console.error('❌ Error purchasing upgrade:', error);
+                        alert('Failed to purchase upgrade: ' + error.message);
+                        return;
+                    }
+                } else {
+                    // Mock mode - update locally only
+                    if (!this.playerData.upgrades) this.playerData.upgrades = {};
+                    this.playerData.upgrades[upgradeType] = currentLevel + 1;
+                    this.playerData.totalXP -= cost;
+                    this.totalXP = this.playerData.totalXP;
+
+                    // Update XP system display
+                    if (window.xpSystem) {
+                        window.xpSystem.syncFromBossWidget();
+                    }
+                }
+
+                // Refresh tooltip
+                const button = document.querySelector(`[data-upgrade="${upgradeType}"]`);
+                this.showUpgradeTooltip(upgradeType, button);
+            }
+        }
+
+        // Initialize Boss Widget
+        // Note: Requires Firebase SDK to be loaded via CDN in HTML <head>
+        window.bossWidget = new BossWidget();
     </script>
 </body>
 </html>

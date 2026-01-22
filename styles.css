@@ -1494,6 +1494,433 @@ body.light-mode .scrollbar-track {
 }
 
 /* ========================= */
+/*       BOSS WIDGET         */
+/* ========================= */
+
+.boss-widget {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    width: 220px;
+    z-index: 999;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.boss-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 12px;
+}
+
+.boss-body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    animation: bossIdle 2s ease-in-out infinite;
+    overflow: visible;
+}
+
+.boss-head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.boss-head.hit {
+    animation: bossHeadHit 0.3s ease-out !important;
+}
+
+@keyframes bossIdle {
+    0%, 100% {
+        transform: scaleY(1);
+        transform-origin: bottom center;
+    }
+    50% {
+        transform: scaleY(1.05);
+        transform-origin: bottom center;
+    }
+}
+
+@keyframes bossHeadHit {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, calc(-50% - 10px)) scale(0.95);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.boss-swipe-vfx {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 130%;
+    height: 10px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 176, 20, 0.4) 10%,
+        rgba(255, 255, 255, 0.9) 40%,
+        rgba(255, 176, 20, 0.9) 50%,
+        rgba(255, 255, 255, 0.9) 60%,
+        rgba(255, 176, 20, 0.4) 90%,
+        transparent 100%);
+    animation: swipeFade 0.2s ease-in-out forwards;
+    pointer-events: none;
+    box-shadow: 0 0 20px rgba(255, 176, 20, 0.8);
+    border-radius: 50%;
+}
+
+@keyframes swipeFade {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.boss-swipe-vfx-crit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 130%;
+    height: 10px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(220, 38, 38, 0.4) 10%,
+        rgba(255, 255, 255, 0.9) 40%,
+        rgba(239, 68, 68, 0.9) 50%,
+        rgba(255, 255, 255, 0.9) 60%,
+        rgba(220, 38, 38, 0.4) 90%,
+        transparent 100%);
+    animation: swipeFade 0.2s ease-in-out forwards;
+    pointer-events: none;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+    border-radius: 50%;
+}
+
+.boss-xp-text {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-family: 'Dosis-Bold';
+    font-size: 18px;
+    color: #FFB014;
+    font-weight: bold;
+    text-shadow:
+        2px 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(255, 176, 20, 0.5);
+    pointer-events: none;
+    animation: xpFloatUp 1s ease-out forwards;
+    z-index: 10;
+}
+
+@keyframes xpFloatUp {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.8);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1);
+    }
+}
+
+.boss-crit-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Dosis-Bold';
+    font-size: 36px;
+    color: #ef4444;
+    font-weight: bold;
+    text-shadow:
+        2px 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(239, 68, 68, 0.8),
+        0 0 40px rgba(239, 68, 68, 0.4);
+    pointer-events: none;
+    animation: critPop 0.5s ease-out forwards;
+    z-index: 15;
+}
+
+@keyframes critPop {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    30% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.3);
+    }
+    60% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
+.boss-health-bar-container {
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.95) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+    backdrop-filter: blur(10px);
+    width: 220px;
+}
+
+body.light-mode .boss-health-bar-container {
+    background: linear-gradient(180deg, rgba(245, 245, 245, 0.95) 0%, rgba(255, 255, 255, 0.95) 100%);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.boss-health-bar {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #3a3a3a;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+body.light-mode .boss-health-bar {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.boss-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+    width: 100%;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.6);
+}
+
+.boss-health-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Dosis-Bold';
+    font-size: 12px;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+}
+
+body.light-mode .boss-health-text {
+    color: #1a1a1a;
+}
+
+.boss-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Dosis-Bold';
+    margin-top: 4px;
+}
+
+.boss-name {
+    font-size: 14px;
+    color: #FFB014;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 176, 20, 0.5);
+}
+
+body.light-mode .boss-name {
+    color: #FFA000;
+    text-shadow: 0 0 10px rgba(255, 160, 0, 0.3);
+}
+
+.boss-phase {
+    font-size: 12px;
+    color: #999;
+}
+
+body.light-mode .boss-phase {
+    color: #666;
+}
+
+.upgrade-hover-text {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Dosis-Bold';
+    font-size: 14px;
+    color: #FFB014;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.boss-widget:hover .upgrade-hover-text {
+    opacity: 1;
+}
+
+.upgrade-menu {
+    position: absolute;
+    top: 50px;
+    left: 220px;
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.upgrade-menu.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.upgrade-button {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(255, 176, 20, 0.9) 0%, rgba(255, 192, 77, 0.9) 100%);
+    border: 3px solid #FFB014;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(255, 176, 20, 0.4);
+}
+
+.upgrade-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.upgrade-button:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 20px rgba(255, 176, 20, 0.6);
+}
+
+.upgrade-button:active {
+    transform: scale(0.95);
+}
+
+.upgrade-damage {
+    top: 0;
+    left: 0;
+}
+
+.upgrade-speed {
+    top: 70px;
+    left: 0;
+}
+
+.upgrade-auto {
+    top: 0;
+    left: 70px;
+}
+
+.upgrade-crit {
+    top: 70px;
+    left: 70px;
+}
+
+.upgrade-tooltip {
+    position: fixed;
+    width: 200px;
+    background: linear-gradient(135deg, rgba(30, 30, 30, 0.98) 0%, rgba(40, 40, 40, 0.98) 100%);
+    border: 2px solid #FFB014;
+    border-radius: 12px;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+}
+
+body.light-mode .upgrade-tooltip {
+    background: linear-gradient(135deg, rgba(245, 245, 245, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+.upgrade-tooltip.show {
+    opacity: 1;
+}
+
+.tooltip-name {
+    font-family: 'Dosis-Bold';
+    font-size: 16px;
+    color: #FFB014;
+    margin-bottom: 8px;
+}
+
+.tooltip-level {
+    font-size: 14px;
+    color: #b0b0b0;
+    margin-bottom: 4px;
+}
+
+body.light-mode .tooltip-level {
+    color: #494949;
+}
+
+.tooltip-cost {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 8px;
+}
+
+body.light-mode .tooltip-cost {
+    color: #666;
+}
+
+.tooltip-effect {
+    font-size: 15px;
+    font-family: 'Dosis-Bold';
+    color: #e0e0e0;
+}
+
+body.light-mode .tooltip-effect {
+    color: #494949;
+}
+
+.stat-increase {
+    color: #4ade80;
+}
+
+/* ========================= */
 /*        MOBILE STYLES      */
 /* ========================= */
 
