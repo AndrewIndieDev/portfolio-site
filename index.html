@@ -2123,7 +2123,7 @@
                 const upgrade = this.upgrades[upgradeType];
                 const currentLevel = (this.playerData.upgrades && this.playerData.upgrades[upgradeType]) || 0;
                 const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, currentLevel));
-                const currentEffect = currentLevel > 0 ? upgrade.getEffect(currentLevel) : '0';
+                const currentEffect = upgrade.getEffect(currentLevel);
                 const nextEffect = upgrade.getEffect(currentLevel + 1);
                 const currentTotalXP = this.playerData.totalXP || 0;
 
