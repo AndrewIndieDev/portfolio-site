@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Players can only READ their own data, all writes via Cloud Functions
+    match /players/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false; // Only Cloud Functions can modify player data
+
+      // Upgrades subcollection
+      match /upgrades/{upgradeId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if false; // Only Cloud Functions can modify upgrades
+      }
+    }
+
+    // Boss state: anyone authenticated can READ, only Cloud Functions can WRITE
+    match /boss/state {
+      allow read: if request.auth != null;
+      allow write: if false; // Only Cloud Functions can modify boss health
+    }
+  }
+}
