@@ -1926,6 +1926,15 @@ body.light-mode .tooltip-effect {
 
 /* Tablets and small laptops */
 @media (max-width: 900px) {
+    /* Hide boss widget and XP bar on tablets and mobile */
+    .boss-widget {
+        display: none !important;
+    }
+
+    .xp-bar-container {
+        display: none !important;
+    }
+
     .dpad {
         bottom: 20px;
         left: 20px;
@@ -2068,6 +2077,15 @@ body.light-mode .tooltip-effect {
 
 /* Phones */
 @media (max-width: 600px) {
+    /* Hide boss widget and XP bar on phones */
+    .boss-widget {
+        display: none !important;
+    }
+
+    .xp-bar-container {
+        display: none !important;
+    }
+
     .dpad {
         bottom: 70px;
         left: 10px;

@@ -1016,8 +1016,18 @@
             }
         }
 
-        // Initialize XP system
-        window.xpSystem = new XPSystem();
+        // Mobile detection utility
+        function isMobileDevice() {
+            // Check for mobile device based on screen width and user agent
+            const mobileWidth = window.innerWidth <= 768;
+            const mobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            return mobileWidth || mobileUserAgent;
+        }
+
+        // Initialize XP system (desktop only - requires boss widget)
+        if (!isMobileDevice()) {
+            window.xpSystem = new XPSystem();
+        }
 
         // Minimap System
         class MinimapSystem {
@@ -2248,9 +2258,13 @@
             }
         }
 
-        // Initialize Boss Widget
+        // Initialize Boss Widget (desktop only)
         // Note: Requires Firebase SDK to be loaded via CDN in HTML <head>
-        window.bossWidget = new BossWidget();
+        if (!isMobileDevice()) {
+            window.bossWidget = new BossWidget();
+        } else {
+            console.log('📱 Mobile device detected - Boss widget and XP bar disabled');
+        }
     </script>
 </body>
 </html>
