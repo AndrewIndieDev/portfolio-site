@@ -1,4 +1,5 @@
 const { https } = require("firebase-functions/v2");
+const { scheduler } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -63,6 +64,7 @@ exports.submitDamage = https.onCall(
 
     const appliedDamage = Math.min(damage, maxAllowedDamage);
 
+    let bossDied = false;
     const bossRef = db.collection("boss").doc("state");
     await db.runTransaction(async (tx) => {
       const bossDoc = await tx.get(bossRef);
@@ -76,6 +78,7 @@ exports.submitDamage = https.onCall(
         const newPhase = boss.phase + 1;
         const newMaxHealth = calculateBossHP(newPhase);
         newHealth = newMaxHealth;
+        bossDied = true;
 
         tx.update(bossRef, {
           currentHealth: newHealth,
@@ -100,6 +103,11 @@ exports.submitDamage = https.onCall(
         lastSeen: Date.now()
       });
     });
+
+    // Update online count when boss dies (outside transaction)
+    if (bossDied) {
+      await updateOnlinePlayerCount();
+    }
 
     return { success: true, appliedDamage };
   }
@@ -176,5 +184,38 @@ exports.grantAchievementXP = https.onCall(
     });
 
     return { success: true, newTotalXP: (await playerRef.get()).data().totalXP };
+  }
+);
+
+// Helper function to update online player count
+async function updateOnlinePlayerCount() {
+  const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+
+  // Query players who have been seen in the last 5 minutes
+  const onlinePlayersSnapshot = await db.collection("players")
+    .where("lastSeen", ">=", fiveMinutesAgo)
+    .get();
+
+  const onlineCount = onlinePlayersSnapshot.size;
+
+  // Update the stats/online document
+  await db.collection("stats").doc("online").set({
+    count: onlineCount,
+    lastUpdated: Date.now()
+  });
+
+  console.log(`Online count updated: ${onlineCount} players`);
+  return onlineCount;
+}
+
+// Scheduled function to update online player count every 5 minutes
+exports.updateOnlineCount = scheduler.onSchedule(
+  {
+    schedule: "every 5 minutes",
+    region: "australia-southeast1",
+    timeZone: "Australia/Sydney"
+  },
+  async (event) => {
+    await updateOnlinePlayerCount();
   }
 );

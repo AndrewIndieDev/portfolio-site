@@ -122,6 +122,7 @@
 
     <!-- Boss Widget -->
     <div class="boss-widget" id="bossWidget">
+        <div class="boss-online-counter" id="bossOnlineCounter">Online: 0</div>
         <div class="boss-container">
             <div class="boss-body" id="bossBody"></div>
             <div class="boss-head" id="bossHead"></div>
@@ -1481,6 +1482,7 @@
                 this.phaseText = document.getElementById('bossPhase');
                 this.upgradeMenu = document.getElementById('upgradeMenu');
                 this.upgradeTooltip = document.getElementById('upgradeTooltip');
+                this.onlineCounter = document.getElementById('bossOnlineCounter');
 
                 // State
                 this.currentPhase = 1;
@@ -1584,6 +1586,7 @@
                     this.startDamageLoop(); // Sync with server every 60 seconds
                     this.startHealthAnimation();
                     this.listenToBossChanges();
+                    this.listenToOnlineCount();
 
                 } catch (error) {
                     this.useMockData();
@@ -1689,6 +1692,17 @@
                     // Update local health to match server (other players may have damaged it)
                     this.localBossHealth = this.bossState.currentHealth;
                     this.updateUI();
+                });
+            }
+
+            listenToOnlineCount() {
+                // Real-time listener for online player count
+                this.db.collection('stats').doc('online').onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const count = data.count || 0;
+                        this.onlineCounter.textContent = `Online: ${count}`;
+                    }
                 });
             }
 
