@@ -1583,7 +1583,7 @@
 
                     this.setupEventListeners();
                     this.startLocalDamageLoop(); // Apply damage locally every 100ms
-                    this.startDamageLoop(); // Sync with server every 60 seconds
+                    this.startDamageLoop(); // Sync with server every 5 minutes
                     this.startHealthAnimation();
                     this.listenToBossChanges();
                     this.listenToOnlineCount();
@@ -1648,7 +1648,7 @@
                 this.updateUI();
                 this.setupEventListeners();
                 this.startLocalDamageLoop(); // Apply damage locally every 100ms
-                this.startMockDamage(); // "Sync" with mock server every 60 seconds
+                this.startMockDamage(); // "Sync" with mock server every 5 minutes
                 this.startHealthAnimation();
             }
 
@@ -1800,7 +1800,7 @@
             }
 
             startDamageLoop() {
-                // Sync with server every 60 seconds
+                // Sync with server every 5 minutes
                 setInterval(async () => {
                     const now = Date.now();
                     const windowStart = this.lastDamageTime;
@@ -1843,14 +1843,14 @@
                     } catch (error) {
                         // Silent error handling
                     }
-                }, 60000); // Sync with server every 60 seconds (1 minute)
+                }, 300000); // Sync with server every 5 minutes
             }
 
             startMockDamage() {
-                // Simulate server sync every 60 seconds in mock mode
+                // Simulate server sync every 5 minutes in mock mode
                 setInterval(() => {
                     const dps = this.calculateDPS();
-                    const damage = dps * 60; // 60 seconds worth of damage
+                    const damage = dps * 300; // 5 minutes worth of damage (300 seconds)
 
                     // Update mock "server" boss state
                     this.bossState.currentHealth -= damage;
@@ -1869,7 +1869,7 @@
 
                     this.updateUI();
                     // Don't play hit animation here - it's already playing from local damage loop
-                }, 60000); // Submit damage every 60 seconds (1 minute)
+                }, 300000); // Submit damage every 5 minutes
             }
 
             updateLocalUI() {
