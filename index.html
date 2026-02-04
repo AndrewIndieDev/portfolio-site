@@ -464,11 +464,142 @@
             }
         };
 
+        // Notification Toast System for general messages (errors, warnings, info)
+        class NotificationToast {
+            constructor() {
+                this.toastQueue = [];
+                this.isShowingToast = false;
+            }
+
+            show(message, type = 'info') {
+                this.toastQueue.push({ message, type });
+                if (!this.isShowingToast) {
+                    this.processQueue();
+                }
+            }
+
+            error(message) {
+                this.show(message, 'error');
+            }
+
+            warning(message) {
+                this.show(message, 'warning');
+            }
+
+            success(message) {
+                this.show(message, 'success');
+            }
+
+            info(message) {
+                this.show(message, 'info');
+            }
+
+            achievement(achievement) {
+                this.toastQueue.push({ achievement, type: 'achievement' });
+                if (!this.isShowingToast) {
+                    this.processQueue();
+                }
+            }
+
+            processQueue() {
+                if (this.toastQueue.length === 0) {
+                    this.isShowingToast = false;
+                    return;
+                }
+
+                this.isShowingToast = true;
+                const item = this.toastQueue.shift();
+
+                // Handle achievement toast differently
+                if (item.achievement) {
+                    this.showAchievementToast(item.achievement);
+                } else {
+                    this.showRegularToast(item.message, item.type);
+                }
+            }
+
+            showAchievementToast(achievement) {
+                const toast = document.createElement('div');
+                toast.className = 'notification-toast notification-achievement';
+                toast.innerHTML = `
+                    <img class="notification-achievement-icon" src="${achievement.icon}" alt="${achievement.title}" onerror="this.style.display='none'">
+                    <div class="notification-content">
+                        <div class="notification-title">Achievement Unlocked! +${achievement.xp} XP</div>
+                        <div class="notification-message"><strong>${achievement.title}</strong> - ${achievement.description}</div>
+                    </div>
+                `;
+
+                document.body.appendChild(toast);
+
+                // Show animation
+                setTimeout(() => toast.classList.add('show'), 100);
+
+                // Hide and remove after 4 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                        this.processQueue();
+                    }, 500);
+                }, 4000);
+            }
+
+            showRegularToast(message, type) {
+                // Add icon based on type
+                let icon = '';
+                let title = '';
+                switch(type) {
+                    case 'error':
+                        icon = '❌';
+                        title = 'Error';
+                        break;
+                    case 'warning':
+                        icon = '⚠️';
+                        title = 'Warning';
+                        break;
+                    case 'success':
+                        icon = '✓';
+                        title = 'Success';
+                        break;
+                    case 'info':
+                    default:
+                        icon = 'ℹ️';
+                        title = 'Info';
+                        break;
+                }
+
+                const toast = document.createElement('div');
+                toast.className = `notification-toast notification-${type}`;
+                toast.innerHTML = `
+                    <div class="notification-icon">${icon}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                `;
+
+                document.body.appendChild(toast);
+
+                // Show animation
+                setTimeout(() => toast.classList.add('show'), 100);
+
+                // Hide and remove after 3.5 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                        this.processQueue();
+                    }, 500);
+                }, 3500);
+            }
+        }
+
+        // Initialize notification toast system
+        const notificationToast = new NotificationToast();
+
         class AchievementManager {
             constructor() {
                 this.unlockedAchievements = this.loadProgress();
-                this.toastQueue = [];
-                this.isShowingToast = false;
                 this.projectsViewed = new Set();
                 this.projectsHovered = new Set();
                 this.startTime = Date.now();
@@ -510,7 +641,7 @@
                 this.unlockedAchievements.push(achievementId);
                 this.saveProgress();
                 const achievement = ACHIEVEMENTS[achievementId];
-                this.showToast(achievement);
+                notificationToast.achievement(achievement);
                 this.updateTrophyCount();
 
                 // Grant XP to boss widget (syncs to Firebase)
@@ -522,48 +653,6 @@
                 if (this.unlockedAchievements.length === Object.keys(ACHIEVEMENTS).length - 1) {
                     setTimeout(() => this.unlock('unlock_all'), 500);
                 }
-            }
-
-            showToast(achievement) {
-                this.toastQueue.push(achievement);
-                if (!this.isShowingToast) {
-                    this.processToastQueue();
-                }
-            }
-
-            processToastQueue() {
-                if (this.toastQueue.length === 0) {
-                    this.isShowingToast = false;
-                    return;
-                }
-
-                this.isShowingToast = true;
-                const achievement = this.toastQueue.shift();
-
-                // Create toast element
-                const toast = document.createElement('div');
-                toast.className = 'achievement-toast';
-                toast.innerHTML = `
-                    <img class="achievement-icon" src="${achievement.icon}" alt="${achievement.title}" onerror="this.style.display='none'">
-                    <div class="achievement-content">
-                        <div class="achievement-title">Achievement Unlocked! +${achievement.xp} XP</div>
-                        <div class="achievement-description"><strong>${achievement.title}</strong> - ${achievement.description}</div>
-                    </div>
-                `;
-
-                document.body.appendChild(toast);
-
-                // Show animation
-                setTimeout(() => toast.classList.add('show'), 100);
-
-                // Hide and remove after 4 seconds
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        document.body.removeChild(toast);
-                        this.processToastQueue();
-                    }, 500);
-                }, 4000);
             }
 
             updateTrophyCount() {
@@ -815,7 +904,7 @@
                     icon: 'images/achievements/placeholder.svg',
                     xp: 25
                 };
-                achievementManager.showToast(testAchievement);
+                notificationToast.achievement(testAchievement);
                 this.addMessage('Test toast notification triggered.', 'success');
             }
 
@@ -1514,12 +1603,14 @@
                             return `${totalDamage}`;
                         },
                         description: 'Damage'
+                        // No maxLevel - unlimited
                     },
                     attackspeed: {
                         name: 'Attack Speed',
                         icon: 'images/boss_upgrades/attackspeed.png',
                         baseCost: 128,
                         costMultiplier: 2.0,
+                        maxLevel: 20,
                         getEffect: (level) => {
                             const interval = 2000 * Math.pow(0.9, level);
                             const seconds = (interval / 1000).toFixed(2);
@@ -1532,6 +1623,7 @@
                         icon: 'images/boss_upgrades/crit_chance.png',
                         baseCost: 2,
                         costMultiplier: 2.0,
+                        maxLevel: 30,
                         getEffect: (level) => `${level * 2}%`,
                         description: 'Crit Chance'
                     },
@@ -1540,6 +1632,7 @@
                         icon: 'images/boss_upgrades/crit_damage.png',
                         baseCost: 2,
                         costMultiplier: 2.0,
+                        maxLevel: 30,
                         getEffect: (level) => `+${100 + level * 10}%`,
                         description: 'Crit Damage'
                     }
@@ -2158,15 +2251,30 @@
 
                 const upgrade = this.upgrades[upgradeType];
                 const currentLevel = (this.playerData.upgrades && this.playerData.upgrades[upgradeType]) || 0;
-                const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, currentLevel));
-                const currentEffect = upgrade.getEffect(currentLevel);
-                const nextEffect = upgrade.getEffect(currentLevel + 1);
                 const currentTotalXP = this.playerData.totalXP || 0;
 
+                // Check if upgrade is at max level
+                const isMaxed = upgrade.maxLevel && currentLevel >= upgrade.maxLevel;
+
                 document.getElementById('tooltipName').textContent = upgrade.name;
-                document.getElementById('tooltipLevel').textContent = `Level: ${currentLevel}`;
-                document.getElementById('tooltipCost').textContent = `Cost: ${cost} Total XP (Have: ${currentTotalXP})`;
-                document.getElementById('tooltipEffect').innerHTML = `<span class="stat-increase">${currentEffect} >> ${nextEffect}</span>`;
+
+                if (isMaxed) {
+                    document.getElementById('tooltipLevel').textContent = `Level: ${currentLevel} (MAX)`;
+                    document.getElementById('tooltipCost').textContent = `MAX LEVEL REACHED`;
+                    const currentEffect = upgrade.getEffect(currentLevel);
+                    document.getElementById('tooltipEffect').innerHTML = `<span class="stat-increase">${currentEffect}</span>`;
+                } else {
+                    const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, currentLevel));
+                    const currentEffect = upgrade.getEffect(currentLevel);
+                    const nextEffect = upgrade.getEffect(currentLevel + 1);
+
+                    const levelText = upgrade.maxLevel
+                        ? `Level: ${currentLevel}/${upgrade.maxLevel}`
+                        : `Level: ${currentLevel}`;
+                    document.getElementById('tooltipLevel').textContent = levelText;
+                    document.getElementById('tooltipCost').textContent = `Cost: ${cost} Total XP (Have: ${currentTotalXP})`;
+                    document.getElementById('tooltipEffect').innerHTML = `<span class="stat-increase">${currentEffect} >> ${nextEffect}</span>`;
+                }
 
                 this.upgradeTooltip.classList.add('show');
 
@@ -2208,6 +2316,13 @@
             async purchaseUpgrade(upgradeType) {
                 const upgrade = this.upgrades[upgradeType];
                 const currentLevel = (this.playerData.upgrades && this.playerData.upgrades[upgradeType]) || 0;
+
+                // Check if upgrade is at max level
+                if (upgrade.maxLevel && currentLevel >= upgrade.maxLevel) {
+                    notificationToast.warning(`${upgrade.name} is already at MAX level (${upgrade.maxLevel})!`);
+                    return;
+                }
+
                 const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, currentLevel));
 
                 // Call Cloud Function to purchase upgrade
@@ -2244,7 +2359,7 @@
                         // Check if player has enough total XP (using server value)
                         const currentTotalXP = this.playerData.totalXP || 0;
                         if (currentTotalXP < cost) {
-                            alert(`Not enough Total XP! Need ${cost}, have ${currentTotalXP}`);
+                            notificationToast.error(`Not enough Total XP! Need ${cost}, have ${currentTotalXP}`);
                             return;
                         }
 
@@ -2262,11 +2377,17 @@
                             window.xpSystem.syncFromBossWidget();
                         }
                     } catch (error) {
-                        alert('Failed to purchase upgrade: ' + error.message);
+                        notificationToast.error('Failed to purchase upgrade: ' + error.message);
                         return;
                     }
                 } else {
                     // Mock mode - update locally only
+                    const currentTotalXP = this.playerData.totalXP || 0;
+                    if (currentTotalXP < cost) {
+                        notificationToast.error(`Not enough Total XP! Need ${cost}, have ${currentTotalXP}`);
+                        return;
+                    }
+
                     if (!this.playerData.upgrades) this.playerData.upgrades = {};
                     this.playerData.upgrades[upgradeType] = currentLevel + 1;
                     this.playerData.totalXP -= cost;

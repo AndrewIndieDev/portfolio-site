@@ -121,6 +121,14 @@ exports.purchaseUpgrade = https.onCall(
     const uid = request.auth.uid;
     const { upgradeType, cost } = request.data;
 
+    // Define max levels for upgrades
+    const upgradeMaxLevels = {
+      attackspeed: 20,
+      critchance: 30,
+      critdamage: 30
+      // damage: no limit
+    };
+
     const playerRef = db.collection("players").doc(uid);
     const upgradeRef = playerRef.collection("upgrades").doc(upgradeType);
 
@@ -139,6 +147,12 @@ exports.purchaseUpgrade = https.onCall(
       // Get current upgrade level
       const upgradeDoc = await tx.get(upgradeRef);
       const currentLevel = upgradeDoc.exists ? (upgradeDoc.data().level || 0) : 0;
+
+      // Check if upgrade is at max level
+      const maxLevel = upgradeMaxLevels[upgradeType];
+      if (maxLevel && currentLevel >= maxLevel) {
+        throw new https.HttpsError("failed-precondition", `Upgrade is already at max level (${maxLevel})`);
+      }
 
       // Deduct XP and update upgrade level
       tx.update(playerRef, {
