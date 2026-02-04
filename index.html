@@ -1801,6 +1801,11 @@
                 this.lastDamageTime = Date.now();
                 this.lastLocalDamageTime = Date.now();
                 this.updateUI();
+
+                // Sync XP system with loaded data from Firebase
+                if (window.xpSystem) {
+                    window.xpSystem.syncFromBossWidget();
+                }
             }
 
             listenToBossChanges() {
