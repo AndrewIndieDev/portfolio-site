@@ -18,6 +18,41 @@ function calculateBossHP(phase) {
   }
 }
 
+// Calculate player's DPS based on upgrade levels
+function calculateDPS(upgrades) {
+  // Base damage: 1 + (damage level * 2)
+  const damageLevel = upgrades.damage || 0;
+  const baseDamage = 1 + (damageLevel * 2);
+
+  // Crit chance: level * 2 (as percentage)
+  const critChanceLevel = upgrades.critchance || 0;
+  const critChance = (critChanceLevel * 2) / 100; // Convert to decimal
+
+  // Crit multiplier: 1.0 + (level * 0.1)
+  const critDamageLevel = upgrades.critdamage || 0;
+  const critMultiplier = critDamageLevel * 0.1;
+
+  // Average damage per hit = baseDamage * (1 + critMultiplier * critChance)
+  const avgDamagePerHit = baseDamage * (1 + critMultiplier * critChance);
+
+  // Attack speed: base 2000ms, reduced by 10% per level
+  const attackSpeedLevel = upgrades.attackspeed || 0;
+  const attackInterval = 2000 * Math.pow(0.9, attackSpeedLevel);
+
+  // DPS = average damage per hit / (interval in seconds)
+  const dps = avgDamagePerHit / (attackInterval / 1000);
+
+  return dps;
+}
+
+// Calculate XP earned based on DPS and time elapsed
+function calculateXPEarned(dps, timeElapsedMs) {
+  // XP = 50% of damage dealt
+  const damage = dps * (timeElapsedMs / 1000);
+  const xp = damage * 0.5;
+  return Math.floor(xp);
+}
+
 // CORS configuration
 const corsOptions = {
   cors: true, // Allow all origins in development
@@ -53,16 +88,32 @@ exports.submitDamage = https.onCall(
     if (!request.auth) throw new https.HttpsError("unauthenticated", "Login required");
 
     const uid = request.auth.uid;
-    const { damage, windowStart, windowEnd, totalXPGained } = request.data;
+    const { damage, windowStart, windowEnd } = request.data;
 
     const playerRef = db.collection("players").doc(uid);
     const playerDoc = await playerRef.get();
     if (!playerDoc.exists) throw new https.HttpsError("not-found", "Player not found");
 
     const player = playerDoc.data();
-    const maxAllowedDamage = 100000;
 
-    const appliedDamage = Math.min(damage, maxAllowedDamage);
+    // Load player's upgrades to calculate DPS
+    const upgradesSnapshot = await playerRef.collection("upgrades").get();
+    const upgrades = {};
+    upgradesSnapshot.forEach(doc => {
+      upgrades[doc.id] = doc.data().level || 0;
+    });
+
+    // Calculate DPS from upgrades (server-side, can't be cheated)
+    const dps = calculateDPS(upgrades);
+
+    // Calculate XP earned based on DPS and time elapsed
+    const timeElapsed = Date.now() - (player.lastDamageSubmit || Date.now());
+    const xpEarned = calculateXPEarned(dps, timeElapsed);
+
+    // Calculate damage based on DPS and time elapsed (server authoritative)
+    const calculatedDamage = dps * (timeElapsed / 1000);
+    const maxAllowedDamage = 100000;
+    const appliedDamage = Math.min(calculatedDamage, maxAllowedDamage);
 
     let bossDied = false;
     const bossRef = db.collection("boss").doc("state");
@@ -95,11 +146,11 @@ exports.submitDamage = https.onCall(
         });
       }
 
-      // Update player stats including totalXP gained from hits
+      // Update player stats with server-calculated XP
       tx.update(playerRef, {
         lastDamageSubmit: Date.now(),
         totalDamage: (player.totalDamage || 0) + appliedDamage,
-        totalXP: (player.totalXP || 0) + (totalXPGained || 0),
+        totalXP: (player.totalXP || 0) + xpEarned,
         lastSeen: Date.now()
       });
     });
@@ -109,7 +160,7 @@ exports.submitDamage = https.onCall(
       await updateOnlinePlayerCount();
     }
 
-    return { success: true, appliedDamage };
+    return { success: true, appliedDamage, xpEarned, newTotalXP: (player.totalXP || 0) + xpEarned };
   }
 );
 
@@ -119,44 +170,69 @@ exports.purchaseUpgrade = https.onCall(
     if (!request.auth) throw new https.HttpsError("unauthenticated", "Login required");
 
     const uid = request.auth.uid;
-    const { upgradeType, cost } = request.data;
+    const { upgradeType } = request.data;
 
-    // Define max levels for upgrades
-    const upgradeMaxLevels = {
-      attackspeed: 20,
-      critchance: 30,
-      critdamage: 30
-      // damage: no limit
+    // Upgrade definitions (must match client-side for display)
+    const upgradeDefs = {
+      damage: { baseCost: 2, costMultiplier: 2.0, maxLevel: null },
+      attackspeed: { baseCost: 128, costMultiplier: 2.0, maxLevel: 20 },
+      critchance: { baseCost: 2, costMultiplier: 2.0, maxLevel: 30 },
+      critdamage: { baseCost: 2, costMultiplier: 2.0, maxLevel: 30 }
     };
+
+    if (!upgradeDefs[upgradeType]) {
+      throw new https.HttpsError("invalid-argument", "Invalid upgrade type");
+    }
 
     const playerRef = db.collection("players").doc(uid);
     const upgradeRef = playerRef.collection("upgrades").doc(upgradeType);
+
+    let newTotalXP = 0;
 
     await db.runTransaction(async (tx) => {
       const playerDoc = await tx.get(playerRef);
       if (!playerDoc.exists) throw new https.HttpsError("not-found", "Player not found");
 
       const player = playerDoc.data();
-      const currentTotalXP = player.totalXP || 0;
 
-      // Verify player has enough XP
-      if (currentTotalXP < cost) {
-        throw new https.HttpsError("failed-precondition", "Not enough Total XP");
-      }
+      // Load all upgrades to calculate DPS
+      const upgradesSnapshot = await playerRef.collection("upgrades").get();
+      const upgrades = {};
+      upgradesSnapshot.forEach(doc => {
+        upgrades[doc.id] = doc.data().level || 0;
+      });
+
+      // Calculate XP earned since last damage submit
+      const dps = calculateDPS(upgrades);
+      const timeElapsed = Date.now() - (player.lastDamageSubmit || Date.now());
+      const xpEarned = calculateXPEarned(dps, timeElapsed);
+
+      // Update player's totalXP with earned XP
+      let currentTotalXP = (player.totalXP || 0) + xpEarned;
 
       // Get current upgrade level
       const upgradeDoc = await tx.get(upgradeRef);
       const currentLevel = upgradeDoc.exists ? (upgradeDoc.data().level || 0) : 0;
 
       // Check if upgrade is at max level
-      const maxLevel = upgradeMaxLevels[upgradeType];
-      if (maxLevel && currentLevel >= maxLevel) {
-        throw new https.HttpsError("failed-precondition", `Upgrade is already at max level (${maxLevel})`);
+      const upgradeDef = upgradeDefs[upgradeType];
+      if (upgradeDef.maxLevel && currentLevel >= upgradeDef.maxLevel) {
+        throw new https.HttpsError("failed-precondition", `Upgrade is already at max level (${upgradeDef.maxLevel})`);
+      }
+
+      // Calculate cost (server-side, can't be cheated)
+      const cost = Math.floor(upgradeDef.baseCost * Math.pow(upgradeDef.costMultiplier, currentLevel));
+
+      // Verify player has enough XP
+      if (currentTotalXP < cost) {
+        throw new https.HttpsError("failed-precondition", `Not enough Total XP. Need ${cost}, have ${currentTotalXP}`);
       }
 
       // Deduct XP and update upgrade level
+      newTotalXP = currentTotalXP - cost;
       tx.update(playerRef, {
-        totalXP: currentTotalXP - cost,
+        totalXP: newTotalXP,
+        lastDamageSubmit: Date.now(), // Reset the timer after calculating earned XP
         lastSeen: Date.now()
       });
 
@@ -165,7 +241,7 @@ exports.purchaseUpgrade = https.onCall(
       });
     });
 
-    return { success: true };
+    return { success: true, newTotalXP };
   }
 );
 

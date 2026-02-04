@@ -1618,8 +1618,7 @@
                 this.localBossHealth = 0; // Client-side boss health for immediate feedback
                 this.lastHitAnimationTime = 0; // Track when we last played hit animation
                 this.trackingCursor = false; // Track whether tooltip should follow cursor
-                this.totalXP = 0; // Track total XP earned (for upgrades)
-                this.xpGainedSinceLastSync = 0; // Track XP gained since last server sync
+                this.totalXP = 0; // Optimistic XP for display (synced from server every 5min)
 
                 // Firestore listener unsubscribe functions
                 this.bossListener = null;
@@ -1770,7 +1769,6 @@
                 this.localBossHealth = this.bossState.currentHealth;
                 this.lastLocalDamageTime = Date.now();
                 this.totalXP = 0;
-                this.xpGainedSinceLastSync = 0;
 
                 this.updateUI();
                 this.setupEventListeners();
@@ -1797,7 +1795,6 @@
                     this.playerData.totalXP = 0;
                 }
                 this.totalXP = this.playerData.totalXP;
-                this.xpGainedSinceLastSync = 0;
 
                 // Load upgrades from subcollection
                 this.playerData.upgrades = {};
@@ -1950,25 +1947,24 @@
                         const result = await submitDamageFunc({
                             damage,
                             windowStart,
-                            windowEnd,
-                            totalXPGained: this.xpGainedSinceLastSync
+                            windowEnd
+                            // Server now calculates XP based on DPS and time
                         });
 
                         // Reset tracking variables
                         this.lastDamageTime = now;
                         this.localDamageAccumulated = 0;
-                        this.xpGainedSinceLastSync = 0;
+
+                        // Update totalXP from server response
+                        if (result.data && result.data.newTotalXP !== undefined) {
+                            this.playerData.totalXP = result.data.newTotalXP;
+                            this.totalXP = result.data.newTotalXP;
+                        }
 
                         // Fetch fresh boss state (includes damage from other players)
                         const bossDoc = await this.db.collection('boss').doc('state').get();
                         this.bossState = bossDoc.data();
                         this.localBossHealth = this.bossState.currentHealth;
-
-                        // Refresh player data to get updated totalXP from server
-                        const playerDoc = await this.db.collection('players').doc(this.auth.currentUser.uid).get();
-                        const serverPlayerData = playerDoc.data();
-                        this.playerData.totalXP = serverPlayerData.totalXP;
-                        this.totalXP = serverPlayerData.totalXP;
 
                         // Update XP system display
                         if (window.xpSystem) {
@@ -2001,8 +1997,16 @@
                     // Sync local health with "server" health
                     this.localBossHealth = this.bossState.currentHealth;
 
-                    // Reset XP tracking
-                    this.xpGainedSinceLastSync = 0;
+                    // In mock mode, simulate XP calculation (server would do this)
+                    const timeElapsed = 300000; // 5 minutes
+                    const xpEarned = Math.floor((dps * (timeElapsed / 1000)) * 0.5);
+                    this.playerData.totalXP = (this.playerData.totalXP || 0) + xpEarned;
+                    this.totalXP = this.playerData.totalXP;
+
+                    // Update XP system display
+                    if (window.xpSystem) {
+                        window.xpSystem.syncFromBossWidget();
+                    }
 
                     this.updateUI();
                     // Don't play hit animation here - it's already playing from local damage loop
@@ -2102,7 +2106,7 @@
             }
 
             showHitAnimation() {
-                // Calculate damage for this hit
+                // Calculate damage for this hit (visual only - server calculates authoritative damage)
                 const baseDamage = this.getBaseDamage();
                 const critChance = this.getCritChance();
                 const critMultiplier = this.getCritMultiplier();
@@ -2112,17 +2116,17 @@
                 // Crit damage = base + (base × critMultiplier)
                 const damage = isCrit ? baseDamage * (1 + critMultiplier) : baseDamage;
 
-                // Apply damage to boss
+                // Apply damage to boss (visual only)
                 this.localBossHealth -= damage;
                 this.localDamageAccumulated += damage;
                 this.lastLocalDamageTime = Date.now();
 
-                // Grant XP: 50% of damage dealt, floored, minimum 1
+                // Calculate OPTIMISTIC XP for display (server calculates true XP)
+                // This is just for visual feedback - server will sync the real value
                 const xpGain = Math.max(1, Math.floor(damage * 0.5));
 
-                // Track XP locally (will be synced to server later)
+                // Track XP locally for display and client-side validation
                 this.totalXP += xpGain;
-                this.xpGainedSinceLastSync += xpGain;
                 if (!this.playerData.totalXP) this.playerData.totalXP = 0;
                 this.playerData.totalXP += xpGain;
 
@@ -2369,52 +2373,26 @@
 
                 const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, currentLevel));
 
+                // Client-side validation to prevent spam requests
+                // Check local XP first (server will do authoritative check)
+                const localXP = this.playerData.totalXP || 0;
+                if (localXP < cost) {
+                    notificationToast.error(`Not enough Total XP! Need ${cost}, have ${localXP}`);
+                    return;
+                }
+
                 // Call Cloud Function to purchase upgrade
                 if (this.auth && this.functions) {
                     try {
-                        // First, sync any unsynced XP to the server
-                        if (this.xpGainedSinceLastSync > 0) {
-                            const submitDamageFunc = this.functions.httpsCallable('submitDamage');
-                            const now = Date.now();
-                            const windowStart = this.lastDamageTime;
-                            const windowEnd = now;
-                            const dps = this.calculateDPS();
-                            const damage = dps * ((windowEnd - windowStart) / 1000);
-
-                            await submitDamageFunc({
-                                damage,
-                                windowStart,
-                                windowEnd,
-                                totalXPGained: this.xpGainedSinceLastSync
-                            });
-
-                            // Reset tracking
-                            this.lastDamageTime = now;
-                            this.localDamageAccumulated = 0;
-                            this.xpGainedSinceLastSync = 0;
-
-                            // Refresh player XP from server
-                            const playerDoc = await this.db.collection('players').doc(this.auth.currentUser.uid).get();
-                            const serverPlayerData = playerDoc.data();
-                            this.playerData.totalXP = serverPlayerData.totalXP;
-                            this.totalXP = serverPlayerData.totalXP;
-                        }
-
-                        // Check if player has enough total XP (using server value)
-                        const currentTotalXP = this.playerData.totalXP || 0;
-                        if (currentTotalXP < cost) {
-                            notificationToast.error(`Not enough Total XP! Need ${cost}, have ${currentTotalXP}`);
-                            return;
-                        }
-
+                        // Server will calculate earned XP and validate purchase
                         const purchaseUpgradeFunc = this.functions.httpsCallable('purchaseUpgrade');
-                        await purchaseUpgradeFunc({ upgradeType, cost });
+                        const result = await purchaseUpgradeFunc({ upgradeType });
 
-                        // Update locally after successful purchase
+                        // Update locally from server response
                         if (!this.playerData.upgrades) this.playerData.upgrades = {};
                         this.playerData.upgrades[upgradeType] = currentLevel + 1;
-                        this.playerData.totalXP -= cost;
-                        this.totalXP = this.playerData.totalXP;
+                        this.playerData.totalXP = result.data.newTotalXP;
+                        this.totalXP = result.data.newTotalXP;
 
                         // Update XP system display
                         if (window.xpSystem) {
