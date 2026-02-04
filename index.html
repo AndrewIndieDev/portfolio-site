@@ -1621,6 +1621,10 @@
                 this.totalXP = 0; // Track total XP earned (for upgrades)
                 this.xpGainedSinceLastSync = 0; // Track XP gained since last server sync
 
+                // Firestore listener unsubscribe functions
+                this.bossListener = null;
+                this.onlineListener = null;
+
                 // Upgrade definitions
                 this.upgrades = {
                     damage: {
@@ -1815,8 +1819,13 @@
             }
 
             listenToBossChanges() {
+                // Unsubscribe from previous listener if it exists
+                if (this.bossListener) {
+                    this.bossListener();
+                }
+
                 // Real-time listener for boss state changes (from other players)
-                this.db.collection('boss').doc('state').onSnapshot((doc) => {
+                this.bossListener = this.db.collection('boss').doc('state').onSnapshot((doc) => {
                     const previousHealth = this.bossState.currentHealth;
                     this.bossState = doc.data();
 
@@ -1833,8 +1842,13 @@
             }
 
             listenToOnlineCount() {
+                // Unsubscribe from previous listener if it exists
+                if (this.onlineListener) {
+                    this.onlineListener();
+                }
+
                 // Real-time listener for online player count
-                this.db.collection('stats').doc('online').onSnapshot((doc) => {
+                this.onlineListener = this.db.collection('stats').doc('online').onSnapshot((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
                         const count = data.count || 0;
@@ -2433,12 +2447,31 @@
                 const button = document.querySelector(`[data-upgrade="${upgradeType}"]`);
                 this.showUpgradeTooltip(upgradeType, button);
             }
+
+            cleanup() {
+                // Unsubscribe from all Firestore listeners
+                if (this.bossListener) {
+                    this.bossListener();
+                    this.bossListener = null;
+                }
+                if (this.onlineListener) {
+                    this.onlineListener();
+                    this.onlineListener = null;
+                }
+            }
         }
 
         // Initialize Boss Widget (desktop only)
         // Note: Requires Firebase SDK to be loaded via CDN in HTML <head>
         if (!isMobileDevice()) {
             window.bossWidget = new BossWidget();
+
+            // Cleanup listeners when page unloads
+            window.addEventListener('beforeunload', () => {
+                if (window.bossWidget) {
+                    window.bossWidget.cleanup();
+                }
+            });
         }
     </script>
 </body>
