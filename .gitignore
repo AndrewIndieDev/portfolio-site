@@ -1,5 +1,26 @@
-.claude/
 .firebase/
-CLAUDE.md
-BOSS_WIDGET_QUICKSTART.md
-BOSS_WIDGET_README.md
+
+# Dependencies
+node_modules/
+functions/node_modules/
+
+# Firebase local artifacts
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc.local
+.runtimeconfig.json
+functions/.runtimeconfig.json
+
+# Emulator / local state
+firebase-export/
+.firebase/
+
+# Environment files
+.env
+.env.*
+functions/.env
+functions/.env.*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
