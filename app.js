@@ -6,6 +6,8 @@ const dom = {
   contentViewport: document.getElementById("contentViewport")
 };
 
+const STORE_RATINGS_ENDPOINT = "https://australia-southeast1-portfolio-boss-raid.cloudfunctions.net/getStoreRatings";
+
 const appState = {
   content: null,
   ui: {
@@ -170,7 +172,7 @@ function markStoreRatingsUnavailable() {
 }
 
 async function loadStoreRatings() {
-  const response = await fetch("/api/store-ratings", {
+  const response = await fetch(STORE_RATINGS_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
