@@ -1,6 +1,8 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
+const fs = require("node:fs/promises");
+const path = require("node:path");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -9,9 +11,39 @@ const REGION = "australia-southeast1";
 const STORE_RATINGS_COLLECTION = "storeRatings";
 const STORE_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
 const BROWSER_CACHE_SECONDS = 10 * 60;
+const SITE_CONTENT_URL = "https://andrewdowsett.dev/data/site-content.json";
+const SITE_CONTENT_CACHE_MS = 5 * 60 * 1000;
+const ALLOWED_ORIGIN_PATTERNS = [
+  /^https:\/\/andrewdowsett\.dev$/i,
+  /^https:\/\/www\.andrewdowsett\.dev$/i,
+  /^http:\/\/localhost(?::\d+)?$/i,
+  /^http:\/\/127\.0\.0\.1(?::\d+)?$/i
+];
+
+let cachedCanonicalSources = {
+  loadedAt: 0,
+  sources: []
+};
 
 function now() {
   return Date.now();
+}
+
+function isAllowedOrigin(origin) {
+  return typeof origin === "string" && ALLOWED_ORIGIN_PATTERNS.some((pattern) => pattern.test(origin));
+}
+
+function applyCorsHeaders(request, response) {
+  const origin = request.get("origin");
+  if (!isAllowedOrigin(origin)) {
+    return false;
+  }
+
+  response.set("Access-Control-Allow-Origin", origin);
+  response.set("Vary", "Origin");
+  response.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+  response.set("Access-Control-Allow-Headers", "Content-Type");
+  return true;
 }
 
 function encodeStoreKey(key) {
@@ -108,6 +140,38 @@ function normalizeStoreSources(payload) {
     ...source,
     projectIds: [...new Set(source.projectIds)]
   }));
+}
+
+async function loadSiteContentFromFile() {
+  const localPath = path.resolve(__dirname, "..", "data", "site-content.json");
+  const raw = await fs.readFile(localPath, "utf8");
+  return JSON.parse(raw);
+}
+
+async function getCanonicalStoreSources() {
+  const currentTime = now();
+  if (cachedCanonicalSources.sources.length && (currentTime - cachedCanonicalSources.loadedAt) < SITE_CONTENT_CACHE_MS) {
+    return cachedCanonicalSources.sources;
+  }
+
+  let content;
+  try {
+    const response = await fetch(SITE_CONTENT_URL, { headers: { Accept: "application/json" } });
+    if (!response.ok) {
+      throw new Error(`Site content request failed with ${response.status}`);
+    }
+    content = await response.json();
+  } catch (error) {
+    content = await loadSiteContentFromFile();
+  }
+
+  const sources = normalizeStoreSources({ projects: content?.projects });
+  cachedCanonicalSources = {
+    loadedAt: currentTime,
+    sources
+  };
+
+  return sources;
 }
 
 async function fetchSteamRating(source) {
@@ -296,15 +360,42 @@ async function upsertStoreSources(sources) {
   return results;
 }
 
+async function pruneUnknownStoreSources(allowedSources) {
+  const allowedKeys = new Set(allowedSources.map((source) => source.key));
+  const snapshot = await db.collection(STORE_RATINGS_COLLECTION).get();
+
+  const deletions = snapshot.docs
+    .filter((doc) => !allowedKeys.has(doc.data()?.key))
+    .map((doc) => doc.ref.delete());
+
+  if (deletions.length) {
+    await Promise.all(deletions);
+  }
+}
+
 exports.getStoreRatings = onRequest(
-  { region: REGION, cors: true },
+  { region: REGION, cors: false },
   async (request, response) => {
-    if (request.method !== "POST") {
+    if (request.method === "OPTIONS") {
+      if (!applyCorsHeaders(request, response)) {
+        response.status(403).json({ error: "Forbidden" });
+        return;
+      }
+      response.status(204).send("");
+      return;
+    }
+
+    if (!applyCorsHeaders(request, response)) {
+      response.status(403).json({ error: "Forbidden" });
+      return;
+    }
+
+    if (request.method !== "GET") {
       response.status(405).json({ error: "Method not allowed" });
       return;
     }
 
-    const sources = normalizeStoreSources(request.body);
+    const sources = await getCanonicalStoreSources();
     const ratings = await upsertStoreSources(sources);
 
     response.set("Cache-Control", `public, max-age=${BROWSER_CACHE_SECONDS}`);
@@ -333,23 +424,24 @@ exports.refreshStoreRatings = onSchedule(
     timeZone: "Australia/Sydney"
   },
   async () => {
-    const snapshot = await db.collection(STORE_RATINGS_COLLECTION).get();
+    const sources = await getCanonicalStoreSources();
+    await pruneUnknownStoreSources(sources);
 
-    for (const doc of snapshot.docs) {
-      const data = doc.data();
-      if (!data?.key || !data?.type) {
-        continue;
-      }
+    const snapshots = await Promise.all(
+      sources.map((source) => db.collection(STORE_RATINGS_COLLECTION).doc(encodeStoreKey(source.key)).get())
+    );
+
+    for (let i = 0; i < sources.length; i += 1) {
+      const source = sources[i];
+      const snapshot = snapshots[i];
+      const existing = snapshot.exists ? snapshot.data() : {};
 
       await refreshStoreRating(
         {
-          key: data.key,
-          type: data.type,
-          appId: data.appId || null,
-          url: data.url || null,
-          projectIds: data.projectIds || []
+          ...source,
+          projectIds: source.projectIds || existing.projectIds || []
         },
-        data
+        existing
       );
     }
   }

@@ -211,12 +211,8 @@ function markStoreRatingsUnavailable() {
 
 async function loadStoreRatings() {
   const response = await fetch(STORE_RATINGS_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    cache: "default",
-    body: JSON.stringify(getStoreRatingsPayload())
+    method: "GET",
+    cache: "default"
   });
 
   if (!response.ok) {
