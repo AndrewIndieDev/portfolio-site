@@ -154,8 +154,15 @@ async function fetchItchRating(source) {
   }
 
   const html = await response.text();
-  const ratingMatch = html.match(/Rated\s+([0-9.]+)\s+out of 5 stars/i);
-  const countMatch = html.match(/\(([0-9,]+)\s+total ratings\)/i);
+  const ratingMatch =
+    html.match(/itemprop="ratingValue"[^>]*content="([0-9.]+)"/i) ||
+    html.match(/"aggregateRating"\s*:\s*\{.*?"ratingValue"\s*:\s*"?([0-9.]+)"?/is) ||
+    html.match(/Rated\s+([0-9.]+)\s+out of 5 stars/i);
+
+  const countMatch =
+    html.match(/itemprop="ratingCount"[^>]*content="([0-9,]+)"/i) ||
+    html.match(/"aggregateRating"\s*:\s*\{.*?"ratingCount"\s*:\s*([0-9,]+)/is) ||
+    html.match(/\(([0-9,]+)\s+total ratings\)/i);
 
   if (!ratingMatch || !countMatch) {
     return {
@@ -265,7 +272,11 @@ async function upsertStoreSources(sources) {
       updatedAt: seenAt
     }, { merge: true });
 
-    if (!existing.lastRefreshed || (seenAt - existing.lastRefreshed) >= STORE_REFRESH_INTERVAL_MS) {
+    if (
+      existing.status !== "ok" ||
+      !existing.lastRefreshed ||
+      (seenAt - existing.lastRefreshed) >= STORE_REFRESH_INTERVAL_MS
+    ) {
       results.push(await refreshStoreRating({ ...existing, ...source, projectIds }, { ...existing, projectIds, lastSeenAt: seenAt }));
       continue;
     }
