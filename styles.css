@@ -179,6 +179,131 @@ button {
   opacity: 0.9;
 }
 
+.content-scene {
+  position: relative;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  max-width: 1284px;
+}
+
+.citizen-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.citizen {
+  position: absolute;
+  width: 8px;
+  height: 10px;
+  background: #fff;
+}
+
+.scroll-elevator {
+  position: relative;
+  min-height: 100%;
+  pointer-events: none;
+}
+
+.scroll-elevator__shaft,
+.scroll-elevator__track,
+.scroll-elevator__car {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.scroll-elevator__shaft {
+  top: 0;
+  bottom: 0;
+  width: 50px;
+  box-sizing: border-box;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+    linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.06) 12%, transparent 24%, transparent 76%, rgba(255, 255, 255, 0.06) 88%, transparent 100%);
+  opacity: 0.9;
+}
+
+.scroll-elevator__shaft::before,
+.scroll-elevator__shaft::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.scroll-elevator__shaft::before {
+  top: 0;
+}
+
+.scroll-elevator__shaft::after {
+  bottom: 0;
+}
+
+.scroll-elevator__track {
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08));
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 18px rgba(255, 255, 255, 0.03);
+}
+
+.scroll-elevator__car {
+  top: 0;
+  width: 52px;
+  height: 78px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 0 16px rgba(255, 255, 255, 0.04);
+}
+
+.scroll-elevator__display {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 7px;
+  line-height: 12px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scroll-elevator__slots {
+  position: absolute;
+  top: 22px;
+  left: 7px;
+  width: 38px;
+  height: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 4px 7px;
+}
+
+.scroll-elevator__slot {
+  width: 8px;
+  height: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .content-viewport {
   position: relative;
   z-index: 1;
@@ -197,8 +322,42 @@ button {
 .hero-panel,
 .section-panel,
 .project-panel {
+  position: relative;
   border: 1px solid var(--border);
   background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+}
+
+.section-panel::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -23px;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.section-queue {
+  position: absolute;
+  top: -11px;
+  left: -16px;
+  width: 78px;
+  pointer-events: none;
+}
+
+.section-queue__slots {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  width: 100%;
+}
+
+.section-queue__slot {
+  width: 8px;
+  height: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .hero-panel {
@@ -543,6 +702,23 @@ button {
 
   .content-viewport {
     padding: 16px;
+  }
+
+  .content-scene {
+    display: block;
+    max-width: none;
+  }
+
+  .scroll-elevator {
+    display: none;
+  }
+
+  .section-queue {
+    display: none;
+  }
+
+  .citizen-layer {
+    display: none;
   }
 
   .content-stack {
