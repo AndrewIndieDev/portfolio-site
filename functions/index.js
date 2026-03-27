@@ -125,7 +125,7 @@ async function fetchSteamRating(source) {
   const totalPositive = Number(summary.total_positive ?? 0);
   const totalNegative = Number(summary.total_negative ?? 0);
   const totalReviews = Number(summary.total_reviews ?? (totalPositive + totalNegative));
-  const percent = totalReviews > 0 ? Math.round((totalPositive / totalReviews) * 100) : 0;
+  const percent = totalReviews > 0 ? Math.floor((totalPositive / totalReviews) * 100) : 0;
 
   if (!Number.isFinite(percent) || !Number.isFinite(totalReviews) || totalReviews <= 0) {
     return {
