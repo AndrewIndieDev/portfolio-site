@@ -277,8 +277,8 @@
       "role": "Networking / Game Feel / UI-UX",
       "team": ["Andrew Dowsett", "Corey Horne"],
       "summary": "An anomaly hunting game set in a robot-lead world. Players take on the role of a scientist, using a camera to gather information for our overseer.",
-      "video": "",
-      "poster": "",
+      "video": "images/Mandela Protocol/Thumbnail.mp4",
+      "poster": "images/Mandela Protocol/Thumbnail.png",
       "links": []
     }
   ]
