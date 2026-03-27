@@ -122,9 +122,10 @@ async function fetchSteamRating(source) {
     throw new Error("Steam summary payload missing");
   }
 
-  const rawScore = Number(summary.review_score);
-  const percent = rawScore <= 1 ? Math.round(rawScore * 100) : Math.round(rawScore);
-  const totalReviews = Number(summary.total_reviews ?? (Number(summary.total_positive ?? 0) + Number(summary.total_negative ?? 0)));
+  const totalPositive = Number(summary.total_positive ?? 0);
+  const totalNegative = Number(summary.total_negative ?? 0);
+  const totalReviews = Number(summary.total_reviews ?? (totalPositive + totalNegative));
+  const percent = totalReviews > 0 ? Math.round((totalPositive / totalReviews) * 100) : 0;
 
   if (!Number.isFinite(percent) || !Number.isFinite(totalReviews) || totalReviews <= 0) {
     return {
