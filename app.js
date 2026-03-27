@@ -1,1 +1,561 @@
-const ACHIEVEMENTS={first_visit:{id:"first_visit",title:"Welcome!",description:"Thanks for visiting my portfolio",icon:"images/achievements/first_visit.png",xp:10},scroll_end:{id:"scroll_end",title:"Journey Complete",description:"Reached the end of the room",icon:"images/achievements/scroll_end.png",xp:25},light_mode:{id:"light_mode",title:"Enlightened",description:"Switched to light mode",icon:"images/achievements/light_mode.png",xp:15},dark_mode:{id:"dark_mode",title:"Shadow Walker",description:"Switched to dark mode",icon:"images/achievements/dark_mode.png",xp:15},view_all_projects:{id:"view_all_projects",title:"Completionist",description:"Viewed all non-hidden projects",icon:"images/achievements/view_all_projects.png",xp:30},external_link:{id:"external_link",title:"Curious Mind",description:"Clicked on a project link",icon:"images/achievements/external_link.png",xp:20},time_spent:{id:"time_spent",title:"Dedicated Visitor",description:"Spent 2 minutes exploring",icon:"images/achievements/time_spent.png",xp:35},read_about:{id:"read_about",title:"Getting Personal",description:"Read the About Me section",icon:"images/achievements/read_about.png",xp:20},hover_master:{id:"hover_master",title:"Interactive Explorer",description:"Hovered over 3 project previews",icon:"images/achievements/hover_master.png",xp:25},unlock_all:{id:"unlock_all",title:"Achievement Hunter",description:"Unlocked all achievements!",icon:"images/achievements/unlock_all.png",xp:50}};class NotificationToast{constructor(){this.toastQueue=[],this.isShowingToast=!1}show(t,e="info"){this.toastQueue.push({message:t,type:e}),this.isShowingToast||this.processQueue()}error(t){this.show(t,"error")}warning(t){this.show(t,"warning")}success(t){this.show(t,"success")}info(t){this.show(t,"info")}achievement(t){this.toastQueue.push({achievement:t,type:"achievement"}),this.isShowingToast||this.processQueue()}processQueue(){if(0===this.toastQueue.length)return void(this.isShowingToast=!1);this.isShowingToast=!0;const t=this.toastQueue.shift();t.achievement?this.showAchievementToast(t.achievement):this.showRegularToast(t.message,t.type)}showAchievementToast(t){const e=document.createElement("div");e.className="notification-toast notification-achievement",e.innerHTML=`\n                    <img class="notification-achievement-icon" src="${t.icon}" alt="${t.title}" onerror="this.style.display='none'">\n                    <div class="notification-content">\n                        <div class="notification-title">Achievement Unlocked! +${t.xp} XP</div>\n                        <div class="notification-message"><strong>${t.title}</strong> - ${t.description}</div>\n                    </div>\n                `,document.body.appendChild(e),setTimeout(()=>e.classList.add("show"),100),setTimeout(()=>{e.classList.remove("show"),setTimeout(()=>{document.body.removeChild(e),this.processQueue()},500)},4e3)}showRegularToast(t,e){let s="",i="";switch(e){case"error":s="❌",i="Error";break;case"warning":s="⚠️",i="Warning";break;case"success":s="✓",i="Success";break;default:s="ℹ️",i="Info"}const a=document.createElement("div");a.className=`notification-toast notification-${e}`,a.innerHTML=`\n                    <div class="notification-icon">${s}</div>\n                    <div class="notification-content">\n                        <div class="notification-title">${i}</div>\n                        <div class="notification-message">${t}</div>\n                    </div>\n                `,document.body.appendChild(a),setTimeout(()=>a.classList.add("show"),100),setTimeout(()=>{a.classList.remove("show"),setTimeout(()=>{document.body.removeChild(a),this.processQueue()},500)},3500)}}const notificationToast=new NotificationToast;class AchievementManager{constructor(){this.unlockedAchievements=this.loadProgress(),this.projectsViewed=new Set,this.projectsHovered=new Set,this.startTime=Date.now(),this.hasViewedAbout=!1,this.aboutMeTimer=null,this.init()}init(){this.updateTrophyCount(),this.setupEventListeners(),setTimeout(()=>{this.unlock("first_visit")},1e3),setTimeout(()=>{this.unlock("time_spent")},12e4)}loadProgress(){const t=localStorage.getItem("portfolio_achievements");return t?JSON.parse(t):[]}saveProgress(){localStorage.setItem("portfolio_achievements",JSON.stringify(this.unlockedAchievements))}unlock(t){if(this.unlockedAchievements.includes(t))return;this.unlockedAchievements.push(t),this.saveProgress();const e=ACHIEVEMENTS[t];notificationToast.achievement(e),this.updateTrophyCount(),e.xp&&window.bossWidget&&window.bossWidget.addAchievementXP(e.xp),this.unlockedAchievements.length===Object.keys(ACHIEVEMENTS).length-1&&setTimeout(()=>this.unlock("unlock_all"),500)}updateTrophyCount(){const t=this.unlockedAchievements.length,e=Object.keys(ACHIEVEMENTS).length;document.getElementById("trophyCount").textContent=`${t}/${e}`}setupEventListeners(){window.addEventListener("scroll",()=>{const t=window.pageXOffset||document.documentElement.scrollLeft,e=window.innerWidth,s=document.documentElement.scrollWidth;t+e>=s-100&&this.unlock("scroll_end");const i=document.querySelector(".aboutme-section");if(i&&!this.hasViewedAbout){const t=i.getBoundingClientRect();t.left<e&&t.right>0?this.aboutMeTimer||(this.aboutMeTimer=setTimeout(()=>{this.unlock("read_about"),this.hasViewedAbout=!0},5e3)):this.aboutMeTimer&&(clearTimeout(this.aboutMeTimer),this.aboutMeTimer=null)}const a=document.querySelectorAll('.project-item:not([data-hidden="true"])');a.forEach((t,s)=>{const i=t.getBoundingClientRect();i.left<e&&i.right>0&&(this.projectsViewed.add(s),this.projectsViewed.size===a.length&&this.unlock("view_all_projects"))})}),document.querySelectorAll(".project-info a").forEach(t=>{t.addEventListener("click",()=>{this.unlock("external_link")})}),document.querySelectorAll('.project-item:not([data-hidden="true"]) .project-frame').forEach((t,e)=>{t.addEventListener("mouseenter",()=>{this.projectsHovered.add(e),this.projectsHovered.size>=3&&this.unlock("hover_master")})}),document.getElementById("btnWest").addEventListener("click",()=>{this.showAchievementList()})}showAchievementList(){const t=document.getElementById("achievementModal"),e=document.getElementById("achievementGrid"),s=document.getElementById("modalProgress"),i=Object.keys(ACHIEVEMENTS).length,a=this.unlockedAchievements.length;s.textContent=`${a}/${i} Unlocked`,e.innerHTML="",Object.values(ACHIEVEMENTS).forEach(t=>{const s=this.unlockedAchievements.includes(t.id),i=document.createElement("div");i.className="achievement-card "+(s?"unlocked":"locked"),i.innerHTML=`\n                        <img class="achievement-card-icon" src="${t.icon}" alt="${t.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2264%22 height=%2264%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%23666%22 rx=%228%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3E%3F%3C/text%3E%3C/svg%3E'">\n                        <div class="achievement-card-content">\n                            <div class="achievement-card-title">\n                                ${t.title}\n                            </div>\n                            <div class="achievement-card-description">${t.description}</div>\n                        </div>\n                    `,e.appendChild(i)}),t.classList.add("show")}hideAchievementList(){document.getElementById("achievementModal").classList.remove("show")}}window.achievementManager=new AchievementManager,document.getElementById("closeModal").addEventListener("click",()=>{achievementManager.hideAchievementList()}),document.getElementById("achievementModal").addEventListener("click",t=>{"achievementModal"===t.target.id&&achievementManager.hideAchievementList()}),document.addEventListener("keydown",t=>{"Escape"===t.key&&achievementManager.hideAchievementList()});class DevConsole{constructor(){this.console=document.getElementById("devConsole"),this.output=document.getElementById("consoleOutput"),this.input=document.getElementById("consoleInput"),this.isActive=!1,this.konamiCode=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"],this.konamiIndex=0,this.hiddenProjectsVisible=!1,this.commands={help:()=>this.showHelp(),ad_testtoast:()=>this.testToast(),ad_showhiddenprojects:()=>this.showHiddenProjects(),clear:()=>this.clearOutput(),close:()=>this.toggle()},this.init()}init(){document.addEventListener("keydown",t=>{t.key===this.konamiCode[this.konamiIndex]?(this.konamiIndex++,this.konamiIndex===this.konamiCode.length&&(this.activate(),this.konamiIndex=0)):this.konamiIndex=0}),this.input.addEventListener("keydown",t=>{if("Enter"===t.key){const t=this.input.value.trim();t&&(this.executeCommand(t),this.input.value="")}}),document.getElementById("closeConsole").addEventListener("click",()=>{this.toggle()}),this.console.addEventListener("transitionend",()=>{this.isActive&&this.input.focus()})}activate(){this.addMessage("Konami Code Activated! Developer Console Unlocked.","success"),this.toggle()}toggle(){this.isActive=!this.isActive,this.console.classList.toggle("active"),this.isActive&&setTimeout(()=>this.input.focus(),300)}executeCommand(t){this.addMessage(`> ${t}`,"command");const e=t.toLowerCase().trim();this.commands[e]?this.commands[e]():this.addMessage(`Unknown command: "${t}". Type 'help' for available commands.`,"error"),this.output.scrollTop=this.output.scrollHeight}addMessage(t,e="info"){const s=document.createElement("div");s.className=`console-message console-${e}`,s.textContent=t,this.output.appendChild(s),this.output.scrollTop=this.output.scrollHeight}showHelp(){this.addMessage("Available Commands:","info"),this.addMessage("  help - Show this help message","info"),this.addMessage("  ad_testtoast - Test achievement toast notification","info"),this.addMessage("  ad_showhiddenprojects - Toggle hidden projects visibility","info"),this.addMessage("  clear - Clear console output","info"),this.addMessage("  close - Close the console","info")}testToast(){notificationToast.achievement({id:"test",title:"Test Achievement",description:"This is a test notification from the dev console",icon:"images/achievements/placeholder.svg",xp:25}),this.addMessage("Test toast notification triggered.","success")}showHiddenProjects(){this.hiddenProjectsVisible=!this.hiddenProjectsVisible;const t=document.querySelectorAll('.project-item[data-hidden="true"]');if(t.forEach(t=>{this.hiddenProjectsVisible?t.style.display="grid":t.style.display="none"}),0===t.length)this.addMessage("No hidden projects found.","warning");else{const e=this.hiddenProjectsVisible?"shown":"hidden";this.addMessage(`Hidden projects ${e} (${t.length} project${t.length>1?"s":""}).`,"success")}}clearOutput(){this.output.innerHTML="",this.addMessage("Console cleared.","system")}}const devConsole=new DevConsole;class XPSystem{constructor(){this.xpBarFill=document.getElementById("xpBarFill"),this.xpBarText=document.getElementById("xpBarText"),this.xpLevel=document.getElementById("xpLevel"),this.levelUpNotification=document.getElementById("levelUpNotification"),this.levelUpNumber=document.getElementById("levelUpNumber"),this.canvas=document.getElementById("particleCanvas"),this.ctx=this.canvas.getContext("2d"),this.currentLevel=1,this.currentXP=0,this.particles=[],this.loadProgress(),this.setupCanvas(),this.init()}init(){window.addEventListener("resize",()=>this.setupCanvas()),this.updateDisplay(),this.animate()}setupCanvas(){this.canvas.width=window.innerWidth,this.canvas.height=window.innerHeight}getXPForLevel(t){return Math.floor(50*Math.pow(1.5,t-1))}syncFromBossWidget(){if(!window.bossWidget)return;let t=1,e=window.bossWidget.totalXP||0;for(;e>=this.getXPForLevel(t);)e-=this.getXPForLevel(t),t++;const s=this.currentLevel;this.currentLevel=t,this.currentXP=e,this.currentLevel>s&&this.levelUp(),this.updateDisplay()}loadProgress(){const t=setInterval(()=>{window.bossWidget&&window.bossWidget.playerData&&(this.syncFromBossWidget(),clearInterval(t))},100);setTimeout(()=>clearInterval(t),5e3)}saveProgress(){}addXP(t){}updateDisplay(){const t=this.getXPForLevel(this.currentLevel),e=this.currentXP/t*100;this.xpBarFill.style.width=e+"%",this.xpBarText.textContent=`${this.currentXP}/${t}`,this.xpLevel.textContent=this.currentLevel}levelUp(){this.levelUpNumber.textContent=this.currentLevel,this.levelUpNotification.classList.add("show"),this.createLevelUpParticles(),setTimeout(()=>{this.levelUpNotification.classList.remove("show")},2e3)}createLevelUpParticles(){const t=window.innerWidth/2,e=window.innerHeight/2;for(let s=0;s<50;s++){const i=2*Math.PI*s/50,a=2+3*Math.random();this.particles.push({x:t,y:e,vx:Math.cos(i)*a,vy:Math.sin(i)*a,life:1,decay:.015+.01*Math.random(),size:3+4*Math.random(),color:this.getRandomColor()})}}getRandomColor(){const t=["#FFB014","#FFC04D","#FFD700","#FFA500"];return t[Math.floor(Math.random()*t.length)]}animate(){this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);for(let t=this.particles.length-1;t>=0;t--){const e=this.particles[t];e.x+=e.vx,e.y+=e.vy,e.vy+=.1,e.life-=e.decay,e.life<=0?this.particles.splice(t,1):(this.ctx.save(),this.ctx.globalAlpha=e.life,this.ctx.fillStyle=e.color,this.ctx.beginPath(),this.ctx.arc(e.x,e.y,e.size,0,2*Math.PI),this.ctx.fill(),this.ctx.restore())}requestAnimationFrame(()=>this.animate())}}function isMobileDevice(){const t=window.innerWidth<=768,e=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);return t||e}isMobileDevice()||(window.xpSystem=new XPSystem);class MinimapSystem{constructor(){this.minimap=document.getElementById("minimap"),this.viewportBox=document.getElementById("minimapViewportBox"),this.leftBoundary=document.querySelector(".minimap-boundary-left"),this.timeCycle=document.getElementById("timeCycle"),this.init()}init(){this.updateTimeRotation(),setInterval(()=>this.updateTimeRotation(),6e4),window.addEventListener("scroll",()=>this.updateViewportPosition()),window.addEventListener("resize",()=>this.updateViewportPosition()),this.updateViewportPosition(),this.minimap.addEventListener("click",t=>this.handleMinimapClick(t)),this.minimap.style.cursor="pointer"}handleMinimapClick(t){const e=this.minimap.getBoundingClientRect(),s=t.clientX-e.left,i=this.minimap.offsetWidth,a=this.viewportBox.offsetWidth,o=this.leftBoundary.offsetLeft+4,n=i-5-2-6-a,l=n-o,r=s-a/2,c=(Math.max(o,Math.min(n,r))-o)/l*(document.documentElement.scrollWidth-window.innerWidth);window.scrollTo({left:c,behavior:"smooth"})}updateTimeRotation(){const t=new Date,e=(60*t.getHours()+t.getMinutes()-360+1440)%1440/1440*360;this.timeCycle.style.transform=`rotate(-${e}deg)`}updateViewportPosition(){const t=window.scrollX/(document.documentElement.scrollWidth-window.innerWidth),e=this.minimap.offsetWidth,s=this.viewportBox.offsetWidth,i=this.leftBoundary.offsetLeft+4,a=i+t*(e-5-2-6-s-i);this.viewportBox.style.left=`${a}px`}}const minimapSystem=new MinimapSystem;window.addEventListener("wheel",t=>{Math.abs(t.deltaY)>Math.abs(t.deltaX)&&(t.preventDefault(),window.scrollBy({left:t.deltaY,behavior:"auto"}))},{passive:!1});let touchStartY=0,touchStartX=0;function updateCustomScrollbar(){const t=(window.pageXOffset||document.documentElement.scrollLeft)/(document.documentElement.scrollWidth-window.innerWidth)*100,e=document.getElementById("scrollbarThumb");e&&(e.style.width=t+"%")}document.addEventListener("touchstart",t=>{touchStartY=t.touches[0].clientY,touchStartX=t.touches[0].clientX},{passive:!0}),document.addEventListener("touchmove",t=>{Math.abs(t.touches[0].clientY-touchStartY)>Math.abs(t.touches[0].clientX-touchStartX)&&t.preventDefault()},{passive:!1}),window.addEventListener("scroll",updateCustomScrollbar),window.addEventListener("resize",updateCustomScrollbar),updateCustomScrollbar();const btnNorth=document.getElementById("btnNorth"),themeBadge=document.getElementById("themeBadge"),body=document.body;function updateThemeBadge(){body.classList.contains("light-mode")?themeBadge.textContent="Dark":themeBadge.textContent="Light"}function dispatchKeyEvent(t){const e=new KeyboardEvent("keydown",{key:t,code:t,bubbles:!0,cancelable:!0});document.dispatchEvent(e)}updateThemeBadge(),btnNorth.addEventListener("click",()=>{body.classList.toggle("light-mode"),updateThemeBadge(),body.classList.contains("light-mode")?achievementManager.unlock("light_mode"):achievementManager.unlock("dark_mode")}),document.getElementById("dpadUp").addEventListener("click",()=>{dispatchKeyEvent("ArrowUp")}),document.getElementById("dpadDown").addEventListener("click",()=>{dispatchKeyEvent("ArrowDown")});let scrollInterval=null;const scrollSpeed=20,scrollAmount=8;function startContinuousScroll(t){scrollInterval&&clearInterval(scrollInterval),window.scrollBy({left:"left"===t?-8:8,behavior:"auto"}),scrollInterval=setInterval(()=>{window.scrollBy({left:"left"===t?-8:8,behavior:"auto"})},20)}function stopContinuousScroll(){scrollInterval&&(clearInterval(scrollInterval),scrollInterval=null)}const dpadLeft=document.getElementById("dpadLeft");dpadLeft.addEventListener("mousedown",()=>startContinuousScroll("left")),dpadLeft.addEventListener("mouseup",stopContinuousScroll),dpadLeft.addEventListener("mouseleave",stopContinuousScroll),dpadLeft.addEventListener("touchstart",t=>{t.preventDefault(),startContinuousScroll("left")}),dpadLeft.addEventListener("touchend",stopContinuousScroll),dpadLeft.addEventListener("touchcancel",stopContinuousScroll);const dpadRight=document.getElementById("dpadRight");dpadRight.addEventListener("mousedown",()=>startContinuousScroll("right")),dpadRight.addEventListener("mouseup",stopContinuousScroll),dpadRight.addEventListener("mouseleave",stopContinuousScroll),dpadRight.addEventListener("touchstart",t=>{t.preventDefault(),startContinuousScroll("right")}),dpadRight.addEventListener("touchend",stopContinuousScroll),dpadRight.addEventListener("touchcancel",stopContinuousScroll),document.getElementById("dpadLeft").addEventListener("click",()=>{dispatchKeyEvent("ArrowLeft")}),document.getElementById("dpadRight").addEventListener("click",()=>{dispatchKeyEvent("ArrowRight")}),document.getElementById("btnEast").addEventListener("click",()=>{dispatchKeyEvent("b")}),document.getElementById("btnSouth").addEventListener("click",()=>{dispatchKeyEvent("a")});let keyScrollInterval=null,currentScrollKey=null;document.addEventListener("keydown",t=>{if("INPUT"!==t.target.tagName&&"TEXTAREA"!==t.target.tagName&&t.isTrusted&&("ArrowLeft"===t.key||"ArrowRight"===t.key)){if(t.preventDefault(),currentScrollKey===t.key)return;keyScrollInterval&&clearInterval(keyScrollInterval),currentScrollKey=t.key;const e="ArrowLeft"===t.key?-1:1,s=8;window.scrollBy({left:e*s,behavior:"auto"}),keyScrollInterval=setInterval(()=>{window.scrollBy({left:e*s,behavior:"auto"})},20)}}),document.addEventListener("keyup",t=>{"ArrowLeft"!==t.key&&"ArrowRight"!==t.key||keyScrollInterval&&(clearInterval(keyScrollInterval),keyScrollInterval=null,currentScrollKey=null)}),window.addEventListener("blur",()=>{stopContinuousScroll(),keyScrollInterval&&(clearInterval(keyScrollInterval),keyScrollInterval=null,currentScrollKey=null)});const projectFrames=document.querySelectorAll(".project-frame");projectFrames.forEach(t=>{t.style.backgroundImage=`url('${t.dataset.src}')`});let scrollTimeout,currentActiveFrame=null,changeTimeout=null;function updateActiveProject(){const t=window.innerWidth/2;let e=null,s=1/0;projectFrames.forEach(i=>{if(!i.dataset.hover)return;const a=i.getBoundingClientRect(),o=a.left+a.width/2,n=Math.abs(o-t);n<s&&(s=n,e=i)}),e!==currentActiveFrame&&(changeTimeout&&clearTimeout(changeTimeout),changeTimeout=setTimeout(()=>{currentActiveFrame&&currentActiveFrame.dataset.hover&&(currentActiveFrame.style.backgroundImage=`url('${currentActiveFrame.dataset.src}')`),e&&e.dataset.hover&&(e.style.backgroundImage=`url('${e.dataset.hover}')`),currentActiveFrame=e},500))}window.addEventListener("scroll",()=>{scrollTimeout&&window.cancelAnimationFrame(scrollTimeout),scrollTimeout=window.requestAnimationFrame(()=>{updateActiveProject()})}),updateActiveProject(),projectFrames.forEach(t=>{t.addEventListener("mouseenter",()=>{t.dataset.hover&&(t.style.backgroundImage=`url('${t.dataset.hover}')`)}),t.addEventListener("mouseleave",()=>{t!==currentActiveFrame&&(t.style.backgroundImage=`url('${t.dataset.src}')`)})});class BossWidget{constructor(){this.firebaseConfig={apiKey:"AIzaSyABduDmw6F50DZ2gFPhyQV_qlzGKaVT7mw",authDomain:"portfolio-boss-raid.firebaseapp.com",projectId:"portfolio-boss-raid",storageBucket:"portfolio-boss-raid.firebasestorage.app",messagingSenderId:"431982597085",appId:"1:431982597085:web:622b13cf3b8b8a1a565c34"},this.widget=document.getElementById("bossWidget"),this.bossBody=document.getElementById("bossBody"),this.bossHead=document.getElementById("bossHead"),this.healthFill=document.getElementById("bossHealthFill"),this.healthText=document.getElementById("bossHealthText"),this.bossName=document.getElementById("bossName"),this.phaseText=document.getElementById("bossPhase"),this.upgradeMenu=document.getElementById("upgradeMenu"),this.upgradeTooltip=document.getElementById("upgradeTooltip"),this.onlineCounter=document.getElementById("bossOnlineCounter"),this.currentPhase=1,this.bossState=null,this.playerData=null,this.bossData={},this.isMenuOpen=!1,this.lastDamageTime=Date.now(),this.lastLocalDamageTime=Date.now(),this.targetHealth=100,this.currentDisplayHealth=100,this.animationFrame=null,this.localDamageAccumulated=0,this.localBossHealth=0,this.lastHitAnimationTime=0,this.trackingCursor=!1,this.totalXP=0,this.bossListener=null,this.onlineListener=null,this.upgrades={damage:{name:"Damage",icon:"images/boss_upgrades/damage.png",baseCost:2,costMultiplier:2,getEffect:t=>`${1+2*t}`,description:"Damage"},attackspeed:{name:"Attack Speed",icon:"images/boss_upgrades/attackspeed.png",baseCost:128,costMultiplier:2,maxLevel:20,getEffect:t=>`${(2e3*Math.pow(.9,t)/1e3).toFixed(2)}s`,description:"Attack Speed"},critchance:{name:"Crit Chance",icon:"images/boss_upgrades/crit_chance.png",baseCost:2,costMultiplier:2,maxLevel:30,getEffect:t=>2*t+"%",description:"Crit Chance"},critdamage:{name:"Crit Damage",icon:"images/boss_upgrades/crit_damage.png",baseCost:2,costMultiplier:2,maxLevel:30,getEffect:t=>`+${100+10*t}%`,description:"Crit Damage"}},this.init()}async init(){try{if("undefined"==typeof firebase)return void this.useMockData();firebase.apps.length||firebase.initializeApp(this.firebaseConfig),this.auth=firebase.auth(),this.db=firebase.firestore();const t=firebase.app();this.functions=t.functions("australia-southeast1"),await this.auth.signInAnonymously(),await new Promise(t=>setTimeout(t,500)),await this.createPlayer(),await this.loadData(),this.setupEventListeners(),this.startLocalDamageLoop(),this.startDamageLoop(),this.startHealthAnimation(),this.listenToBossChanges(),this.listenToOnlineCount()}catch(t){this.useMockData()}}calculateBossHP(t){if(t<=100){const e=1e4,s=Math.pow(1e5,1/99);return Math.floor(e*Math.pow(s,t-1))}return 1e9*(t-99)}formatNumber(t){const e=Math.abs(t);return e>=1e9?(t/1e9).toFixed(2)+"b":e>=1e6?(t/1e6).toFixed(2)+"m":e>=1e3?(t/1e3).toFixed(2)+"k":Math.floor(t).toString()}useMockData(){this.bossState={currentHealth:1e4,maxHealth:1e4,phase:1},this.playerData={xp:0,totalXP:0,dps:1,upgrades:{damage:0,attackspeed:0,critchance:0,critdamage:0},totalDamage:0},this.localBossHealth=this.bossState.currentHealth,this.lastLocalDamageTime=Date.now(),this.totalXP=0,this.updateUI(),this.setupEventListeners(),this.startLocalDamageLoop(),this.startMockDamage(),this.startHealthAnimation()}async createPlayer(){const t=this.functions.httpsCallable("createPlayer");return await t()}async loadData(){const t=this.auth.currentUser.uid,e=await this.db.collection("players").doc(t).get();this.playerData=e.data(),this.playerData.totalXP||(this.playerData.totalXP=0),this.totalXP=this.playerData.totalXP,this.playerData.upgrades={};(await this.db.collection("players").doc(t).collection("upgrades").get()).forEach(t=>{this.playerData.upgrades[t.id]=t.data().level||0});const s=await this.db.collection("boss").doc("state").get();this.bossState=s.data(),this.localBossHealth=this.bossState.currentHealth,this.lastDamageTime=Date.now(),this.lastLocalDamageTime=Date.now(),this.updateUI(),window.xpSystem&&window.xpSystem.syncFromBossWidget()}listenToBossChanges(){this.bossListener&&this.bossListener(),this.bossListener=this.db.collection("boss").doc("state").onSnapshot(t=>{const e=this.bossState.currentHealth;this.bossState=t.data(),e&&this.bossState.currentHealth<e&&this.createServerSwipeVFX(),this.localBossHealth=this.bossState.currentHealth,this.updateUI()})}listenToOnlineCount(){this.onlineListener&&this.onlineListener(),this.onlineListener=this.db.collection("stats").doc("online").onSnapshot(t=>{if(t.exists){const e=t.data().count||0;this.onlineCounter.textContent=`Online: ${e}`}})}getAttackInterval(){const t=(this.playerData.upgrades||{}).attackspeed||0;return 2e3*Math.pow(.9,t)}getBaseDamage(){let t=this.playerData.dps||1;return t+=2*((this.playerData.upgrades||{}).damage||0),t}getCritChance(){return 2*((this.playerData.upgrades||{}).critchance||0)}getCritMultiplier(){return 1+.1*((this.playerData.upgrades||{}).critdamage||0)}calculateDPS(){const t=this.getBaseDamage(),e=this.getCritChance()/100;return t*(1+this.getCritMultiplier()*e)/(this.getAttackInterval()/1e3)}startLocalDamageLoop(){setInterval(()=>{const t=Date.now();this.localBossHealth<=0&&(this.localBossHealth=0);const e=this.getAttackInterval();t-this.lastHitAnimationTime>=e&&(this.showHitAnimation(),this.lastHitAnimationTime=t),this.updateLocalUI()},100)}startDamageLoop(){setInterval(async()=>{const t=Date.now(),e=this.lastDamageTime,s=t,i=this.calculateDPS()*((s-e)/1e3);try{const a=this.functions.httpsCallable("submitDamage"),o=await a({damage:i,windowStart:e,windowEnd:s});this.lastDamageTime=t,this.localDamageAccumulated=0,o.data&&void 0!==o.data.newTotalXP&&(this.playerData.totalXP=o.data.newTotalXP,this.totalXP=o.data.newTotalXP);const n=await this.db.collection("boss").doc("state").get();this.bossState=n.data(),this.localBossHealth=this.bossState.currentHealth,window.xpSystem&&window.xpSystem.syncFromBossWidget(),this.updateUI()}catch(t){}},3e5)}startMockDamage(){setInterval(()=>{const t=this.calculateDPS(),e=300*t;this.bossState.currentHealth-=e,this.bossState.currentHealth<=0&&(this.bossState.phase++,this.bossState.maxHealth=this.calculateBossHP(this.bossState.phase),this.bossState.currentHealth=this.bossState.maxHealth),this.localBossHealth=this.bossState.currentHealth;const s=Math.floor(300*t*.5);this.playerData.totalXP=(this.playerData.totalXP||0)+s,this.totalXP=this.playerData.totalXP,window.xpSystem&&window.xpSystem.syncFromBossWidget(),this.updateUI()},3e5)}updateLocalUI(){const t=this.localBossHealth/this.bossState.maxHealth*100;this.targetHealth=Math.max(0,t)}async updateUI(){const t=this.bossState.phase||1;this.currentPhase=t,this.phaseText.textContent=`Phase ${t}`,await this.loadBossData(t),this.updateBossImages(t);const e=this.localBossHealth/this.bossState.maxHealth*100;this.targetHealth=Math.max(0,e)}async loadBossData(t){const e=await this.resolveAssetPhase(t);if(this.assetPhase=e,this.bossData[e])this.bossName.textContent=this.bossData[e].name;else try{const t=await fetch(`images/boss/phase_${e}/boss_data.json`),s=await t.json();this.bossData[e]=s,this.bossName.textContent=s.name}catch(t){this.bossName.textContent="Unknown Boss"}}async resolveAssetPhase(t){if(this.phaseFallbackCache||(this.phaseFallbackCache={}),null!=this.phaseFallbackCache[t])return this.phaseFallbackCache[t];for(let e=t;e>=1;e--){if(null!=this.phaseFallbackCache[e])return this.phaseFallbackCache[t]=this.phaseFallbackCache[e],this.phaseFallbackCache[t];let s=!1;try{const t=await fetch(`images/boss/phase_${e}/boss_data.json`,{method:"HEAD",cache:"no-store"});s=t.ok}catch(t){}if(!s)try{const t=await fetch(`images/boss/phase_${e}/boss_data.json`,{cache:"no-store"});s=t.ok}catch(t){}if(s)return this.phaseFallbackCache[e]=e,this.phaseFallbackCache[t]=e,e}return this.phaseFallbackCache[t]=1,1}updateBossImages(t){const e=this.assetPhase||t;this.bossBody.style.backgroundImage=`url('images/boss/phase_${e}/body.png')`,this.bossHead.style.backgroundImage=`url('images/boss/phase_${e}/head.png')`,this.currentPhase=e}startHealthAnimation(){const t=()=>{const e=this.targetHealth-this.currentDisplayHealth;Math.abs(e)>.1?this.currentDisplayHealth+=.1*e:this.currentDisplayHealth=this.targetHealth,this.healthFill.style.width=`${this.currentDisplayHealth}%`;const s=this.bossState.maxHealth,i=this.currentDisplayHealth/100*s;this.healthText.textContent=`${this.formatNumber(i)} / ${this.formatNumber(s)}`,this.updateHeadPosition(),this.animationFrame=requestAnimationFrame(t)};t()}updateHeadPosition(){const t=this.bossBody.getBoundingClientRect(),e=this.bossBody.parentElement.getBoundingClientRect(),s=t.left+t.width/2-e.left,i=t.top+t.height/2-e.top;this.bossHead.style.left=`${s}px`,this.bossHead.style.top=`${i}px`,this.bossHead.style.transform="translate(-50%, -50%)"}showHitAnimation(){const t=this.getBaseDamage(),e=this.getCritChance(),s=this.getCritMultiplier(),i=100*Math.random()<e,a=i?t*(1+s):t;this.localBossHealth-=a,this.localDamageAccumulated+=a,this.lastLocalDamageTime=Date.now();const o=Math.max(1,Math.floor(.5*a));this.totalXP+=o,this.playerData.totalXP||(this.playerData.totalXP=0),this.playerData.totalXP+=o,window.xpSystem&&window.xpSystem.syncFromBossWidget(),this.bossHead.classList.add("hit"),this.bossHead.style.backgroundImage=`url('images/boss/phase_${this.currentPhase}/head_hit.png')`,this.createSwipeVFX(i),this.showXPGainText(o),setTimeout(()=>{this.bossHead.classList.remove("hit"),this.bossHead.style.backgroundImage=`url('images/boss/phase_${this.currentPhase}/head.png')`},300)}showXPGainText(t){const e=document.createElement("div");e.className="boss-xp-text",e.textContent=`+${t} XP`,this.bossBody.appendChild(e),setTimeout(()=>{e.remove()},1e3)}createSwipeVFX(t=!1){const e=document.createElement("div");e.className="boss-swipe-vfx";const s=120*Math.random()-60;e.style.transform=`translate(-50%, -50%) rotate(${s}deg)`,this.bossHead.appendChild(e),setTimeout(()=>{e.remove()},200),t&&setTimeout(()=>{const t=document.createElement("div");t.className="boss-swipe-vfx-crit";const e=120*Math.random()-60;t.style.transform=`translate(-50%, -50%) rotate(${e}deg)`,this.bossHead.appendChild(t),setTimeout(()=>{t.remove()},200);const s=document.createElement("div");s.className="boss-crit-text",s.textContent="CRIT!",this.bossHead.appendChild(s),setTimeout(()=>{s.remove()},500)},100)}createServerSwipeVFX(){const t=document.createElement("div");t.className="boss-swipe-vfx-server";const e=120*Math.random()-60;t.style.transform=`translate(-50%, -50%) rotate(${e}deg)`,this.bossHead.appendChild(t),setTimeout(()=>{t.remove()},200)}setupEventListeners(){this.widget.addEventListener("click",t=>{t.target.closest(".upgrade-button")||t.target.closest(".upgrade-menu")||this.toggleUpgradeMenu()}),document.addEventListener("click",t=>{!t.target.closest(".boss-widget")&&this.isMenuOpen&&this.closeUpgradeMenu()}),document.addEventListener("mousemove",t=>{if(this.trackingCursor&&this.upgradeTooltip.classList.contains("show")){const e=20,s=20;this.upgradeTooltip.style.left=`${t.clientX+e}px`,this.upgradeTooltip.style.top=`${t.clientY+s}px`}});document.querySelectorAll(".upgrade-button").forEach(t=>{const e=t.dataset.upgrade;t.addEventListener("mouseenter",()=>{this.showUpgradeTooltip(e,t)}),t.addEventListener("mouseleave",()=>{this.hideUpgradeTooltip()}),t.addEventListener("click",t=>{t.stopPropagation(),this.purchaseUpgrade(e)})})}toggleUpgradeMenu(){this.isMenuOpen=!this.isMenuOpen,this.isMenuOpen?this.upgradeMenu.classList.add("show"):(this.upgradeMenu.classList.remove("show"),this.hideUpgradeTooltip())}closeUpgradeMenu(){this.isMenuOpen=!1,this.upgradeMenu.classList.remove("show"),this.hideUpgradeTooltip()}showUpgradeTooltip(t,e){if(!this.isMenuOpen)return;const s=this.upgrades[t],i=this.playerData.upgrades&&this.playerData.upgrades[t]||0,a=this.playerData.totalXP||0,o=s.maxLevel&&i>=s.maxLevel;if(document.getElementById("tooltipName").textContent=s.name,o){document.getElementById("tooltipLevel").textContent=`Level: ${i} (MAX)`,document.getElementById("tooltipCost").textContent="MAX LEVEL REACHED";const t=s.getEffect(i);document.getElementById("tooltipEffect").innerHTML=`<span class="stat-increase">${t}</span>`}else{const t=Math.floor(s.baseCost*Math.pow(s.costMultiplier,i)),e=s.getEffect(i),o=s.getEffect(i+1),n=s.maxLevel?`Level: ${i}/${s.maxLevel}`:`Level: ${i}`;document.getElementById("tooltipLevel").textContent=n,document.getElementById("tooltipCost").textContent=`Cost: ${t} Total XP (Have: ${a})`,document.getElementById("tooltipEffect").innerHTML=`<span class="stat-increase">${e} >> ${o}</span>`}this.upgradeTooltip.classList.add("show"),this.trackingCursor=!0}hideUpgradeTooltip(){this.upgradeTooltip.classList.remove("show"),this.trackingCursor=!1}async addAchievementXP(t){if(this.totalXP+=t,this.playerData.totalXP||(this.playerData.totalXP=0),this.playerData.totalXP+=t,window.xpSystem&&window.xpSystem.syncFromBossWidget(),this.auth&&this.functions)try{const e=this.functions.httpsCallable("grantAchievementXP"),s=await e({xpAmount:t});this.playerData.totalXP=s.data.newTotalXP,this.totalXP=s.data.newTotalXP}catch(t){}}async purchaseUpgrade(t){const e=this.upgrades[t],s=this.playerData.upgrades&&this.playerData.upgrades[t]||0;if(e.maxLevel&&s>=e.maxLevel)return void notificationToast.warning(`${e.name} is already at MAX level (${e.maxLevel})!`);const i=Math.floor(e.baseCost*Math.pow(e.costMultiplier,s)),a=this.playerData.totalXP||0;if(a<i)return void notificationToast.error(`Not enough Total XP! Need ${i}, have ${a}`);if(this.auth&&this.functions)try{const e=this.functions.httpsCallable("purchaseUpgrade"),i=await e({upgradeType:t});this.playerData.upgrades||(this.playerData.upgrades={}),this.playerData.upgrades[t]=s+1,this.playerData.totalXP=i.data.newTotalXP,this.totalXP=i.data.newTotalXP,window.xpSystem&&window.xpSystem.syncFromBossWidget()}catch(t){return void notificationToast.error("Failed to purchase upgrade: "+t.message)}else{const e=this.playerData.totalXP||0;if(e<i)return void notificationToast.error(`Not enough Total XP! Need ${i}, have ${e}`);this.playerData.upgrades||(this.playerData.upgrades={}),this.playerData.upgrades[t]=s+1,this.playerData.totalXP-=i,this.totalXP=this.playerData.totalXP,window.xpSystem&&window.xpSystem.syncFromBossWidget()}const o=document.querySelector(`[data-upgrade="${t}"]`);this.showUpgradeTooltip(t,o)}cleanup(){this.bossListener&&(this.bossListener(),this.bossListener=null),this.onlineListener&&(this.onlineListener(),this.onlineListener=null)}}isMobileDevice()||(window.bossWidget=new BossWidget,window.addEventListener("beforeunload",()=>{window.bossWidget&&window.bossWidget.cleanup()}));
+const dom = {
+  appShell: document.getElementById("app"),
+  mobileMenuToggle: document.getElementById("mobileMenuToggle"),
+  mobileNavScrim: document.getElementById("mobileNavScrim"),
+  navRail: document.getElementById("navRail"),
+  contentViewport: document.getElementById("contentViewport")
+};
+
+const appState = {
+  content: null,
+  ui: {
+    projectsExpanded: true,
+    activeTarget: "about",
+    mobileNavOpen: false
+  },
+  steamReviews: new Map(),
+  itchRatings: new Map(),
+  mediaObserver: null,
+  sectionElements: new Map(),
+  navElements: new Map()
+};
+
+async function loadContent() {
+  const response = await fetch("data/site-content.json", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("Failed to load site content.");
+  }
+  return response.json();
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("\"", "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function extractSteamAppId(project) {
+  const steamLink = project.links.find((link) => /store\.steampowered\.com\/app\/(\d+)/i.test(link.url));
+  if (!steamLink) {
+    return null;
+  }
+
+  const match = steamLink.url.match(/store\.steampowered\.com\/app\/(\d+)/i);
+  return match ? match[1] : null;
+}
+
+function extractItchUrl(project) {
+  const itchLink = project.links.find((link) => /https?:\/\/[^\s]+\.itch\.io\/[^\s/]+/i.test(link.url));
+  return itchLink ? itchLink.url : null;
+}
+
+function formatReviewPercent(reviewSummary) {
+  if (typeof reviewSummary.review_score !== "number") {
+    return null;
+  }
+
+  if (reviewSummary.review_score <= 1) {
+    return `${Math.round(reviewSummary.review_score * 100)}%`;
+  }
+
+  return `${Math.round(reviewSummary.review_score)}%`;
+}
+
+function renderSteamReviewBadge(project) {
+  const appId = extractSteamAppId(project);
+  if (!appId) {
+    return "";
+  }
+
+  return `
+    <div class="steam-review-badge" data-steam-app-id="${escapeHtml(appId)}" aria-live="polite">
+      <span class="steam-review-label">Steam Reviews</span>
+      <span class="steam-review-value">Loading...</span>
+    </div>
+  `;
+}
+
+function renderItchRatingBadge(project) {
+  const itchUrl = extractItchUrl(project);
+  if (!itchUrl) {
+    return "";
+  }
+
+  return `
+    <div class="store-rating-badge" data-itch-url="${escapeHtml(itchUrl)}" aria-live="polite">
+      <span class="store-rating-label">itch.io Rating</span>
+      <span class="store-rating-value">Loading...</span>
+    </div>
+  `;
+}
+
+function getStoreRatingsPayload() {
+  return {
+    projects: appState.content.projects.map((project) => ({
+      id: project.id,
+      links: project.links.map((link) => ({
+        url: link.url
+      }))
+    }))
+  };
+}
+
+function applySteamReviewBadges() {
+  dom.contentViewport.querySelectorAll("[data-steam-app-id]").forEach((badge) => {
+    const appId = badge.dataset.steamAppId;
+    const summary = appState.steamReviews.get(appId);
+    const value = badge.querySelector(".steam-review-value");
+
+    if (!value || !summary) {
+      return;
+    }
+
+    if (summary.error) {
+      value.textContent = "Unavailable";
+      badge.classList.add("is-unavailable");
+      return;
+    }
+
+    value.textContent = summary.valueText;
+    badge.classList.add("is-loaded");
+  });
+}
+
+function applyItchRatingBadges() {
+  dom.contentViewport.querySelectorAll("[data-itch-url]").forEach((badge) => {
+    const itchUrl = badge.dataset.itchUrl;
+    const summary = appState.itchRatings.get(itchUrl);
+    const value = badge.querySelector(".store-rating-value");
+
+    if (!value || !summary) {
+      return;
+    }
+
+    if (summary.error) {
+      value.textContent = "Unavailable";
+      badge.classList.add("is-unavailable");
+      return;
+    }
+
+    if (summary.status === "unrated") {
+      value.textContent = "No public rating";
+      badge.classList.add("is-unavailable");
+      return;
+    }
+
+    value.textContent = summary.valueText;
+    badge.classList.add("is-loaded");
+  });
+}
+
+function markStoreRatingsUnavailable() {
+  dom.contentViewport.querySelectorAll("[data-steam-app-id]").forEach((badge) => {
+    const value = badge.querySelector(".steam-review-value");
+    if (value) {
+      value.textContent = "Unavailable";
+      badge.classList.add("is-unavailable");
+    }
+  });
+
+  dom.contentViewport.querySelectorAll("[data-itch-url]").forEach((badge) => {
+    const value = badge.querySelector(".store-rating-value");
+    if (value) {
+      value.textContent = "Unavailable";
+      badge.classList.add("is-unavailable");
+    }
+  });
+}
+
+async function loadStoreRatings() {
+  const response = await fetch("/api/store-ratings", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    cache: "default",
+    body: JSON.stringify(getStoreRatingsPayload())
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to load cached store ratings.");
+  }
+
+  const payload = await response.json();
+  const ratings = Array.isArray(payload?.ratings) ? payload.ratings : [];
+
+  appState.steamReviews.clear();
+  appState.itchRatings.clear();
+
+  ratings.forEach((rating) => {
+    if (rating.type === "steam" && rating.appId) {
+      appState.steamReviews.set(rating.appId, rating);
+    }
+
+    if (rating.type === "itch" && rating.url) {
+      appState.itchRatings.set(rating.url, rating);
+    }
+  });
+
+  dom.contentViewport.querySelectorAll("[data-steam-app-id]").forEach((badge) => {
+    const appId = badge.dataset.steamAppId;
+    if (!appState.steamReviews.has(appId)) {
+      appState.steamReviews.set(appId, { error: true });
+    }
+  });
+
+  dom.contentViewport.querySelectorAll("[data-itch-url]").forEach((badge) => {
+    const itchUrl = badge.dataset.itchUrl;
+    if (!appState.itchRatings.has(itchUrl)) {
+      appState.itchRatings.set(itchUrl, { error: true });
+    }
+  });
+
+  applyItchRatingBadges();
+  applySteamReviewBadges();
+}
+
+function renderNav() {
+  const { site, sections, projects } = appState.content;
+  const navUtilityLinks = sections.contact.links
+    .map((link) => `<a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`)
+    .join("");
+
+  dom.navRail.innerHTML = `
+    <div class="nav-header">
+      <h1 class="nav-title">${escapeHtml(site.title)}</h1>
+      <div class="nav-role">${escapeHtml(site.role)}</div>
+      <div class="nav-intro">${escapeHtml(site.intro)}</div>
+    </div>
+    <div class="nav-list">
+      <button class="nav-button" data-target="about">About</button>
+      <button class="nav-button" data-target="skills">Skills</button>
+      <button class="nav-button" data-target="experience">Experience</button>
+      <div class="nav-section">
+        <button class="nav-group-toggle" data-group-toggle="projects">
+          <span>Projects</span>
+          <span>${appState.ui.projectsExpanded ? "-" : "+"}</span>
+        </button>
+        <div class="nav-project-list${appState.ui.projectsExpanded ? " is-expanded" : ""}">
+          ${projects.map((project) => `<button class="nav-project-button" data-target="project-${project.id}">${escapeHtml(project.label)}</button>`).join("")}
+        </div>
+      </div>
+      <button class="nav-button" data-target="contact">Contact</button>
+    </div>
+    <div class="nav-utility">
+      ${navUtilityLinks}
+    </div>
+  `;
+
+  appState.navElements.clear();
+  dom.navRail.querySelectorAll("[data-target]").forEach((element) => {
+    appState.navElements.set(element.dataset.target, element);
+    element.addEventListener("click", () => {
+      scrollToTarget(element.dataset.target);
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        setMobileNavOpen(false);
+      }
+    });
+  });
+
+  dom.navRail.querySelector("[data-group-toggle='projects']")?.addEventListener("click", () => {
+    appState.ui.projectsExpanded = !appState.ui.projectsExpanded;
+    renderNav();
+    updateActiveNav();
+  });
+}
+
+function renderContent() {
+  const { site, sections, projects } = appState.content;
+
+  dom.contentViewport.innerHTML = `
+    <div class="content-stack">
+      <section class="hero-panel" data-section="hero">
+        <h2 class="hero-title">${escapeHtml(site.title)}</h2>
+        <div class="hero-copy">${escapeHtml(site.intro)}</div>
+      </section>
+
+      <section class="section-panel" id="about" data-section="about">
+        <div class="section-header">
+          <h2 class="section-title">${escapeHtml(sections.about.label)}</h2>
+          <div class="section-kicker">Overview</div>
+        </div>
+        <div class="about-body">
+          <p class="section-summary">${escapeHtml(sections.about.summary)}</p>
+          <div class="section-body">
+            ${sections.about.body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+          </div>
+        </div>
+      </section>
+
+      <section class="section-panel" id="skills" data-section="skills">
+        <div class="section-header">
+          <h2 class="section-title">${escapeHtml(sections.skills.label)}</h2>
+          <div class="section-kicker">Capabilities</div>
+        </div>
+        <div class="skills-grid">
+          ${sections.skills.clusters.map((cluster) => `
+            <article class="skill-card">
+              <h3>${escapeHtml(cluster.label)}</h3>
+              <ul class="skill-list">
+                ${cluster.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+              </ul>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+
+      <section class="section-panel" id="experience" data-section="experience">
+        <div class="section-header">
+          <h2 class="section-title">${escapeHtml(sections.experience.label)}</h2>
+          <div class="section-kicker">Timeline</div>
+        </div>
+        <div class="experience-grid">
+          ${sections.experience.entries.map((entry) => `
+            <article class="experience-card">
+              <div class="experience-period">${escapeHtml(entry.period)}</div>
+              <h3>${escapeHtml(entry.title)}</h3>
+              <p class="experience-copy">${escapeHtml(entry.body)}</p>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+
+      <section class="section-panel" id="projects" data-section="projects">
+        <div class="section-header">
+          <h2 class="section-title">Projects</h2>
+          <div class="section-kicker">${projects.length} Entries</div>
+        </div>
+        <div class="projects-grid">
+          ${projects.map((project) => `
+            <article class="project-panel" id="project-${escapeHtml(project.id)}" data-section="project-${escapeHtml(project.id)}">
+              <div class="project-media">
+                ${renderProjectMedia(project)}
+              </div>
+              <div class="project-content">
+                <div class="project-meta">${escapeHtml(project.platform)} · ${escapeHtml(project.year)}</div>
+                <h3 class="project-title">${escapeHtml(project.title)}</h3>
+                <div class="project-ratings">
+                  ${renderSteamReviewBadge(project)}
+                  ${renderItchRatingBadge(project)}
+                </div>
+                <p class="project-summary">${escapeHtml(project.summary)}</p>
+                <div class="project-meta">Role: ${escapeHtml(project.role)}</div>
+                <div class="project-meta">Team: ${escapeHtml(project.team.join(", "))}</div>
+                <div class="project-links">
+                  ${project.links.map((link) => `<a class="project-link" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`).join("")}
+                </div>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+
+      <section class="section-panel" id="contact" data-section="contact">
+        <div class="section-header">
+          <h2 class="section-title">${escapeHtml(sections.contact.label)}</h2>
+          <div class="section-kicker">Reach Out</div>
+        </div>
+        <div class="contact-grid">
+          <article class="contact-card">
+            <div class="contact-label">Availability</div>
+            <p class="section-body">${escapeHtml(sections.contact.body)}</p>
+          </article>
+          <article class="contact-card">
+            <div class="contact-label">Links</div>
+            <div class="contact-links">
+              ${sections.contact.links.map((link) => `<a class="contact-link" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`).join("")}
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  `;
+
+  appState.sectionElements.clear();
+  dom.contentViewport.querySelectorAll("[data-section]").forEach((element) => {
+    appState.sectionElements.set(element.dataset.section, element);
+  });
+}
+
+function renderProjectMedia(project) {
+  const insetPoster = project.poster
+    ? `<img class="project-poster-inset" src="${escapeHtml(project.poster)}" alt="${escapeHtml(project.title)} poster">`
+    : "";
+  const mainPoster = project.poster
+    ? `<img class="project-media-poster" src="${escapeHtml(project.poster)}" alt="${escapeHtml(project.title)} poster" loading="lazy" decoding="async">`
+    : "";
+
+  if (project.video && /\.mp4($|\?)/i.test(project.video)) {
+    return `
+      ${mainPoster}
+      <video class="project-media-asset" data-src="${escapeHtml(project.video)}" autoplay muted loop playsinline preload="none" poster="${escapeHtml(project.poster || "")}"></video>
+      ${insetPoster}
+    `;
+  }
+
+  if (project.video) {
+    return `
+      ${mainPoster}
+      <img class="project-media-asset" data-src="${escapeHtml(project.video)}" alt="${escapeHtml(project.title)}" loading="lazy" decoding="async">
+      ${insetPoster}
+    `;
+  }
+
+  if (project.poster) {
+    return `<img src="${escapeHtml(project.poster)}" alt="${escapeHtml(project.title)}">`;
+  }
+
+  return "";
+}
+
+function revealProjectMedia(mediaContainer) {
+  mediaContainer.classList.add("is-loaded");
+}
+
+function loadProjectMediaAsset(asset) {
+  if (!asset || asset.dataset.loaded === "true" || !asset.dataset.src) {
+    return;
+  }
+
+  const mediaContainer = asset.closest(".project-media");
+  const onReady = () => {
+    asset.dataset.loaded = "true";
+    revealProjectMedia(mediaContainer);
+    asset.removeEventListener("load", onReady);
+    asset.removeEventListener("loadeddata", onReady);
+    asset.removeEventListener("error", onError);
+  };
+
+  const onError = () => {
+    asset.dataset.loaded = "error";
+    asset.removeEventListener("load", onReady);
+    asset.removeEventListener("loadeddata", onReady);
+    asset.removeEventListener("error", onError);
+  };
+
+  asset.addEventListener("load", onReady);
+  asset.addEventListener("loadeddata", onReady);
+  asset.addEventListener("error", onError);
+
+  asset.src = asset.dataset.src;
+  if (asset.tagName === "VIDEO") {
+    asset.load();
+  }
+}
+
+function initLazyProjectMedia() {
+  appState.mediaObserver?.disconnect();
+
+  const assets = [...dom.contentViewport.querySelectorAll(".project-media-asset[data-src]")];
+  if (!assets.length) {
+    return;
+  }
+
+  appState.mediaObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) {
+        return;
+      }
+
+      loadProjectMediaAsset(entry.target);
+      observer.unobserve(entry.target);
+    });
+  }, {
+    root: null,
+    rootMargin: "300px 0px",
+    threshold: 0.01
+  });
+
+  assets.forEach((asset) => {
+    appState.mediaObserver.observe(asset);
+  });
+}
+
+function scrollToTarget(target) {
+  const element = appState.sectionElements.get(target);
+  if (!element) {
+    return;
+  }
+
+  appState.ui.activeTarget = target;
+  updateActiveNav();
+  element.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function setMobileNavOpen(isOpen) {
+  appState.ui.mobileNavOpen = isOpen;
+  dom.appShell.classList.toggle("is-mobile-nav-open", isOpen);
+  dom.mobileMenuToggle?.setAttribute("aria-expanded", String(isOpen));
+  dom.mobileNavScrim.hidden = !isOpen;
+}
+
+function updateActiveNav() {
+  appState.navElements.forEach((element) => {
+    element.classList.toggle("is-active", element.dataset.target === appState.ui.activeTarget);
+  });
+}
+
+function handleScrollSpy() {
+  let bestTarget = appState.ui.activeTarget;
+  let bestDistance = Infinity;
+
+  appState.sectionElements.forEach((element, key) => {
+    if (key === "hero") {
+      return;
+    }
+    const rect = element.getBoundingClientRect();
+    const distance = Math.abs(rect.top - 28);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestTarget = key;
+    }
+  });
+
+  if (bestTarget !== appState.ui.activeTarget) {
+    appState.ui.activeTarget = bestTarget;
+    updateActiveNav();
+  }
+}
+
+function addEvents() {
+  dom.contentViewport.addEventListener("scroll", handleScrollSpy, { passive: true });
+  dom.mobileMenuToggle?.addEventListener("click", () => {
+    setMobileNavOpen(!appState.ui.mobileNavOpen);
+  });
+  dom.mobileNavScrim?.addEventListener("click", () => {
+    setMobileNavOpen(false);
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900 && appState.ui.mobileNavOpen) {
+      setMobileNavOpen(false);
+    }
+  }, { passive: true });
+}
+
+async function init() {
+  appState.content = await loadContent();
+  renderNav();
+  renderContent();
+  initLazyProjectMedia();
+  addEvents();
+  updateActiveNav();
+  try {
+    await loadStoreRatings();
+  } catch (error) {
+    console.error(error);
+    markStoreRatingsUnavailable();
+  }
+}
+
+init().catch((error) => {
+  console.error(error);
+  dom.navRail.innerHTML = `
+    <div class="nav-header">
+      <h1 class="nav-title">Portfolio Error</h1>
+      <div class="nav-intro">The content failed to load.</div>
+    </div>
+  `;
+});

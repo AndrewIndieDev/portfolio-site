@@ -1,311 +1,344 @@
-const { https } = require("firebase-functions/v2");
-const { scheduler } = require("firebase-functions/v2");
+const { onRequest } = require("firebase-functions/v2/https");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// Calculate boss max HP for a given phase
-function calculateBossHP(phase) {
-  if (phase <= 100) {
-    // Exponential growth from 10,000 (phase 1) to 1,000,000,000 (phase 100)
-    const baseHP = 10000;
-    const multiplier = Math.pow(100000, 1/99); // ≈ 1.1174
-    return Math.floor(baseHP * Math.pow(multiplier, phase - 1));
-  } else {
-    // Linear growth: 1 billion HP per level after phase 100
-    return 1000000000 * (phase - 99);
+const REGION = "australia-southeast1";
+const STORE_RATINGS_COLLECTION = "storeRatings";
+const STORE_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
+const BROWSER_CACHE_SECONDS = 10 * 60;
+
+function now() {
+  return Date.now();
+}
+
+function encodeStoreKey(key) {
+  return Buffer.from(key).toString("base64url");
+}
+
+function parseSteamAppId(url) {
+  if (typeof url !== "string") {
+    return null;
   }
+
+  const match = url.match(/store\.steampowered\.com\/app\/(\d+)/i);
+  return match ? match[1] : null;
 }
 
-// Calculate player's DPS based on upgrade levels
-function calculateDPS(upgrades) {
-  // Base damage: 1 + (damage level * 2)
-  const damageLevel = upgrades.damage || 0;
-  const baseDamage = 1 + (damageLevel * 2);
-
-  // Crit chance: level * 2 (as percentage)
-  const critChanceLevel = upgrades.critchance || 0;
-  const critChance = (critChanceLevel * 2) / 100; // Convert to decimal
-
-  // Crit multiplier: 1.0 + (level * 0.1)
-  const critDamageLevel = upgrades.critdamage || 0;
-  const critMultiplier = critDamageLevel * 0.1;
-
-  // Average damage per hit = baseDamage * (1 + critMultiplier * critChance)
-  const avgDamagePerHit = baseDamage * (1 + critMultiplier * critChance);
-
-  // Attack speed: base 2000ms, reduced by 10% per level
-  const attackSpeedLevel = upgrades.attackspeed || 0;
-  const attackInterval = 2000 * Math.pow(0.9, attackSpeedLevel);
-
-  // DPS = average damage per hit / (interval in seconds)
-  const dps = avgDamagePerHit / (attackInterval / 1000);
-
-  return dps;
-}
-
-// Calculate XP earned based on DPS and time elapsed
-function calculateXPEarned(dps, timeElapsedMs) {
-  // XP = 50% of damage dealt
-  const damage = dps * (timeElapsedMs / 1000);
-  const xp = damage * 0.5;
-  return Math.floor(xp);
-}
-
-// CORS configuration
-const corsOptions = {
-  cors: true, // Allow all origins in development
-};
-
-exports.createPlayer = https.onCall(
-  { region: "australia-southeast1", cors: true },
-  async (request) => {
-    // In Functions v2, auth is in request.auth, not context.auth
-    if (!request.auth) throw new https.HttpsError("unauthenticated", "Login required");
-
-    const uid = request.auth.uid;
-    const playerRef = db.collection("players").doc(uid);
-    const doc = await playerRef.get();
-
-    if (!doc.exists) {
-      await playerRef.set({
-        totalXP: 0,
-        lastSeen: Date.now(),
-        lastDamageSubmit: Date.now(),
-        totalDamage: 0
-      });
-    }
-
-    return { success: true };
+function normalizeItchUrl(url) {
+  if (typeof url !== "string") {
+    return null;
   }
-);
 
-exports.submitDamage = https.onCall(
-  { region: "australia-southeast1", cors: true },
-  async (request) => {
-    // In Functions v2, auth is in request.auth, data is in request.data
-    if (!request.auth) throw new https.HttpsError("unauthenticated", "Login required");
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
 
-    const uid = request.auth.uid;
-    const { damage, windowStart, windowEnd } = request.data;
+  if (!/\.itch\.io$/i.test(parsed.hostname)) {
+    return null;
+  }
 
-    const playerRef = db.collection("players").doc(uid);
-    const playerDoc = await playerRef.get();
-    if (!playerDoc.exists) throw new https.HttpsError("not-found", "Player not found");
+  const pathParts = parsed.pathname.split("/").filter(Boolean);
+  if (!pathParts.length) {
+    return null;
+  }
 
-    const player = playerDoc.data();
+  return `https://${parsed.hostname}/${pathParts[0]}`;
+}
 
-    // Load player's upgrades to calculate DPS
-    const upgradesSnapshot = await playerRef.collection("upgrades").get();
-    const upgrades = {};
-    upgradesSnapshot.forEach(doc => {
-      upgrades[doc.id] = doc.data().level || 0;
-    });
+function normalizeStoreSources(payload) {
+  const projects = Array.isArray(payload?.projects) ? payload.projects : [];
+  const keyed = new Map();
 
-    // Calculate DPS from upgrades (server-side, can't be cheated)
-    const dps = calculateDPS(upgrades);
+  for (const project of projects) {
+    const projectId = typeof project?.id === "string" ? project.id : null;
+    const links = Array.isArray(project?.links) ? project.links : [];
 
-    // Calculate XP earned based on DPS and time elapsed
-    const timeElapsed = Date.now() - (player.lastDamageSubmit || Date.now());
-    const xpEarned = calculateXPEarned(dps, timeElapsed);
+    for (const link of links) {
+      const url = typeof link?.url === "string" ? link.url : "";
+      const steamAppId = parseSteamAppId(url);
 
-    // Calculate damage based on DPS and time elapsed (server authoritative)
-    const calculatedDamage = dps * (timeElapsed / 1000);
-    const maxAllowedDamage = 100000;
-    const appliedDamage = Math.min(calculatedDamage, maxAllowedDamage);
-
-    let bossDied = false;
-    const bossRef = db.collection("boss").doc("state");
-    await db.runTransaction(async (tx) => {
-      const bossDoc = await tx.get(bossRef);
-      if (!bossDoc.exists) throw new https.HttpsError("not-found", "Boss not found");
-
-      const boss = bossDoc.data();
-      let newHealth = boss.currentHealth - appliedDamage;
-
-      if (newHealth <= 0) {
-        // Boss dies → advance to next phase
-        const newPhase = boss.phase + 1;
-        const newMaxHealth = calculateBossHP(newPhase);
-        newHealth = newMaxHealth;
-        bossDied = true;
-
-        tx.update(bossRef, {
-          currentHealth: newHealth,
-          maxHealth: newMaxHealth,
-          phase: newPhase,
-          deathCount: boss.deathCount + 1,
-          lastUpdate: Date.now()
-        });
-      } else {
-        // just reduce health
-        tx.update(bossRef, {
-          currentHealth: newHealth,
-          lastUpdate: Date.now()
-        });
+      if (steamAppId) {
+        const key = `steam:${steamAppId}`;
+        const existing = keyed.get(key);
+        if (existing) {
+          if (projectId) {
+            existing.projectIds.push(projectId);
+          }
+        } else {
+          keyed.set(key, {
+            key,
+            type: "steam",
+            appId: steamAppId,
+            url,
+            projectIds: projectId ? [projectId] : []
+          });
+        }
+        continue;
       }
 
-      // Update player stats with server-calculated XP
-      tx.update(playerRef, {
-        lastDamageSubmit: Date.now(),
-        totalDamage: (player.totalDamage || 0) + appliedDamage,
-        totalXP: (player.totalXP || 0) + xpEarned,
-        lastSeen: Date.now()
-      });
-    });
+      const itchUrl = normalizeItchUrl(url);
+      if (!itchUrl) {
+        continue;
+      }
 
-    // Update online count when boss dies (outside transaction)
-    if (bossDied) {
-      await updateOnlinePlayerCount();
+      const key = `itch:${itchUrl}`;
+      const existing = keyed.get(key);
+      if (existing) {
+        if (projectId) {
+          existing.projectIds.push(projectId);
+        }
+      } else {
+        keyed.set(key, {
+          key,
+          type: "itch",
+          url: itchUrl,
+          projectIds: projectId ? [projectId] : []
+        });
+      }
     }
-
-    return { success: true, appliedDamage, xpEarned, newTotalXP: (player.totalXP || 0) + xpEarned };
   }
-);
 
-exports.purchaseUpgrade = https.onCall(
-  { region: "australia-southeast1", cors: true },
-  async (request) => {
-    if (!request.auth) throw new https.HttpsError("unauthenticated", "Login required");
+  return [...keyed.values()].map((source) => ({
+    ...source,
+    projectIds: [...new Set(source.projectIds)]
+  }));
+}
 
-    const uid = request.auth.uid;
-    const { upgradeType } = request.data;
+async function fetchSteamRating(source) {
+  const response = await fetch(`https://store.steampowered.com/appreviews/${source.appId}?json=1&filter=summary&language=all&purchase_type=all&num_per_page=0`);
+  if (!response.ok) {
+    throw new Error(`Steam request failed with ${response.status}`);
+  }
 
-    // Upgrade definitions (must match client-side for display)
-    const upgradeDefs = {
-      damage: { baseCost: 2, costMultiplier: 2.0, maxLevel: null },
-      attackspeed: { baseCost: 128, costMultiplier: 2.0, maxLevel: 20 },
-      critchance: { baseCost: 2, costMultiplier: 2.0, maxLevel: 30 },
-      critdamage: { baseCost: 2, costMultiplier: 2.0, maxLevel: 30 }
+  const payload = await response.json();
+  const summary = payload?.query_summary;
+  if (!payload?.success || !summary) {
+    throw new Error("Steam summary payload missing");
+  }
+
+  const rawScore = Number(summary.review_score);
+  const percent = rawScore <= 1 ? Math.round(rawScore * 100) : Math.round(rawScore);
+  const totalReviews = Number(summary.total_reviews ?? (Number(summary.total_positive ?? 0) + Number(summary.total_negative ?? 0)));
+
+  if (!Number.isFinite(percent) || !Number.isFinite(totalReviews) || totalReviews <= 0) {
+    return {
+      status: "unavailable",
+      label: "Steam Reviews",
+      valueText: "Unavailable",
+      count: 0,
+      score: null
+    };
+  }
+
+  const descriptor = String(summary.review_score_desc || "User Reviews").trim();
+  return {
+    status: "ok",
+    label: "Steam Reviews",
+    valueText: `${percent}% ${descriptor} (${totalReviews})`,
+    count: totalReviews,
+    score: percent
+  };
+}
+
+async function fetchItchRating(source) {
+  const response = await fetch(source.url);
+  if (!response.ok) {
+    throw new Error(`itch request failed with ${response.status}`);
+  }
+
+  const html = await response.text();
+  const ratingMatch = html.match(/Rated\s+([0-9.]+)\s+out of 5 stars/i);
+  const countMatch = html.match(/\(([0-9,]+)\s+total ratings\)/i);
+
+  if (!ratingMatch || !countMatch) {
+    return {
+      status: "unrated",
+      label: "itch.io Rating",
+      valueText: "No public rating",
+      count: 0,
+      score: null
+    };
+  }
+
+  const rating = Number(ratingMatch[1]);
+  const totalRatings = Number(countMatch[1].replaceAll(",", ""));
+
+  return {
+    status: "ok",
+    label: "itch.io Rating",
+    valueText: `${rating.toFixed(1)}/5 (${totalRatings})`,
+    count: totalRatings,
+    score: rating
+  };
+}
+
+async function fetchStoreRating(source) {
+  if (source.type === "steam") {
+    return fetchSteamRating(source);
+  }
+
+  if (source.type === "itch") {
+    return fetchItchRating(source);
+  }
+
+  throw new Error(`Unsupported source type: ${source.type}`);
+}
+
+async function refreshStoreRating(source, existing = {}) {
+  const key = source.key || existing.key;
+  const docRef = db.collection(STORE_RATINGS_COLLECTION).doc(encodeStoreKey(key));
+  const refreshedAt = now();
+
+  try {
+    const latest = await fetchStoreRating(source);
+    const payload = {
+      key,
+      type: source.type,
+      appId: source.appId || null,
+      url: source.url || null,
+      label: latest.label,
+      valueText: latest.valueText,
+      status: latest.status,
+      count: latest.count,
+      score: latest.score,
+      projectIds: source.projectIds || existing.projectIds || [],
+      lastRefreshed: refreshedAt,
+      lastSeenAt: existing.lastSeenAt || refreshedAt,
+      updatedAt: refreshedAt,
+      error: admin.firestore.FieldValue.delete()
     };
 
-    if (!upgradeDefs[upgradeType]) {
-      throw new https.HttpsError("invalid-argument", "Invalid upgrade type");
-    }
+    await docRef.set(payload, { merge: true });
+    return payload;
+  } catch (error) {
+    const payload = {
+      key,
+      type: source.type,
+      appId: source.appId || null,
+      url: source.url || null,
+      label: source.type === "steam" ? "Steam Reviews" : "itch.io Rating",
+      valueText: "Unavailable",
+      status: "unavailable",
+      count: 0,
+      score: null,
+      projectIds: source.projectIds || existing.projectIds || [],
+      lastRefreshed: refreshedAt,
+      lastSeenAt: existing.lastSeenAt || refreshedAt,
+      updatedAt: refreshedAt,
+      error: String(error.message || error)
+    };
 
-    const playerRef = db.collection("players").doc(uid);
-    const upgradeRef = playerRef.collection("upgrades").doc(upgradeType);
-
-    let newTotalXP = 0;
-
-    await db.runTransaction(async (tx) => {
-      const playerDoc = await tx.get(playerRef);
-      if (!playerDoc.exists) throw new https.HttpsError("not-found", "Player not found");
-
-      const player = playerDoc.data();
-
-      // Load all upgrades to calculate DPS
-      const upgradesSnapshot = await playerRef.collection("upgrades").get();
-      const upgrades = {};
-      upgradesSnapshot.forEach(doc => {
-        upgrades[doc.id] = doc.data().level || 0;
-      });
-
-      // Calculate XP earned since last damage submit
-      const dps = calculateDPS(upgrades);
-      const timeElapsed = Date.now() - (player.lastDamageSubmit || Date.now());
-      const xpEarned = calculateXPEarned(dps, timeElapsed);
-
-      // Update player's totalXP with earned XP
-      let currentTotalXP = (player.totalXP || 0) + xpEarned;
-
-      // Get current upgrade level
-      const upgradeDoc = await tx.get(upgradeRef);
-      const currentLevel = upgradeDoc.exists ? (upgradeDoc.data().level || 0) : 0;
-
-      // Check if upgrade is at max level
-      const upgradeDef = upgradeDefs[upgradeType];
-      if (upgradeDef.maxLevel && currentLevel >= upgradeDef.maxLevel) {
-        throw new https.HttpsError("failed-precondition", `Upgrade is already at max level (${upgradeDef.maxLevel})`);
-      }
-
-      // Calculate cost (server-side, can't be cheated)
-      const cost = Math.floor(upgradeDef.baseCost * Math.pow(upgradeDef.costMultiplier, currentLevel));
-
-      // Verify player has enough XP
-      if (currentTotalXP < cost) {
-        throw new https.HttpsError("failed-precondition", `Not enough Total XP. Need ${cost}, have ${currentTotalXP}`);
-      }
-
-      // Deduct XP and update upgrade level
-      newTotalXP = currentTotalXP - cost;
-      tx.update(playerRef, {
-        totalXP: newTotalXP,
-        lastDamageSubmit: Date.now(), // Reset the timer after calculating earned XP
-        lastSeen: Date.now()
-      });
-
-      tx.set(upgradeRef, {
-        level: currentLevel + 1
-      });
-    });
-
-    return { success: true, newTotalXP };
+    await docRef.set(payload, { merge: true });
+    return payload;
   }
-);
-
-exports.grantAchievementXP = https.onCall(
-  { region: "australia-southeast1", cors: true },
-  async (request) => {
-    if (!request.auth) throw new https.HttpsError("unauthenticated", "Login required");
-
-    const uid = request.auth.uid;
-    const { xpAmount } = request.data;
-
-    // Validate XP amount (reasonable range for achievement XP)
-    if (!xpAmount || xpAmount < 0 || xpAmount > 100) {
-      throw new https.HttpsError("invalid-argument", "Invalid XP amount");
-    }
-
-    const playerRef = db.collection("players").doc(uid);
-
-    await db.runTransaction(async (tx) => {
-      const playerDoc = await tx.get(playerRef);
-      if (!playerDoc.exists) throw new https.HttpsError("not-found", "Player not found");
-
-      const player = playerDoc.data();
-      const currentTotalXP = player.totalXP || 0;
-
-      tx.update(playerRef, {
-        totalXP: currentTotalXP + xpAmount,
-        lastSeen: Date.now()
-      });
-    });
-
-    return { success: true, newTotalXP: (await playerRef.get()).data().totalXP };
-  }
-);
-
-// Helper function to update online player count
-async function updateOnlinePlayerCount() {
-  const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
-
-  // Query players who have been seen in the last 5 minutes
-  const onlinePlayersSnapshot = await db.collection("players")
-    .where("lastSeen", ">=", fiveMinutesAgo)
-    .get();
-
-  const onlineCount = onlinePlayersSnapshot.size;
-
-  // Update the stats/online document
-  await db.collection("stats").doc("online").set({
-    count: onlineCount,
-    lastUpdated: Date.now()
-  });
-
-  console.log(`Online count updated: ${onlineCount} players`);
-  return onlineCount;
 }
 
-// Scheduled function to update online player count every 5 minutes
-exports.updateOnlineCount = scheduler.onSchedule(
+async function upsertStoreSources(sources) {
+  const snapshots = await Promise.all(
+    sources.map((source) => db.collection(STORE_RATINGS_COLLECTION).doc(encodeStoreKey(source.key)).get())
+  );
+
+  const results = [];
+
+  for (let i = 0; i < sources.length; i += 1) {
+    const source = sources[i];
+    const snapshot = snapshots[i];
+    const seenAt = now();
+    const existing = snapshot.exists ? snapshot.data() : null;
+
+    if (!existing) {
+      results.push(await refreshStoreRating(source, { projectIds: source.projectIds, lastSeenAt: seenAt }));
+      continue;
+    }
+
+    const projectIds = [...new Set([...(existing.projectIds || []), ...(source.projectIds || [])])];
+    await snapshot.ref.set({
+      projectIds,
+      lastSeenAt: seenAt,
+      updatedAt: seenAt
+    }, { merge: true });
+
+    if (!existing.lastRefreshed || (seenAt - existing.lastRefreshed) >= STORE_REFRESH_INTERVAL_MS) {
+      results.push(await refreshStoreRating({ ...existing, ...source, projectIds }, { ...existing, projectIds, lastSeenAt: seenAt }));
+      continue;
+    }
+
+    results.push({
+      ...existing,
+      key: source.key,
+      type: source.type,
+      appId: source.appId || existing.appId || null,
+      url: source.url || existing.url || null,
+      projectIds,
+      lastSeenAt: seenAt,
+      updatedAt: seenAt
+    });
+  }
+
+  return results;
+}
+
+exports.getStoreRatings = onRequest(
+  { region: REGION, cors: true },
+  async (request, response) => {
+    if (request.method !== "POST") {
+      response.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    const sources = normalizeStoreSources(request.body);
+    const ratings = await upsertStoreSources(sources);
+
+    response.set("Cache-Control", `public, max-age=${BROWSER_CACHE_SECONDS}`);
+    response.json({
+      ratings: ratings.map((rating) => ({
+        key: rating.key,
+        type: rating.type,
+        appId: rating.appId || null,
+        url: rating.url || null,
+        label: rating.label,
+        valueText: rating.valueText,
+        status: rating.status,
+        count: rating.count || 0,
+        score: rating.score ?? null,
+        projectIds: rating.projectIds || [],
+        lastRefreshed: rating.lastRefreshed || null
+      }))
+    });
+  }
+);
+
+exports.refreshStoreRatings = onSchedule(
   {
-    schedule: "every 5 minutes",
-    region: "australia-southeast1",
+    schedule: "every 60 minutes",
+    region: REGION,
     timeZone: "Australia/Sydney"
   },
-  async (event) => {
-    await updateOnlinePlayerCount();
+  async () => {
+    const snapshot = await db.collection(STORE_RATINGS_COLLECTION).get();
+
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
+      if (!data?.key || !data?.type) {
+        continue;
+      }
+
+      await refreshStoreRating(
+        {
+          key: data.key,
+          type: data.type,
+          appId: data.appId || null,
+          url: data.url || null,
+          projectIds: data.projectIds || []
+        },
+        data
+      );
+    }
   }
 );

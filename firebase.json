@@ -2,6 +2,24 @@
   "firestore": {
     "rules": "firestore.rules"
   },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "functions/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/store-ratings",
+        "function": {
+          "functionId": "getStoreRatings",
+          "region": "australia-southeast1"
+        }
+      }
+    ]
+  },
   "functions": [
     {
       "source": "functions",

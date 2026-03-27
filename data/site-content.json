@@ -1,0 +1,285 @@
+{
+  "site": {
+    "title": "Andrew Dowsett",
+    "role": "Unity Programmer / Designer",
+    "intro": "Portfolio"
+  },
+  "sections": {
+    "about": {
+      "id": "about",
+      "label": "About",
+      "summary": "I make games, prototypes, and weird little systems that somehow start as \"this should be quick\" and end with me happily deep in architecture, tools, and backend logic.",
+      "body": [
+        "I have been working with Unity for more than a decade, which is long enough to have made a lot of things, broken a lot of things, and become suspicious whenever someone says a feature is just a simple little addition.",
+        "Over the years I have gone from self-directed experimentation and small projects into building more reusable gameplay systems, better workflows, and tools that help teams move faster without setting the whole project on fire.",
+        "Most of my work lives in the space between programming and design. I like solving the practical problems that make games feel better to build and better to play, whether that is gameplay architecture, iteration speed, multiplayer logic, or backend systems that do their job quietly in the background.",
+        "I have worked across personal projects, team projects, jam games, and shipped releases, and I tend to gravitate toward the technical glue that holds everything together.",
+        "I have also recently started my Advanced Diploma in Game Design, so alongside building games professionally and independently, I am still actively sharpening the design side of my work too."
+      ]
+    },
+    "skills": {
+      "id": "skills",
+      "label": "Skills",
+      "clusters": [
+        {
+          "id": "gameplay-programming",
+          "label": "Gameplay Programming",
+          "items": ["Player Controllers", "State Management", "Progression Systems", "Moment-to-Moment Game Feel"]
+        },
+        {
+          "id": "unity-and-csharp",
+          "label": "Unity & C#",
+          "items": ["Unity Engine", "C#", "Prefab Workflows", "Scene Setup"]
+        },
+        {
+          "id": "systems-and-design",
+          "label": "Systems Design",
+          "items": ["Core Loops", "Balancing", "Readable Mechanics", "Player Feedback"]
+        },
+        {
+          "id": "tools-and-workflow",
+          "label": "Tools & Workflow",
+          "items": ["Editor Tools", "Rapid Prototyping", "Debugging", "Iteration Speed"]
+        },
+        {
+          "id": "production-and-collaboration",
+          "label": "Production & Teamwork",
+          "items": ["Git Version Control", "Working in Teams", "Scoping Features", "Shipping Projects"]
+        },
+        {
+          "id": "multiplayer-and-backend",
+          "label": "Multiplayer & Backend",
+          "items": ["Netcode for GameObjects", "Client / Server Thinking", "SteamSDK", "Server Authority"]
+        },
+        {
+          "id": "platforms-and-performance",
+          "label": "Platforms & Performance",
+          "items": ["Cross-Platform Development", "Optimization Techniques", "Memory Management", "Frame Rate Stability"]
+        }
+      ]
+    },
+    "experience": {
+      "id": "experience",
+      "label": "Experience",
+      "entries": [
+        {
+          "id": "exp-2014",
+          "label": "Early Years",
+          "title": "Learning By Making Questionable Things",
+          "period": "2014 - 2018",
+          "body": "This was the era of making a lot of projects, breaking a lot of projects, and accidentally learning a huge amount of Unity by refusing to stop poking at it."
+        },
+        {
+          "id": "exp-2019",
+          "label": "Systems Focus",
+          "title": "From Random Prototypes to Systems That Behave Themselves",
+          "period": "2019 - 2022",
+          "body": "I started caring a lot more about structure, reusable systems, and workflows that let teams move quickly without every feature turning into a mystery box."
+        },
+        {
+          "id": "exp-2023",
+          "label": "Shipped Work",
+          "title": "Turning That Into Actual Shipped Work",
+          "period": "2023 - 2025",
+          "body": "That technical foundation turned into shipped games, team collaboration, and the kind of practical problem solving that only shows up when deadlines and real players are involved."
+        },
+        {
+          "id": "exp-now",
+          "label": "Now",
+          "title": "Still Building, Still Iterating, Slightly Wiser",
+          "period": "2025 - Present",
+          "body": "Right now I am still building technically grounded interactive work with a focus on clarity, feel, and scalable design, while also starting my Advanced Diploma in Game Design and continuing to sharpen the design side of what I do."
+        }
+      ]
+    },
+    "contact": {
+      "id": "contact",
+      "label": "Contact",
+      "body": "Actively looking for new opportunities as a Unity Programmer or Game Designer.",
+      "links": [
+        {
+          "id": "email",
+          "label": "Email",
+          "url": "mailto:andrew+portfolio@andrewdowsett.dev"
+        },
+        {
+          "id": "github",
+          "label": "GitHub",
+          "url": "https://github.com/AndrewIndieDev"
+        },
+        {
+          "id": "linkedin",
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/in/drewdowsett/"
+        }
+      ]
+    }
+  },
+  "projects": [
+    {
+      "id": "carrot-commotion",
+      "label": "Carrot Commotion",
+      "title": "Carrot Commotion",
+      "year": "coming soon",
+      "platform": "PC (server) / WebGL (client)",
+      "role": "Project Management / Programming / Networking",
+      "team": ["Andrew Dowsett", "Scarlett Ainsworth", "Alana McAnulty", "Miguel Boura", "Corey Horne"],
+      "summary": "A social deduction party game for up to eight players built around hidden information, shifting identities, and readable multiplayer systems.",
+      "video": "images/Carrot Commotion/Thumbnail.mp4",
+      "poster": "images/Carrot Commotion/Thumbnail.png",
+      "links": [
+        {
+          "id": "steam",
+          "label": "Steam",
+          "url": "https://store.steampowered.com/app/2914110/Carrot_Commotion/"
+        }
+      ]
+    },
+    {
+      "id": "ridiculous-gungame",
+      "label": "Ridiculous Gungame",
+      "title": "Ridiculous Gungame",
+      "year": "coming soon",
+      "platform": "PC",
+      "role": "Networking / Adding Content",
+      "team": ["Andrew Dowsett", "David Lawrence"],
+      "summary": "An instagib party shooter built around ridiculous weapons and fast, chaotic multiplayer matches.",
+      "video": "images/Ridiculous Gungame/Thumbnail.mp4",
+      "poster": "images/Ridiculous Gungame/Thumbnail.png",
+      "links": [
+        {
+          "id": "steam",
+          "label": "Steam",
+          "url": "https://store.steampowered.com/app/1224310/Ridiculous_Gungame/"
+        }
+      ]
+    },
+    {
+      "id": "balls-to-the-walls",
+      "label": "Balls to the Walls",
+      "title": "Balls to the Walls",
+      "year": "2026",
+      "platform": "WebGL",
+      "role": "Solo Developer",
+      "team": ["Andrew Dowsett"],
+      "summary": "An incremental brick-breaking prototype built as a playground for progression systems, player feedback, and satisfying moment-to-moment feel.",
+      "video": "images/BTTW/Thumbnail.mp4",
+      "poster": "images/BTTW/Thumbnail.png",
+      "links": [
+        {
+          "id": "itch",
+          "label": "Itch.io",
+          "url": "https://andrewindie.itch.io/balls-to-the-walls"
+        }
+      ]
+    },
+    {
+      "id": "baroquen-bones",
+      "label": "Baroquen Bones",
+      "title": "Baroquen Bones",
+      "year": "2026",
+      "platform": "WebGL",
+      "role": "Solo Developer",
+      "team": ["Andrew Dowsett"],
+      "summary": "A stylised prototype focused on strong visual direction, readable mechanics, and the kind of experimentation that starts with one idea and somehow becomes five systems.",
+      "video": "images/Baroquen Bones/Thumbnail.mp4",
+      "poster": "images/Baroquen Bones/Thumbnail.png",
+      "links": [
+        {
+          "id": "itch",
+          "label": "Itch.io",
+          "url": "https://andrewindie.itch.io/baroquen-bones"
+        }
+      ]
+    },
+    {
+      "id": "ihmhty",
+      "label": "I Have More Hours Than You",
+      "title": "I Have More Hours Than You",
+      "year": "2025",
+      "platform": "PC",
+      "role": "Gameplay / Systems",
+      "team": ["Andrew Dowsett", "David Lawrence"],
+      "summary": "An abstract idle-like experience that uses Steam achievements as a core part of both progression and narrative framing.",
+      "video": "images/IHMHTY/Thumbnail.mp4",
+      "poster": "images/IHMHTY/Thumbnail.png",
+      "links": [
+        {
+          "id": "steam",
+          "label": "Steam",
+          "url": "https://store.steampowered.com/app/3056640/I_Have_More_Hours_Than_You/"
+        }
+      ]
+    },
+    {
+      "id": "one-ships-trash",
+      "label": "One Ships Trash",
+      "title": "One Ships Trash",
+      "year": "2025",
+      "platform": "PC",
+      "role": "Gameplay / Systems",
+      "team": ["Andrew Dowsett", "Corey Horne", "Liam Clarkson-Holborn", "Jayden Cosgrove"],
+      "summary": "A magnet-fishing jam game about cleaning an underwater reef, designed and built in two (2) days.",
+      "video": "images/One Ships Trash/Thumbnail.mp4",
+      "poster": "images/One Ships Trash/Thumbnail.png",
+      "links": [
+        {
+          "id": "itch",
+          "label": "Itch.io",
+          "url": "https://liam3d.itch.io/one-ships-trash-jam"
+        }
+      ]
+    },
+    {
+      "id": "dino-eco-sim",
+      "label": "Dino Eco Simulation",
+      "title": "Dino Eco Simulation",
+      "year": "2024",
+      "platform": "PC",
+      "role": "Gameplay / Systems",
+      "team": ["Andrew Dowsett", "Corey Horne"],
+      "summary": "A relaxed ecosystem simulation focused on observing dinosaur life cycles instead of controlling or fighting them.",
+      "video": "images/Dinosaur Ecosystem/Thumbnail.mp4",
+      "poster": "images/Dinosaur Ecosystem/Thumbnail.png",
+      "links": [
+        {
+          "id": "itch",
+          "label": "Itch.io",
+          "url": "https://andrewindie.itch.io/project-gcap"
+        }
+      ]
+    },
+    {
+      "id": "whos-your-possessor",
+      "label": "Who's Your Possessor",
+      "title": "Who's Your Possessor",
+      "year": "2024",
+      "platform": "WebGL",
+      "role": "Solo Developer",
+      "team": ["Andrew Dowsett"],
+      "summary": "A possession-based prototype built around playful chaos, clear interactions, and a strong core gimmick with immediate payoff.",
+      "video": "",
+      "poster": "images/Whos Your Possessor/Thumbnail.png",
+      "links": [
+        {
+          "id": "itch",
+          "label": "Itch.io",
+          "url": "https://andrewindie.itch.io/whos-your-possessor"
+        }
+      ]
+    },
+    {
+      "id": "mandela-protocol",
+      "label": "Mandela Protocol",
+      "title": "Mandela Protocol",
+      "year": "in development",
+      "platform": "PC",
+      "role": "Networking / Game Feel / UI-UX",
+      "team": ["Andrew Dowsett", "Corey Horne"],
+      "summary": "An anomaly hunting game set in a robot-lead world. Players take on the role of a scientist, using a camera to gather information for our overseer.",
+      "video": "",
+      "poster": "",
+      "links": []
+    }
+  ]
+}
