@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "Andrew Dowsett",
-    "role": "Welcome to my portfolio!",
+    "role": "Unity Developer / Game Designer",
     "intro": "Unity Programmer / Game Designer"
   },
   "sections": {
@@ -74,21 +74,21 @@
           "label": "Systems Focus",
           "title": "From Random Prototypes to Systems That Behave Themselves",
           "period": "2019 - 2022",
-          "body": "I started caring a lot more about structure, reusable systems, and workflows that let teams move quickly without every feature turning into a mystery box."
+          "body": "This was when I stopped just making prototypes and started thinking properly about structure, reusable systems, and how to build things without making future me miserable."
         },
         {
           "id": "exp-2023",
           "label": "Shipped Work",
           "title": "Turning That Into Actual Shipped Work",
           "period": "2023 - 2025",
-          "body": "That technical foundation turned into shipped games, team collaboration, and the kind of practical problem solving that only shows up when deadlines and real players are involved."
+          "body": "A lot of that learning turned into shipped games, team projects, and the kinds of problems you only really hit when something has to work for other people, not just for yourself."
         },
         {
           "id": "exp-now",
           "label": "Now",
           "title": "Still Building, Still Iterating, Slightly Wiser",
           "period": "2025 - Present",
-          "body": "Right now I am still building technically grounded interactive work with a focus on clarity, feel, and scalable design, while also starting my Advanced Diploma in Game Design and continuing to sharpen the design side of what I do."
+          "body": "Right now I am building games with a stronger balance between programming and design, while also working through my Advanced Diploma in Game Design and getting better at the design side of the work."
         }
       ]
     },
@@ -124,7 +124,7 @@
       "platform": "PC (server) / WebGL (client)",
       "role": "Project Management / Programming / Networking",
       "team": ["Andrew Dowsett", "Scarlett Ainsworth", "Alana McAnulty", "Miguel Boura", "Corey Horne"],
-      "summary": "A social deduction party game for up to eight players built around hidden information.",
+      "summary": "A social deduction party game for up to eight players where bluffing and reading people matter as much as the mechanics.",
       "video": "images/Carrot Commotion/Thumbnail.mp4",
       "poster": "images/Carrot Commotion/Thumbnail.png",
       "links": [
@@ -162,7 +162,7 @@
       "platform": "WebGL",
       "role": "Solo Developer",
       "team": ["Andrew Dowsett"],
-      "summary": "An incremental brick-breaking prototype built as a playground for progression systems, player feedback, and satisfying moment-to-moment feel.",
+      "summary": "A brick-breaking incremental prototype where I got to experiment with progression, feedback, and making simple actions feel good.",
       "video": "images/BTTW/Thumbnail.mp4",
       "poster": "images/BTTW/Thumbnail.png",
       "links": [
@@ -181,7 +181,7 @@
       "platform": "WebGL",
       "role": "Audio Implementation / Game Feel / Level Design",
       "team": ["Andrew Dowsett", "Corey Horne", "Jane Wei", "Robbie Little", "Jacob Mackay", "Simone Rizzuto"],
-      "summary": "A stylised prototype focused on strong visual direction, readable mechanics, and the kind of experimentation that starts with one idea and somehow becomes five systems.",
+      "summary": "A stylised prototype that started with one idea and turned into a much stranger, more systems-heavy experiment than planned.",
       "video": "images/Baroquen Bones/Thumbnail.mp4",
       "poster": "images/Baroquen Bones/Thumbnail.png",
       "links": [
@@ -200,7 +200,7 @@
       "platform": "PC",
       "role": "UI - UX / Steam Integration / Progression Systems",
       "team": ["Andrew Dowsett", "David Lawrence"],
-      "summary": "An abstract idle-like experience that uses Steam achievements as a core part of both progression and narrative framing.",
+      "summary": "An abstract idle-like game that uses Steam achievements as both progression and part of the joke.",
       "video": "images/IHMHTY/Thumbnail.mp4",
       "poster": "images/IHMHTY/Thumbnail.png",
       "links": [
@@ -238,7 +238,7 @@
       "platform": "PC",
       "role": "Level Design / Game Feel / UI-UX / Animation Systems",
       "team": ["Andrew Dowsett", "Corey Horne"],
-      "summary": "A relaxed ecosystem simulation focused on observing dinosaur life cycles instead of controlling or fighting them.",
+      "summary": "A dinosaur ecosystem sim about watching creatures live, eat, and die instead of turning everything into combat.",
       "video": "images/Dinosaur Ecosystem/Thumbnail.mp4",
       "poster": "images/Dinosaur Ecosystem/Thumbnail.png",
       "links": [
