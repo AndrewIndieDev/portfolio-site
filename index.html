@@ -18,9 +18,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260327b">
+  <link rel="stylesheet" href="styles.css?v=20260815j">
 </head>
 <body>
+  <div id="backgroundStage" class="background-stage" aria-label="Interactive project stage">
+    <video id="backgroundPreview" class="background-preview" muted loop playsinline></video>
+    <iframe id="backgroundGame" class="background-game" title="Playable web game" allow="autoplay; fullscreen; gamepad" allowfullscreen hidden></iframe>
+    <div class="stage-vignette" aria-hidden="true"></div>
+    <div class="stage-label" aria-live="polite">
+      <span id="stageMode" class="stage-mode">Background preview</span>
+      <strong id="stageTitle">Loading portfolio…</strong>
+    </div>
+  </div>
+  <div class="hud-controls" aria-label="HUD controls">
+    <button id="hudToggle" class="hud-control" type="button" aria-expanded="true">Retract HUD</button>
+    <button id="exitGame" class="hud-control hud-control--danger" type="button" hidden>Exit game</button>
+  </div>
   <header class="mobile-topbar" aria-label="Mobile navigation">
     <div class="mobile-brand">
       <span class="mobile-brand-name">Andrew Dowsett</span>
@@ -38,6 +51,6 @@
       <div id="contentViewport" class="content-viewport"></div>
     </main>
   </div>
-  <script src="app.js?v=20260327b" defer></script>
+  <script src="app.js?v=20260815h" defer></script>
 </body>
 </html>

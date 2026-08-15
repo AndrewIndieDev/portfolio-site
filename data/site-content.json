@@ -2,7 +2,7 @@
   "site": {
     "title": "Andrew Dowsett",
     "role": "",
-    "intro": "Unity Developer / Game Designer"
+    "intro": "Unity Developer\nGame Designer"
   },
   "sections": {
     "about": {
@@ -24,36 +24,43 @@
         {
           "id": "gameplay-programming",
           "label": "Gameplay Programming",
+          "summary": "Builds responsive, state-driven gameplay with clear ownership, predictable transitions, and tuning surfaces that support rapid designer iteration. Treats input, animation, camera, audio and feedback as one player-facing system while keeping the implementation debuggable enough to survive production.",
           "items": ["Player Controllers", "State Management", "Progression Systems", "Moment-to-Moment Game Feel"]
         },
         {
           "id": "unity-and-csharp",
           "label": "Unity & C#",
+          "summary": "More than a decade of practical Unity experience, focused on maintainable C#, dependable component boundaries, and workflows that remain understandable as projects grow.",
           "items": ["Unity Engine", "C#", "Prefab Workflows", "Scene Setup"]
         },
         {
           "id": "systems-and-design",
           "label": "Systems Design",
+          "summary": "Turns design goals into readable mechanics, progression and player feedback, balancing technical constraints against clarity, pacing and long-term engagement.",
           "items": ["Core Loops", "Balancing", "Readable Mechanics", "Player Feedback"]
         },
         {
           "id": "tools-and-workflow",
           "label": "Tools & Workflow",
+          "summary": "Creates focused tools and diagnostics that shorten iteration loops, expose useful data, and let designers spend more time improving the game.",
           "items": ["Editor Tools", "Rapid Prototyping", "Debugging", "Iteration Speed"]
         },
         {
           "id": "production-and-collaboration",
           "label": "Production & Teamwork",
+          "summary": "Scopes work honestly, communicates trade-offs early, and delivers readable systems that teammates can review, extend and confidently take ownership of.",
           "items": ["Git Version Control", "Working in Teams", "Scoping Features", "Shipping Projects"]
         },
         {
           "id": "multiplayer-and-backend",
           "label": "Multiplayer & Backend",
+          "summary": "Approaches networking from a client-server mindset, with server-authoritative state, validated inputs, predictable failure handling and player-facing responsiveness.",
           "items": ["Netcode for GameObjects", "Client / Server Thinking", "SteamSDK", "Server Authority"]
         },
         {
           "id": "platforms-and-performance",
           "label": "Platforms & Performance",
+          "summary": "Treats performance as a design constraint: protecting frame time, memory and stability while adapting features to the realities of each target platform.",
           "items": ["Cross-Platform Development", "Optimization Techniques", "Memory Management", "Frame Rate Stability"]
         }
       ]
@@ -63,32 +70,74 @@
       "label": "Experience",
       "entries": [
         {
-          "id": "exp-2014",
-          "label": "Early Years",
-          "title": "Learning By Making Questionable Things",
-          "period": "2014 - 2018",
-          "body": "This was the era of making a lot of projects, breaking a lot of projects, and accidentally learning a huge amount of Unity by refusing to stop poking at it."
+          "id": "exp-2007",
+          "label": "First Tools",
+          "title": "Discovering GameMaker",
+          "period": "2007 - 2009",
+          "body": "Started building games at school with GameMaker's visual tools, then kept experimenting independently."
         },
         {
-          "id": "exp-2019",
-          "label": "Systems Focus",
-          "title": "From Random Prototypes to Systems That Behave Themselves",
-          "period": "2019 - 2022",
-          "body": "This was when I stopped just making prototypes and started thinking properly about structure, reusable systems, and how to build things without making future me miserable."
+          "id": "exp-2010",
+          "label": "Learning Code",
+          "title": "From Actions to GML",
+          "period": "2010 - 2011",
+          "body": "Moved beyond drag-and-drop into GameMaker Language, learning syntax, logic and core programming concepts."
+        },
+        {
+          "id": "exp-2012",
+          "label": "Live Development",
+          "title": "Games Built With an Audience",
+          "period": "2012 - 2013",
+          "body": "Streamed development and made Twitch-connected games that viewers could play while they were being built."
+        },
+        {
+          "id": "exp-2014",
+          "label": "Engine Transition",
+          "title": "Unity, C# and Collaboration",
+          "period": "2014 - 2016",
+          "body": "Moved into Unity with longtime collaborator David, learning C# through interactive games and rapid prototypes."
+        },
+        {
+          "id": "exp-2017",
+          "label": "Systems",
+          "title": "Building Deeper Foundations",
+          "period": "2017 - 2019",
+          "body": "Expanded into reusable gameplay systems, UI, tools and integrations through constant hands-on development."
+        },
+        {
+          "id": "exp-2020",
+          "label": "Iteration",
+          "title": "Prototypes Into Production Skills",
+          "period": "2020 - 2022",
+          "body": "Turned years of experiments into stronger architecture, disciplined iteration and regular playtesting with friends."
         },
         {
           "id": "exp-2023",
-          "label": "Shipped Work",
-          "title": "Turning That Into Actual Shipped Work",
-          "period": "2023 - 2025",
-          "body": "A lot of that learning turned into shipped games, team projects, and the kinds of problems you only really hit when something has to work for other people, not just for yourself."
+          "label": "Production",
+          "title": "Designing for Real Players",
+          "period": "2023",
+          "body": "Focused on polished player loops, maintainable systems and the realities of taking projects beyond prototypes."
         },
         {
-          "id": "exp-now",
-          "label": "Now",
-          "title": "Still Building, Still Iterating, Slightly Wiser",
+          "id": "exp-2024",
+          "label": "Industry Residency",
+          "title": "Screen Queensland",
+          "period": "2024",
+          "body": "Completed a year-long residency, learned the business of shipping and secured development funding for Carrot Commotion."
+        },
+        {
+          "id": "exp-2025",
+          "label": "Steamworks",
+          "title": "Shipping and Supporting Games",
+          "period": "2024 - 2025",
+          "body": "Released I Have More Hours Than You and integrated Steam cloud saves, achievements, stats and inventory."
+        },
+        {
+          "id": "exp-2026",
+          "label": "Independent Development",
+          "title": "Emberlane Games",
           "period": "2025 - Present",
-          "body": "Right now I am building games with a stronger balance between programming and design, while also working through my Advanced Diploma in Game Design and getting better at the design side of the work."
+          "body": "Combined contract development with original projects, now building a serious collective around new releases."
         }
       ]
     },
@@ -144,7 +193,7 @@
       "role": "Networking / Adding Content",
       "team": ["Andrew Dowsett", "David Lawrence"],
       "summary": "An instagib party shooter built around ridiculous weapons and fast, chaotic multiplayer matches.",
-      "video": "images/Ridiculous Gungame/Thumbnail.mp4",
+      "video": "images/Ridiculous Gungame/Thumbnail.mp4?v=20260815",
       "poster": "images/Ridiculous Gungame/Thumbnail.png",
       "links": [
         {
@@ -165,6 +214,8 @@
       "summary": "A brick-breaking incremental prototype where I got to experiment with progression, feedback, and making simple actions feel good.",
       "video": "images/BTTW/Thumbnail.mp4",
       "poster": "images/BTTW/Thumbnail.png",
+      "webBuild": "https://itch.io/embed-upload/16868484",
+      "backgroundReady": true,
       "links": [
         {
           "id": "itch",
@@ -184,6 +235,7 @@
       "summary": "A stylised prototype that started with one idea and turned into a much stranger, more systems-heavy experiment than planned.",
       "video": "images/Baroquen Bones/Thumbnail.mp4",
       "poster": "images/Baroquen Bones/Thumbnail.png",
+      "webBuild": "https://itch.io/embed-upload/16361814",
       "links": [
         {
           "id": "itch",
@@ -235,12 +287,13 @@
       "label": "Dino Eco Simulation",
       "title": "Dino Eco Simulation",
       "year": "2024",
-      "platform": "PC",
+      "platform": "WebGL",
       "role": "Level Design / Game Feel / UI-UX / Animation Systems",
       "team": ["Andrew Dowsett", "Corey Horne"],
       "summary": "A dinosaur ecosystem sim about watching creatures live, eat, and die instead of turning everything into combat.",
       "video": "images/Dinosaur Ecosystem/Thumbnail.mp4",
       "poster": "images/Dinosaur Ecosystem/Thumbnail.png",
+      "webBuild": "https://itch.io/embed-upload/11740544",
       "links": [
         {
           "id": "itch",
@@ -260,6 +313,7 @@
       "summary": "A possession-based prototype built around playful chaos.",
       "video": "",
       "poster": "images/Whos Your Possessor/Thumbnail.png",
+      "webBuild": "https://itch.io/embed-upload/9821799",
       "links": [
         {
           "id": "itch",
